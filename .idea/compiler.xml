@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel target="11">
+      <module name="amiibot.app" target="11" />
+      <module name="amiibot.buildSrc" target="11" />
+      <module name="amiibot.buildSrc.main" target="11" />
+      <module name="amiibot.buildSrc.test" target="11" />
+      <module name="amiibot.media" target="11" />
+      <module name="typus.app" target="11" />
+      <module name="typus.buildSrc" target="11" />
+      <module name="typus.buildSrc.main" target="11" />
+      <module name="typus.buildSrc.test" target="11" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
