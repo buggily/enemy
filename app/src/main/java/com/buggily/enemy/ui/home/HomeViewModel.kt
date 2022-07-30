@@ -1,4 +1,4 @@
-package com.buggily.skeleton.ui.home
+package com.buggily.enemy.ui.home
 
 import androidx.lifecycle.ViewModel
 

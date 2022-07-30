@@ -1,4 +1,4 @@
-package com.buggily.skeleton.ui.home
+package com.buggily.enemy.ui.home
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -6,7 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import com.buggily.skeleton.ui.SkeletonDestination
+import com.buggily.enemy.ui.EnemyDestination
 
 @Composable
 fun HomeScreen() {
@@ -14,7 +14,7 @@ fun HomeScreen() {
 
     NavHost(
         navController = navController,
-        startDestination = SkeletonDestination.Default.name,
+        startDestination = EnemyDestination.Default.name,
         modifier = Modifier.fillMaxSize(),
     ) {
 

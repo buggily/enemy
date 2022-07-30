@@ -1,7 +1,7 @@
-package com.buggily.skeleton.ui
+package com.buggily.enemy.ui
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
-class SkeletonApplication : Application()
+class EnemyApplication : Application()

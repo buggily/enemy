@@ -1,11 +1,11 @@
-package com.buggily.skeleton.ui
+package com.buggily.enemy.ui
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 
 @Composable
-fun SkeletonTheme(
+fun EnemyTheme(
     content: @Composable () -> Unit,
 ) {
     val typography = Typography()
