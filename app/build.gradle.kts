@@ -22,6 +22,18 @@ android {
         testInstrumentationRunner = Build.RUNNER
     }
 
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+
+            proguardFiles(
+                getDefaultProguardFile("proguard-android.txt"),
+                "proguard-rules.pro",
+            )
+        }
+    }
+
     buildFeatures {
         compose = true
     }
@@ -37,6 +49,12 @@ android {
 
     kotlinOptions {
         jvmTarget = Version.JAVA.toString()
+
+        val optIns: List<String> = Build.OptIn.values.map {
+            "-opt-in=$it"
+        }
+
+        freeCompilerArgs = freeCompilerArgs + optIns
     }
 
     composeOptions {
@@ -46,6 +64,7 @@ android {
 
 dependencies {
     implementation(project(":domain"))
+    implementation(Dependency.Kotlin.Core.KTX)
 
     implementation(Dependency.Hilt.IDENTITY)
     kapt(Dependency.Hilt.COMPILER)
@@ -53,22 +72,33 @@ dependencies {
     implementation(Dependency.Hilt.Android.NAVIGATION)
     kapt(Dependency.Hilt.Android.COMPILER)
 
-    implementation(Dependency.Room.IDENTITY)
-    kapt(Dependency.Room.COMPILER)
-
-    implementation(Dependency.Room.COROUTINES)
-    implementation(Dependency.Room.PAGING)
-
     implementation(Dependency.Paging.IDENTITY)
     implementation(Dependency.Paging.COMPOSE)
 
-    implementation(Dependency.Retrofit.IDENTITY)
-
-    implementation(Dependency.Compose.UI)
     implementation(Dependency.Compose.ACTIVITY)
-    implementation(Dependency.Compose.VIEW_MODEL)
     implementation(Dependency.Compose.MATERIAL)
     implementation(Dependency.Compose.NAVIGATION)
+
+    implementation(Dependency.Compose.Ui.IDENTITY)
+    implementation(Dependency.Compose.Ui.Tooling.PREVIEW)
+    debugImplementation(Dependency.Compose.Ui.Tooling.IDENTITY)
+
+    implementation(Dependency.Compose.Lifecycle.IDENTITY)
+    implementation(Dependency.Compose.Lifecycle.KTX)
+    implementation(Dependency.Compose.Lifecycle.ViewModel.IDENTITY)
+    implementation(Dependency.Compose.Lifecycle.ViewModel.KTX)
+
+    implementation(Dependency.Coil.IDENTITY)
+
+    implementation(Dependency.Media.IDENTITY)
+    implementation(Dependency.Media.SESSION)
+    implementation(Dependency.Media.UI)
+
+    testImplementation(project(":data"))
+    testImplementation(Dependency.JUnit.IDENTITY)
+    testImplementation(Dependency.Test.COROUTINE)
+
+    androidTestImplementation(Dependency.Test.Android.Compose.JUnit.IDENTITY)
 }
 
 kapt {

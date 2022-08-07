@@ -3,6 +3,8 @@ plugins {
 
     id("kotlin-android")
     id("kotlin-kapt")
+
+    id("dagger.hilt.android.plugin")
 }
 
 android {
@@ -19,4 +21,5 @@ dependencies {
     kapt(Dependency.Hilt.COMPILER)
 
     implementation(Dependency.Paging.CORE)
+    implementation(Dependency.DataStore.Preferences.IDENTITY)
 }

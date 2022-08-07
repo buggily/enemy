@@ -2,12 +2,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.buggily.enemy">
 
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <application
         android:name="com.buggily.enemy.ui.EnemyApplication"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/launcher"
         android:label="@string/name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/launcher_round"
         android:supportsRtl="true"
         android:theme="@style/theme">
 
@@ -21,5 +24,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name="androidx.activity.ComponentActivity" />
+
+        <service
+            android:name="com.buggily.enemy.service.EnemyMediaSessionService"
+            android:exported="true"
+            android:foregroundServiceType="mediaPlayback">
+
+            <intent-filter>
+                <action android:name="androidx.media3.session.MediaSessionService" />
+                <action android:name="android.media.browse.MediaBrowserService" />
+            </intent-filter>
+        </service>
     </application>
 </manifest>

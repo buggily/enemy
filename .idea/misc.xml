@@ -4,6 +4,23 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="../../../../layout/compose-model-1657720884425.xml" value="0.19552364864864866" />
+        <entry key="app/src/main/res/drawable/clear.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/close.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/ic_round_close_24.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/launcher_foreground.xml" value="0.2425" />
+        <entry key="app/src/main/res/drawable/open.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/play.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/repeat.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/repeat_disable.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/repeat_enable.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/search.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/search_disable.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/search_enable.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/settings.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/shuffle.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/shuffle_disable.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/shuffle_enable.xml" value="0.1" />
       </map>
     </option>
   </component>

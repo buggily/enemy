@@ -1,3 +1,31 @@
 <resources>
     <string name="name">enemy</string>
+    <string name="open">open</string>
+    <string name="close">close</string>
+    <string name="clear">clear</string>
+    <string name="theme">theme</string>
+
+    <string name="search">search</string>
+    <string name="search_enable">enable search</string>
+    <string name="search_disable">disable search</string>
+
+    <string name="settings">settings</string>
+    <string name="theme_default">default</string>
+    <string name="theme_dark">dark</string>
+    <string name="theme_light">light</string>
+    <string name="dynamic">dynamic</string>
+    <string name="reset">reset</string>
+
+    <string name="play">play</string>
+    <string name="pause">pause</string>
+    <string name="next">next</string>
+    <string name="previous">previous</string>
+
+    <string name="repeat">repeat</string>
+    <string name="repeat_enable">enable repeat</string>
+    <string name="repeat_disable">disable repeat</string>
+
+    <string name="shuffle">shuffle</string>
+    <string name="shuffle_enable">enable shuffle</string>
+    <string name="shuffle_disable">disable shuffle</string>
 </resources>
