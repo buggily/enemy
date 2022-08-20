@@ -4,8 +4,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.MaterialTheme
@@ -19,8 +24,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -31,11 +39,11 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.buggily.enemy.R
 import com.buggily.enemy.domain.album.Album
 import com.buggily.enemy.ext.nullableItems
+import com.buggily.enemy.ui.ContentAlpha
 import com.buggily.enemy.ui.EnemyDestination
 import com.buggily.enemy.ui.ext.ArtImage
 import com.buggily.enemy.ui.home.HomeState
 import com.buggily.enemy.ui.home.HomeViewModel
-import com.buggily.enemy.ui.ContentAlpha
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -73,11 +81,25 @@ private fun AlbumsScreen(
     albums: LazyPagingItems<Result<Album>>,
     modifier: Modifier = Modifier,
 ) {
+    val layoutDirection: LayoutDirection = LocalLayoutDirection.current
+    val padding: Dp = dimensionResource(R.dimen.padding_large)
+    val navigationBarsPadding: PaddingValues = WindowInsets.navigationBars.asPaddingValues()
+
+    val startPadding: Dp = padding + navigationBarsPadding.calculateStartPadding(layoutDirection)
+    val topPadding: Dp = padding + navigationBarsPadding.calculateTopPadding()
+    val endPadding: Dp = padding + navigationBarsPadding.calculateEndPadding(layoutDirection)
+    val bottomPadding: Dp = padding + navigationBarsPadding.calculateBottomPadding()
+
     LazyVerticalGrid(
         columns = GridCells.Adaptive(dimensionResource(R.dimen.item)),
-        contentPadding = PaddingValues(dimensionResource(R.dimen.padding_large)),
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_large)),
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_large)),
+        contentPadding = PaddingValues(
+            start = startPadding,
+            top = topPadding,
+            end = endPadding,
+            bottom = bottomPadding,
+        ),
+        verticalArrangement = Arrangement.spacedBy(padding),
+        horizontalArrangement = Arrangement.spacedBy(padding),
         modifier = modifier,
     ) {
         val contentModifier: Modifier = Modifier.fillMaxSize()

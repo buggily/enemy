@@ -196,7 +196,7 @@ private fun MainScreenContent(
         ) {
             SettingsScreen(
                 viewModel = hiltViewModel(),
-                modifier = contentModifier.statusBarsPadding(),
+                modifier = contentModifier.systemBarsPadding(),
             )
         }
     }
