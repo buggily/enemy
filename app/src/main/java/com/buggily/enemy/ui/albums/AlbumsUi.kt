@@ -86,6 +86,15 @@ private fun AlbumsScreen(
     val endPadding: Dp = padding + navigationBarsPadding.calculateEndPadding(layoutDirection)
     val bottomPadding: Dp = padding + navigationBarsPadding.calculateBottomPadding()
 
+    val onAlbumClick: (Long) -> Unit = remember {
+        {
+            navController.navigate(EnemyDestination.Album.getRoute(it)) {
+                launchSingleTop = true
+                restoreState = false
+            }
+        }
+    }
+
     LazyVerticalGrid(
         columns = GridCells.Adaptive(dimensionResource(R.dimen.item)),
         contentPadding = PaddingValues(
@@ -98,8 +107,6 @@ private fun AlbumsScreen(
         horizontalArrangement = Arrangement.spacedBy(padding),
         modifier = modifier,
     ) {
-        val contentModifier: Modifier = Modifier.fillMaxSize()
-
         nullableItems(
             items = albums,
             key = { it.getOrNull()?.id },
@@ -107,17 +114,16 @@ private fun AlbumsScreen(
             Surface(
                 shape = MaterialTheme.shapes.medium,
                 color = MaterialTheme.colorScheme.secondary,
-                modifier = contentModifier,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .animateItemPlacement(),
             ) {
                 when (val album: Album? = remember(it) { it?.getOrNull() }) {
                     is Album -> AlbumItem(
                         album = album,
-                        modifier = contentModifier.clickable {
-                            navController.navigate(EnemyDestination.Album.getRoute(album.id)) {
-                                launchSingleTop = true
-                                restoreState = false
-                            }
-                        },
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clickable { onAlbumClick(album.id) },
                     )
                     else -> Unit
                 }

@@ -57,10 +57,12 @@ fun HomeScreen(
     val searchState: HomeState.SearchState = state.searchState
     val itSettingsState: HomeState.SettingsState = state.settingsState
 
-    val onSettingsClick: () -> Unit = {
-        navController.navigate(EnemyDestination.Settings.route) {
-            launchSingleTop = true
-            restoreState = false
+    val onSettingsClick: () -> Unit = remember {
+        {
+            navController.navigate(EnemyDestination.Settings.route) {
+                launchSingleTop = true
+                restoreState = false
+            }
         }
     }
 
