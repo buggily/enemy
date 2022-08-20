@@ -1,10 +1,10 @@
 # enemy
 
-enemy is a supplemental code sample written by @buggily. While exhibition is the primary purpose of enemy, @buggily uses enemy as their dedicated audio player in everyday life!
+enemy is a supplemental code sample written by @buggily. While primary purpose of enemy is exhibition, @buggily uses enemy as their dedicated audio player in everyday life!
 
 ### Overview
 
-enemy provides browsing and playback by album. Background playback is supported by a media service, and the corresponding media notification is available in both the notification tray and on the lock screen. enemy adopts the early beta of Media3 to achieve a familiar playback experience. Enhancements are planned to follow a stable Media3 release.
+enemy provides browsing and playback by album. A media service supports background playback, and the corresponding media notification is available in both the notification tray and on the lock screen. enemy adopts the early beta of Media3 to achieve a familiar playback experience. @buggily plans enhancements to follow a stable Media3 release.
 
 ### Implementation
 
