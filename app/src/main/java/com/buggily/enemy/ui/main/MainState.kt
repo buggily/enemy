@@ -1,6 +1,7 @@
 package com.buggily.enemy.ui.main
 
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.navigation.NavDestination
 import com.buggily.enemy.ui.EnemyDestination
 
@@ -142,6 +143,15 @@ data class MainState(
         data class ItemState(
             val item: MediaItem?,
         ) {
+
+            val nameText: String
+                get() = mediaMetadata?.title.toString()
+
+            val artistText: String
+                get() = mediaMetadata?.artist.toString()
+
+            private val mediaMetadata: MediaMetadata?
+                get() = item?.mediaMetadata
 
             companion object {
                 val default: ItemState

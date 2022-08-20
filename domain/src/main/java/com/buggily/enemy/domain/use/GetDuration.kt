@@ -13,7 +13,7 @@ class GetDuration(
         val seconds: Long = TimeUnit.MILLISECONDS.toSeconds(duration) - TimeUnit.MINUTES.toSeconds(minutes)
         val milliseconds: Long = TimeUnit.MILLISECONDS.toMillis(duration) - TimeUnit.SECONDS.toMillis(seconds)
 
-        val display: String = String.format(
+        val text: String = String.format(
             locale = locale,
             format = "%d:%02d",
             minutes,
@@ -25,7 +25,7 @@ class GetDuration(
             milliseconds = milliseconds,
             seconds = seconds,
             minutes = minutes,
-            display = display,
+            text = text,
         )
     }
 }

@@ -207,16 +207,14 @@ private fun MainController(
     controllerState: MainState.ControllerState,
     modifier: Modifier = Modifier,
 ) {
+    val itemState: MainState.ControllerState.ItemState = controllerState.itemState
     val shape: Shape = MaterialTheme.shapes.large.copy(
         bottomStart = ZeroCornerSize,
         bottomEnd = ZeroCornerSize,
     )
 
-    val itemState: MainState.ControllerState.ItemState = controllerState.itemState
-    val item: MediaItem? = itemState.item
-
     AnimatedVisibility(
-        visible = item.isNonNull(),
+        visible = itemState.item.isNonNull(),
         enter = expandVertically(
             expandFrom = Alignment.Bottom,
         ),
@@ -291,10 +289,6 @@ private fun MainControllerText(
     itemState: MainState.ControllerState.ItemState,
     modifier: Modifier = Modifier,
 ) {
-    val item: MediaItem = itemState.item ?: return
-    val name: String = item.mediaMetadata.title.toString()
-    val albumArtistName: String = item.mediaMetadata.albumArtist.toString()
-
     Column(
         verticalArrangement = Arrangement.spacedBy(
             space = dimensionResource(R.dimen.padding_small),
@@ -304,12 +298,12 @@ private fun MainControllerText(
         modifier = modifier,
     ) {
         SingleLineText(
-            text = name,
+            text = itemState.nameText,
             style = MaterialTheme.typography.titleMedium,
         )
 
         SingleLineText(
-            text = albumArtistName,
+            text = itemState.artistText,
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.alpha(ContentAlpha.MEDIUM),
         )

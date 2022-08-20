@@ -351,7 +351,7 @@ private fun AlbumTrackItem(
         )
 
         Text(
-            text = track.duration.display,
+            text = track.duration.text,
             textAlign = TextAlign.End,
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.alpha(ContentAlpha.MEDIUM),

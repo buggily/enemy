@@ -16,7 +16,7 @@ data class Track(
         val milliseconds: Long,
         val seconds: Long,
         val minutes: Long,
-        val display: String,
+        val text: String,
     )
 
     data class Position(
