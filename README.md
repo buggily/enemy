@@ -23,7 +23,7 @@ Because enemy is a strictly local client, setup simply involves cloning the repo
 
 <img src="./res/the_threatened_swan.png" alt="the threatened swan" width=33.333%><img src="./res/enemy_light_swan.png" alt="enemy light" width=33.333%><img src="./res/enemy_dark_swan.png" alt="enemy dark" width=33.333%>
 
-*enemy in dynamic dark and light modes*
+*enemy in dynamic light and dark modes*
 
 <img src="./res/enemy_light.png" alt="enemy light" width=50%><img src="./res/enemy_dark.png" alt="enemy dark" width=50%>
 
