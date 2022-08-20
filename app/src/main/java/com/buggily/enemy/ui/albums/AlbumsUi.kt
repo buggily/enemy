@@ -42,7 +42,6 @@ import com.buggily.enemy.ext.nullableItems
 import com.buggily.enemy.ui.ContentAlpha
 import com.buggily.enemy.ui.EnemyDestination
 import com.buggily.enemy.ui.ext.ArtImage
-import com.buggily.enemy.ui.home.HomeState
 import com.buggily.enemy.ui.home.HomeViewModel
 import kotlinx.coroutines.flow.collectLatest
 
@@ -60,11 +59,8 @@ fun AlbumsScreen(
     val state: AlbumsState by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        homeViewModel.state.flowWithLifecycle(lifecycle).collectLatest {
-            val itSearchState: HomeState.SearchState = it.searchState
-            val itSearch: String = itSearchState.search
-
-            state.searchState.onSearchChange(itSearch)
+        homeViewModel.search.flowWithLifecycle(lifecycle).collectLatest {
+            state.searchState.onSearchChange(it)
         }
     }
 

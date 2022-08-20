@@ -40,7 +40,6 @@ import com.buggily.enemy.ui.EnemyDestination
 import com.buggily.enemy.ui.albums.AlbumsScreen
 import com.buggily.enemy.ui.ext.Gradient
 import com.buggily.enemy.ui.ext.IconButton
-import com.buggily.enemy.ui.main.MainState
 import com.buggily.enemy.ui.main.MainViewModel
 import kotlinx.coroutines.flow.collectLatest
 
@@ -70,12 +69,8 @@ fun HomeScreen(
     }
 
     LaunchedEffect(Unit) {
-        mainViewModel.state.flowWithLifecycle(lifecycle).collectLatest {
-            val itCollapsableState: MainState.CollapsableState = it.collapsableState
-            val itSearchState: MainState.CollapsableState.SearchState = itCollapsableState.searchState
-            val itIsSearch: Boolean = itSearchState.isSearch
-
-            searchState.onIsSearchChange(itIsSearch)
+        mainViewModel.isSearch.flowWithLifecycle(lifecycle).collectLatest {
+            searchState.onIsSearchChange(it)
         }
     }
 

@@ -1,11 +1,23 @@
 package com.buggily.enemy.ui.home
 
 import androidx.lifecycle.ViewModel
+import com.buggily.enemy.di.DebounceQualifier
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import javax.inject.Inject
 
-class HomeViewModel : ViewModel() {
+@HiltViewModel
+class HomeViewModel @Inject constructor(
+    @DebounceQualifier debounce: Long,
+) : ViewModel() {
+
+    val search: Flow<String>
 
     private val _state: MutableStateFlow<HomeState>
     val state: StateFlow<HomeState> get() = _state
@@ -18,6 +30,10 @@ class HomeViewModel : ViewModel() {
                 onSearchClearClick = ::onSearchClearClick,
             ),
         ).let { _state = MutableStateFlow(it) }
+
+        search = state.map {
+            it.searchState.search
+        }.debounce(debounce).distinctUntilChanged()
     }
 
     private fun onIsSearchChange(isSearch: Boolean) = setIsSearchOfSearchState(

@@ -10,7 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flatMapMerge
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
@@ -31,7 +31,7 @@ class AlbumsViewModel @Inject constructor(
             ),
         ).let { _state = MutableStateFlow(it) }
 
-        albums = state.flatMapMerge {
+        albums = state.flatMapLatest {
             val searchState: AlbumsState.SearchState = it.searchState
             val search: String = searchState.search
 
