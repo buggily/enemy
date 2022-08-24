@@ -59,10 +59,10 @@ class SettingsUiTest {
 
     @Test
     fun themeButtonInvokesOnThemeClickOfThemeState() {
-        var isClicked = false
+        var clicks = 0
         val state: SettingsState = SettingsState.default.copy(
             themeState = themeState.copy(
-                onThemeClick = { isClicked = true },
+                onThemeClick = { clicks++ },
             ),
         )
 
@@ -74,15 +74,15 @@ class SettingsUiTest {
         }
 
         defaultButton.performClick()
-        assert(isClicked)
+        assert(clicks == 1)
     }
 
     @Test
     fun resetButtonInvokesOnResetClickOfResetState() {
-        var isClicked = false
+        var clicks = 0
         val state: SettingsState = SettingsState.default.copy(
             resetState = SettingsState.default.resetState.copy(
-                onResetClick = { isClicked = true },
+                onResetClick = { clicks++ },
             ),
         )
 
@@ -94,7 +94,7 @@ class SettingsUiTest {
         }
 
         resetButton.performClick()
-        assert(isClicked)
+        assert(clicks == 1)
     }
 
     private val defaultButton: SemanticsNodeInteraction
