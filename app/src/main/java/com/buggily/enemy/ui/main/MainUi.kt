@@ -20,7 +20,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -38,6 +40,7 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.media3.common.MediaItem
+import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -64,25 +67,12 @@ fun MainScreen(
     enemyState: EnemyState,
     modifier: Modifier = Modifier,
 ) {
-    val navController: NavHostController = enemyState.navController
-    val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
-    val lifecycle: Lifecycle = lifecycleOwner.lifecycle
-
     val state: MainState by viewModel.state.collectAsStateWithLifecycle()
-    val navigationState: MainState.NavigationState = state.navigationState
-    val collapsableState: MainState.CollapsableState = state.collapsableState
-    val controllerState: MainState.ControllerState = state.controllerState
-
-    LaunchedEffect(Unit) {
-        navController.currentBackStackEntryFlow.flowWithLifecycle(lifecycle).collectLatest {
-            navigationState.onDestinationChange(it.destination)
-        }
-    }
 
     MainScreen(
-        navigationState = navigationState,
-        collapsableState = collapsableState,
-        controllerState = controllerState,
+        navController = enemyState.navController,
+        collapsableState = state.collapsableState,
+        controllerState = state.controllerState,
         modifier = modifier,
         contentModifier = Modifier.fillMaxSize(),
     ) {
@@ -95,7 +85,7 @@ fun MainScreen(
 
 @Composable
 private fun MainScreen(
-    navigationState: MainState.NavigationState,
+    navController: NavHostController,
     collapsableState: MainState.CollapsableState,
     controllerState: MainState.ControllerState,
     modifier: Modifier = Modifier,
@@ -114,7 +104,7 @@ private fun MainScreen(
 
             when (isHorizontalImeVisible) {
                 false -> MainCollapsableButton(
-                    navigationState = navigationState,
+                    navController = navController,
                     collapsableState = collapsableState,
                     modifier = Modifier
                         .fillMaxSize(1 / 2f)
@@ -158,7 +148,7 @@ private fun MainScreenContent(
             deepLinks = EnemyDestination.Orientation.deepLinks,
         ) {
             OrientationScreen(
-                navController = navController,
+                enemyState = enemyState,
                 viewModel = hiltViewModel(),
                 modifier = contentModifier.systemBarsPadding(),
             )
@@ -170,7 +160,7 @@ private fun MainScreenContent(
             deepLinks = EnemyDestination.Home.deepLinks,
         ) {
             HomeScreen(
-                navController = navController,
+                enemyState = enemyState,
                 viewModel = hiltViewModel(),
                 mainViewModel = hiltViewModel(viewModelStoreOwner),
                 modifier = contentModifier.statusBarsPadding(),
@@ -383,15 +373,29 @@ private fun MainControllerPreviousButton(
 
 @Composable
 private fun MainCollapsableButton(
-    navigationState: MainState.NavigationState,
+    navController: NavHostController,
     collapsableState: MainState.CollapsableState,
     modifier: Modifier = Modifier,
 ) {
+    var destination: NavDestination? by remember { mutableStateOf(navController.currentDestination) }
+    val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
+    val lifecycle: Lifecycle = lifecycleOwner.lifecycle
+
+    LaunchedEffect(Unit) {
+        navController.currentBackStackEntryFlow.flowWithLifecycle(lifecycle).collectLatest {
+            destination = it.destination
+        }
+    }
+
     val searchState: MainState.CollapsableState.SearchState = collapsableState.searchState
     val repeatState: MainState.CollapsableState.RepeatState = collapsableState.repeatState
     val shuffleState: MainState.CollapsableState.ShuffleState = collapsableState.shuffleState
 
-    val contents: List<@Composable () -> Unit> = when (navigationState.enemyDestination) {
+    val isCollapsable: Boolean = collapsableState.isCollapsable
+    val painterResId: Int = if (isCollapsable) R.drawable.close else R.drawable.open
+    val contentDescriptionResId: Int = if (isCollapsable) R.drawable.close else R.string.open
+
+    val contents: List<@Composable () -> Unit> = when (EnemyDestination.get(destination)) {
         is EnemyDestination.Home -> listOf(
             { MainRepeatButton(repeatState) },
             { MainSearchButton(searchState) },
@@ -403,10 +407,6 @@ private fun MainCollapsableButton(
         )
         else -> return
     }
-
-    val isCollapsable: Boolean = collapsableState.isCollapsable
-    val painterResId: Int = if (isCollapsable) R.drawable.close else R.drawable.open
-    val contentDescriptionResId: Int = if (isCollapsable) R.drawable.close else R.string.open
 
     CollapsableButton(
         isCollapsable = isCollapsable,

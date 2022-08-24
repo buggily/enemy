@@ -2,32 +2,16 @@ package com.buggily.enemy.ui.main
 
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
-import androidx.navigation.NavDestination
-import com.buggily.enemy.ui.EnemyDestination
+import com.buggily.enemy.domain.album.Album
+import com.buggily.enemy.domain.track.Track
 
 data class MainState(
-    val navigationState: NavigationState,
     val collapsableState: CollapsableState,
     val controllerState: ControllerState,
     val mediaState: MediaState,
+    val playState: PlayState,
+    val trackState: TrackState,
 ) {
-
-    data class NavigationState(
-        private val destination: NavDestination?,
-        val onDestinationChange: (NavDestination?) -> Unit,
-    ) {
-
-        val enemyDestination: EnemyDestination?
-            get() = EnemyDestination.get(destination)
-
-        companion object {
-            val default: NavigationState
-                get() = NavigationState(
-                    destination = null,
-                    onDestinationChange = {},
-                )
-        }
-    }
 
     data class CollapsableState(
         val isCollapsable: Boolean,
@@ -271,13 +255,38 @@ data class MainState(
         }
     }
 
+    data class PlayState(
+        val onPlayClick: (Album) -> Unit,
+    ) {
+
+        companion object {
+            val default: PlayState
+                get() = PlayState(
+                    onPlayClick = {},
+                )
+        }
+    }
+
+    data class TrackState(
+        val onTrackClick: (Track) -> Unit,
+    ) {
+
+        companion object {
+            val default: TrackState
+                get() = TrackState(
+                    onTrackClick = {},
+                )
+        }
+    }
+
     companion object {
         val default: MainState
             get() = MainState(
-                navigationState = NavigationState.default,
                 collapsableState = CollapsableState.default,
                 controllerState = ControllerState.default,
                 mediaState = MediaState.default,
+                playState = PlayState.default,
+                trackState = TrackState.default,
             )
     }
 }

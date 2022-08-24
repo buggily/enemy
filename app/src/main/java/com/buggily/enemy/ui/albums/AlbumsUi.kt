@@ -33,21 +33,20 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
-import androidx.navigation.NavController
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.buggily.enemy.R
 import com.buggily.enemy.domain.album.Album
 import com.buggily.enemy.ext.nullableItems
 import com.buggily.enemy.ui.ContentAlpha
-import com.buggily.enemy.ui.EnemyDestination
+import com.buggily.enemy.ui.EnemyState
 import com.buggily.enemy.ui.ext.ArtImage
 import com.buggily.enemy.ui.home.HomeViewModel
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun AlbumsScreen(
-    navController: NavController,
+    albumState: EnemyState.AlbumState,
     viewModel: AlbumsViewModel,
     homeViewModel: HomeViewModel,
     modifier: Modifier = Modifier,
@@ -65,7 +64,7 @@ fun AlbumsScreen(
     }
 
     AlbumsScreen(
-        navController = navController,
+        albumState = albumState,
         albums = albums,
         modifier = modifier,
     )
@@ -73,7 +72,7 @@ fun AlbumsScreen(
 
 @Composable
 private fun AlbumsScreen(
-    navController: NavController,
+    albumState: EnemyState.AlbumState,
     albums: LazyPagingItems<Result<Album>>,
     modifier: Modifier = Modifier,
 ) {
@@ -85,15 +84,6 @@ private fun AlbumsScreen(
     val topPadding: Dp = padding + navigationBarsPadding.calculateTopPadding()
     val endPadding: Dp = padding + navigationBarsPadding.calculateEndPadding(layoutDirection)
     val bottomPadding: Dp = padding + navigationBarsPadding.calculateBottomPadding()
-
-    val onAlbumClick: (Long) -> Unit = remember {
-        {
-            navController.navigate(EnemyDestination.Album.getRoute(it)) {
-                launchSingleTop = true
-                restoreState = false
-            }
-        }
-    }
 
     LazyVerticalGrid(
         columns = GridCells.Adaptive(dimensionResource(R.dimen.item)),
@@ -123,7 +113,7 @@ private fun AlbumsScreen(
                         album = album,
                         modifier = Modifier
                             .fillMaxSize()
-                            .clickable { onAlbumClick(album.id) },
+                            .clickable { albumState.onAlbumClick(album) },
                     )
                     else -> Unit
                 }

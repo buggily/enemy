@@ -16,22 +16,19 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
-import androidx.navigation.NavDestination
-import androidx.navigation.NavHostController
-import com.buggily.enemy.ui.EnemyDestination
+import com.buggily.enemy.ui.EnemyState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 @Composable
 fun OrientationScreen(
+    enemyState: EnemyState,
     viewModel: OrientationViewModel,
-    navController: NavHostController,
     modifier: Modifier = Modifier,
 ) {
+    val state: OrientationState by viewModel.state.collectAsStateWithLifecycle()
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
     val lifecycle: Lifecycle = lifecycleOwner.lifecycle
-
-    val state: OrientationState by viewModel.state.collectAsStateWithLifecycle()
 
     val orientationState: OrientationState.State = state.state
     val grantState: OrientationState.State.GrantState = orientationState.grantState
@@ -57,18 +54,7 @@ fun OrientationScreen(
                 is OrientationState.PermissionState.EventState -> {
                     when (it) {
                         is OrientationState.PermissionState.EventState.Grant -> {
-                            navController.navigate(EnemyDestination.Home.route) {
-                                val currentDestination: NavDestination = navController.currentDestination ?: return@navigate
-                                val currentRoute: String = currentDestination.route ?: return@navigate
-
-                                launchSingleTop = true
-                                restoreState = false
-
-                                popUpTo(currentRoute) {
-                                    inclusive = true
-                                    saveState = false
-                                }
-                            }
+                            enemyState.orientationState.onHomeClick()
                         }
                         is OrientationState.PermissionState.EventState.Pend -> {
                             launcher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)

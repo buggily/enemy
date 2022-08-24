@@ -47,11 +47,12 @@ import com.buggily.enemy.domain.album.Album
 import com.buggily.enemy.domain.track.Track
 import com.buggily.enemy.ext.nullableItems
 import com.buggily.enemy.ext.orientationCompat
+import com.buggily.enemy.ui.ContentAlpha
 import com.buggily.enemy.ui.ext.ArtImage
 import com.buggily.enemy.ui.ext.Gradient
 import com.buggily.enemy.ui.ext.IconFloatingActionButton
+import com.buggily.enemy.ui.main.MainState
 import com.buggily.enemy.ui.main.MainViewModel
-import com.buggily.enemy.ui.ContentAlpha
 
 @Composable
 fun AlbumScreen(
@@ -60,24 +61,13 @@ fun AlbumScreen(
     modifier: Modifier = Modifier,
 ) {
     val state: AlbumState by viewModel.state.collectAsStateWithLifecycle()
+    val mainState: MainState by mainViewModel.state.collectAsStateWithLifecycle()
     val tracks: LazyPagingItems<Result<Track>> = viewModel.tracks.collectAsLazyPagingItems()
 
-    val albumState: AlbumState.State = state.albumState
-    val itPlayState: AlbumState.PlayState = state.playState
-    val itTrackState: AlbumState.TrackState = state.trackState
-
-    val playState: AlbumState.PlayState = remember(itPlayState) {
-        itPlayState.copy(onPlayClick = mainViewModel::onPlayClick)
-    }
-
-    val trackState: AlbumState.TrackState = remember(itTrackState) {
-        itTrackState.copy(onTrackClick = mainViewModel::onTrackClick)
-    }
-
     AlbumScreen(
-        albumState = albumState,
-        playState = playState,
-        trackState = trackState,
+        albumState = state.albumState,
+        playState = mainState.playState,
+        trackState = mainState.trackState,
         tracks = tracks,
         modifier = modifier,
     )
@@ -86,8 +76,8 @@ fun AlbumScreen(
 @Composable
 private fun AlbumScreen(
     albumState: AlbumState.State,
-    playState: AlbumState.PlayState,
-    trackState: AlbumState.TrackState,
+    playState: MainState.PlayState,
+    trackState: MainState.TrackState,
     tracks: LazyPagingItems<Result<Track>>,
     modifier: Modifier = Modifier,
 ) {
@@ -122,7 +112,7 @@ private fun AlbumScreen(
 @Composable
 private fun AlbumHeader(
     albumState: AlbumState.State,
-    playState: AlbumState.PlayState,
+    playState: MainState.PlayState,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier) {
@@ -172,7 +162,7 @@ private fun AlbumHeaderBackground(
 @Composable
 private fun AlbumHeaderForeground(
     albumState: AlbumState.State,
-    playState: AlbumState.PlayState,
+    playState: MainState.PlayState,
     modifier: Modifier = Modifier,
 ) {
     val orientation: Orientation = LocalConfiguration.current.orientationCompat
@@ -208,7 +198,7 @@ private fun AlbumHeaderForeground(
 @Composable
 private fun AlbumHeaderImage(
     albumState: AlbumState.State,
-    playState: AlbumState.PlayState,
+    playState: MainState.PlayState,
     modifier: Modifier = Modifier,
 ) {
     when (val album: Album? = remember(albumState) { albumState.album }) {
@@ -270,7 +260,7 @@ private fun AlbumHeaderText(
 
 @Composable
 private fun AlbumTracksColumn(
-    trackState: AlbumState.TrackState,
+    trackState: MainState.TrackState,
     tracks: LazyPagingItems<Result<Track>>,
     modifier: Modifier = Modifier,
 ) {
@@ -362,7 +352,7 @@ private fun AlbumTrackItem(
 @Composable
 private fun AlbumPlayButton(
     album: Album,
-    playState: AlbumState.PlayState,
+    playState: MainState.PlayState,
     modifier: Modifier = Modifier,
 ) {
     IconFloatingActionButton(

@@ -21,7 +21,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,9 +33,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
-import androidx.navigation.NavHostController
 import com.buggily.enemy.R
-import com.buggily.enemy.ui.EnemyDestination
+import com.buggily.enemy.ui.EnemyState
 import com.buggily.enemy.ui.albums.AlbumsScreen
 import com.buggily.enemy.ui.ext.Gradient
 import com.buggily.enemy.ui.ext.IconButton
@@ -45,30 +43,16 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun HomeScreen(
-    navController: NavHostController,
+    enemyState: EnemyState,
     viewModel: HomeViewModel,
     mainViewModel: MainViewModel,
     modifier: Modifier = Modifier,
 ) {
-    val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
-    val lifecycle: Lifecycle = lifecycleOwner.lifecycle
-
     val state: HomeState by viewModel.state.collectAsStateWithLifecycle()
     val searchState: HomeState.SearchState = state.searchState
-    val itSettingsState: HomeState.SettingsState = state.settingsState
 
-    val onSettingsClick: () -> Unit = remember {
-        {
-            navController.navigate(EnemyDestination.Settings.route) {
-                launchSingleTop = true
-                restoreState = false
-            }
-        }
-    }
-
-    val settingsState: HomeState.SettingsState = remember(itSettingsState) {
-        itSettingsState.copy(onSettingsClick = onSettingsClick)
-    }
+    val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
+    val lifecycle: Lifecycle = lifecycleOwner.lifecycle
 
     LaunchedEffect(Unit) {
         mainViewModel.isSearch.flowWithLifecycle(lifecycle).collectLatest {
@@ -78,11 +62,11 @@ fun HomeScreen(
 
     HomeScreen(
         searchState = searchState,
-        settingsState = settingsState,
+        settingsState = enemyState.settingsState,
         modifier = modifier,
     ) {
         HomeScreenContent(
-            navController = navController,
+            albumState = enemyState.albumState,
             modifier = Modifier
                 .fillMaxSize()
                 .weight(1f),
@@ -93,7 +77,7 @@ fun HomeScreen(
 @Composable
 private fun HomeScreen(
     searchState: HomeState.SearchState,
-    settingsState: HomeState.SettingsState,
+    settingsState: EnemyState.SettingsState,
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit,
 ) {
@@ -120,7 +104,7 @@ private fun HomeScreen(
 @Composable
 private fun HomeSearchBar(
     searchState: HomeState.SearchState,
-    settingsState: HomeState.SettingsState,
+    settingsState: EnemyState.SettingsState,
     modifier: Modifier = Modifier,
 ) {
     AnimatedVisibility(
@@ -158,7 +142,7 @@ private fun HomeSearchBar(
 
 @Composable
 private fun HomeSettingsButton(
-    settingsState: HomeState.SettingsState,
+    settingsState: EnemyState.SettingsState,
     modifier: Modifier = Modifier,
 ) {
     IconButton(
@@ -201,12 +185,12 @@ private fun HomeSearchBarTrailingIcon(
 
 @Composable
 private fun HomeScreenContent(
-    navController: NavHostController,
+    albumState: EnemyState.AlbumState,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier) {
         AlbumsScreen(
-            navController = navController,
+            albumState = albumState,
             homeViewModel = hiltViewModel(),
             viewModel = hiltViewModel(),
             modifier = Modifier.fillMaxSize(),

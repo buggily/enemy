@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import androidx.navigation.NavDestination
 import com.buggily.enemy.domain.album.Album
 import com.buggily.enemy.domain.theme.Theme
 import com.buggily.enemy.domain.track.Track
@@ -53,9 +52,6 @@ class MainViewModel @Inject constructor(
 
     init {
         MainState.default.copy(
-            navigationState = MainState.NavigationState.default.copy(
-                onDestinationChange = ::onDestinationChange,
-            ),
             collapsableState = MainState.CollapsableState.default.copy(
                 onCollapsableClick = ::onCollapsableClick,
                 searchState = MainState.CollapsableState.SearchState.default.copy(
@@ -78,7 +74,13 @@ class MainViewModel @Inject constructor(
                 previousState = MainState.ControllerState.PreviousState.default.copy(
                     onPreviousClick = ::onPreviousClick,
                 ),
-            )
+            ),
+            playState = MainState.PlayState.default.copy(
+                onPlayClick = ::onPlayClick,
+            ),
+            trackState = MainState.TrackState.default.copy(
+                onTrackClick = ::onTrackClick,
+            ),
         ).let { _state = MutableStateFlow(it) }
 
         isSearch = state.map {
@@ -152,8 +154,7 @@ class MainViewModel @Inject constructor(
     }
 
     private fun onPlayClick() = state.value.let {
-        val itControllerState: MainState.ControllerState = it.controllerState
-        val playState: MainState.ControllerState.PlayState = itControllerState.playState
+        val playState: MainState.ControllerState.PlayState = it.controllerState.playState
         val isPlay: Boolean = playState.isPlay
 
         val controllerState: MainState.MediaState.ControllerState.Event = if (isPlay) {
@@ -185,7 +186,7 @@ class MainViewModel @Inject constructor(
         setControllerStateOfMediaState(controllerState)
     }
 
-    fun onPlayClick(album: Album) = viewModelScope.launch {
+    private fun onPlayClick(album: Album) = viewModelScope.launch {
         val tracks: List<Track> = getTracksByAlbumId(album.id)
 
         val index: Int = tracks.firstIndex
@@ -200,7 +201,7 @@ class MainViewModel @Inject constructor(
         setControllerStateOfMediaState(controllerState)
     }
 
-    fun onTrackClick(track: Track) = viewModelScope.launch {
+    private fun onTrackClick(track: Track) = viewModelScope.launch {
         val album: Track.Album = track.album
         val tracks: List<Track> = getTracksByAlbumId(album.id)
 
@@ -215,10 +216,6 @@ class MainViewModel @Inject constructor(
 
         setControllerStateOfMediaState(controllerState)
     }
-
-    private fun onDestinationChange(destination: NavDestination?) = setDestinationOfNavigationState(
-        destination = destination,
-    )
 
     private fun onCollapsableClick() = state.value.let {
         val collapsableState: MainState.CollapsableState = it.collapsableState
@@ -263,14 +260,6 @@ class MainViewModel @Inject constructor(
         )
 
         setShuffleStateOfMediaState(shuffleState)
-    }
-
-    private fun setDestinationOfNavigationState(destination: NavDestination?) = state.value.let {
-        val navigationState: MainState.NavigationState = it.navigationState.copy(
-            destination = destination,
-        )
-
-        setNavigationState(navigationState)
     }
 
     private fun setIsSearchOfCollapsableSearchState(isSearch: Boolean) = state.value.let {
@@ -371,10 +360,6 @@ class MainViewModel @Inject constructor(
         )
 
         setMediaState(mediaState)
-    }
-
-    private fun setNavigationState(navigationState: MainState.NavigationState) = _state.update {
-        it.copy(navigationState = navigationState)
     }
 
     private fun setCollapsableState(collapsableState: MainState.CollapsableState) = _state.update {
