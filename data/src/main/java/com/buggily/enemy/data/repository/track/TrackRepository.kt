@@ -1,7 +1,7 @@
 package com.buggily.enemy.data.repository.track
 
 import androidx.paging.PagingData
-import com.buggily.enemy.data.Track
+import com.buggily.enemy.data.track.Track
 import com.buggily.enemy.data.source.track.TrackSourceable
 import kotlinx.coroutines.flow.Flow
 

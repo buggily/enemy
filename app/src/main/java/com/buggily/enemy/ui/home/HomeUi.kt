@@ -19,54 +19,39 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.flowWithLifecycle
 import com.buggily.enemy.R
-import com.buggily.enemy.ui.EnemyState
+import com.buggily.enemy.domain.search.Search
 import com.buggily.enemy.ui.albums.AlbumsScreen
+import com.buggily.enemy.ui.albums.AlbumsState
 import com.buggily.enemy.ui.ext.Gradient
 import com.buggily.enemy.ui.ext.IconButton
-import com.buggily.enemy.ui.main.MainViewModel
-import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun HomeScreen(
-    enemyState: EnemyState,
+    albumState: AlbumsState.AlbumState,
+    settingsState: HomeState.SettingsState,
     viewModel: HomeViewModel,
-    mainViewModel: MainViewModel,
     modifier: Modifier = Modifier,
 ) {
     val state: HomeState by viewModel.state.collectAsStateWithLifecycle()
     val searchState: HomeState.SearchState = state.searchState
 
-    val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
-    val lifecycle: Lifecycle = lifecycleOwner.lifecycle
-
-    LaunchedEffect(Unit) {
-        mainViewModel.isSearch.flowWithLifecycle(lifecycle).collectLatest {
-            searchState.onIsSearchChange(it)
-        }
-    }
-
     HomeScreen(
+        settingsState = settingsState,
         searchState = searchState,
-        settingsState = enemyState.settingsState,
         modifier = modifier,
     ) {
         HomeScreenContent(
-            albumState = enemyState.albumState,
+            albumState = albumState,
             modifier = Modifier
                 .fillMaxSize()
                 .weight(1f),
@@ -76,8 +61,8 @@ fun HomeScreen(
 
 @Composable
 private fun HomeScreen(
+    settingsState: HomeState.SettingsState,
     searchState: HomeState.SearchState,
-    settingsState: EnemyState.SettingsState,
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit,
 ) {
@@ -87,8 +72,8 @@ private fun HomeScreen(
         modifier = modifier,
     ) {
         HomeSearchBar(
-            searchState = searchState,
             settingsState = settingsState,
+            searchState = searchState,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
@@ -103,12 +88,15 @@ private fun HomeScreen(
 
 @Composable
 private fun HomeSearchBar(
+    settingsState: HomeState.SettingsState,
     searchState: HomeState.SearchState,
-    settingsState: EnemyState.SettingsState,
     modifier: Modifier = Modifier,
 ) {
+    val search: Search = searchState.search
+    val isSearch: Boolean = search.isVisible
+
     AnimatedVisibility(
-        visible = searchState.isSearch,
+        visible = isSearch,
         enter = expandVertically(
             expandFrom = Alignment.Bottom,
         ),
@@ -125,7 +113,7 @@ private fun HomeSearchBar(
             modifier = modifier,
         ) {
             OutlinedTextField(
-                value = searchState.search,
+                value = search.value,
                 onValueChange = searchState.onSearchChange,
                 singleLine = true,
                 label = { HomeSearchBarLabel() },
@@ -133,16 +121,14 @@ private fun HomeSearchBar(
                 modifier = Modifier.weight(1f),
             )
 
-            HomeSettingsButton(
-                settingsState = settingsState,
-            )
+            HomeSettingsButton(settingsState)
         }
     }
 }
 
 @Composable
 private fun HomeSettingsButton(
-    settingsState: EnemyState.SettingsState,
+    settingsState: HomeState.SettingsState,
     modifier: Modifier = Modifier,
 ) {
     IconButton(
@@ -185,13 +171,12 @@ private fun HomeSearchBarTrailingIcon(
 
 @Composable
 private fun HomeScreenContent(
-    albumState: EnemyState.AlbumState,
+    albumState: AlbumsState.AlbumState,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier) {
         AlbumsScreen(
             albumState = albumState,
-            homeViewModel = hiltViewModel(),
             viewModel = hiltViewModel(),
             modifier = Modifier.fillMaxSize(),
         )

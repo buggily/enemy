@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -22,10 +23,7 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
-import androidx.navigation.compose.rememberNavController
 import com.buggily.enemy.domain.theme.Theme
-import com.buggily.enemy.ui.EnemyState
-import com.buggily.enemy.ui.ext.rememberEnemyState
 import com.buggily.enemy.ui.theme.EnemyPalette
 import com.buggily.enemy.ui.theme.EnemyTheme
 import com.google.common.util.concurrent.ListenableFuture
@@ -47,9 +45,8 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var executor: Executor
 
-    private lateinit var mediaControllerFuture: ListenableFuture<MediaController>
-
     private val viewModel: MainViewModel by viewModels()
+    private lateinit var mediaControllerFuture: ListenableFuture<MediaController>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,108 +68,39 @@ class MainActivity : ComponentActivity() {
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    controllerState.collect {
-                        when (it) {
-                            is MainState.MediaState.ControllerState.Event -> {
-                                when (it) {
-                                    is MainState.MediaState.ControllerState.Event.Play -> requireMediaController().run {
-                                        when (it) {
-                                            is MainState.MediaState.ControllerState.Event.Play.With -> {
-                                                setMediaItems(it.items)
-                                                seekToDefaultPosition(it.index)
-                                            }
-                                            else -> Unit
-                                        }
-
-                                        prepare()
-                                        play()
-                                    }
-                                    is MainState.MediaState.ControllerState.Event.Pause -> {
-                                        requireMediaController().pause()
-                                    }
-                                    is MainState.MediaState.ControllerState.Event.Next -> {
-                                        requireMediaController().seekToNext()
-                                    }
-                                    is MainState.MediaState.ControllerState.Event.Previous -> {
-                                        requireMediaController().seekToPrevious()
-                                    }
-                                }
-
-                                it.onEvent()
-                            }
-                            is MainState.MediaState.ControllerState.Default -> Unit
-                        }
-                    }
-                }
-
-                launch {
-                    repeatState.collect {
-                        when (it) {
-                            is MainState.MediaState.RepeatState.Event -> {
-                                when (it) {
-                                    is MainState.MediaState.RepeatState.Event.Set -> {
-                                        requireMediaController().repeatMode = it.repeatMode
-                                    }
-                                }
-
-                                it.onEvent()
-                            }
-                            is MainState.MediaState.RepeatState.Default -> Unit
-                        }
-                    }
-                }
-
-                launch {
-                    shuffleState.collect {
-                        when (it) {
-                            is MainState.MediaState.ShuffleState.Event -> {
-                                when (it) {
-                                    is MainState.MediaState.ShuffleState.Event.Set -> {
-                                        requireMediaController().shuffleModeEnabled = it.shuffleMode
-                                    }
-                                }
-
-                                it.onEvent()
-                            }
-                            is MainState.MediaState.ShuffleState.Default -> Unit
-                        }
-                    }
-                }
+                launch { controllerState.collect { onControllerStateEvent(it) } }
+                launch { repeatState.collect { onRepeatStateEvent(it) } }
+                launch { shuffleState.collect { onShuffleStateEvent(it) } }
             }
         }
 
         setContent {
-            val enemyState: EnemyState = rememberEnemyState(
-                navController = rememberNavController(),
-                viewModelStoreOwner = this,
-            )
-
             val theme: Theme by viewModel.theme.collectAsStateWithLifecycle()
             val dynamic: Theme.Dynamic by viewModel.dynamic.collectAsStateWithLifecycle()
             val isSystemInDarkTheme: Boolean = isSystemInDarkTheme()
 
-            val isDynamic: Boolean = when (dynamic) {
-                Theme.Dynamic.Off -> false
-                else -> true
-            }
+            val paletteTheme: EnemyPalette.Theme = remember(theme, dynamic) {
+                val isDynamic: Boolean = when (dynamic) {
+                    Theme.Dynamic.Off -> false
+                    else -> true
+                }
 
-            val paletteTheme: EnemyPalette.Theme = remember(
-                theme,
-                isDynamic,
-            ) {
                 when (theme) {
                     is Theme.Default -> EnemyPalette.Theme.Default(
                         isDynamic = isDynamic,
                         isSystemInDarkTheme = isSystemInDarkTheme,
                     )
-                    is Theme.Light -> EnemyPalette.Theme.Light(isDynamic)
-                    is Theme.Dark -> EnemyPalette.Theme.Dark(isDynamic)
+                    is Theme.Light -> EnemyPalette.Theme.Light(
+                        isDynamic = isDynamic,
+                    )
+                    is Theme.Dark -> EnemyPalette.Theme.Dark(
+                        isDynamic = isDynamic,
+                    )
                 }
             }
 
-            val palette: EnemyPalette = remember(paletteTheme) { EnemyPalette(paletteTheme) }
-            val isLight: Boolean = remember(palette) { palette.isLight }
+            val palette = EnemyPalette(paletteTheme)
+            val isLight: Boolean = palette.isLight
 
             LaunchedEffect(isLight) {
                 insetsController.run {
@@ -183,8 +111,7 @@ class MainActivity : ComponentActivity() {
 
             EnemyTheme(palette) {
                 MainScreen(
-                    viewModel = viewModel,
-                    enemyState = enemyState,
+                    viewModel = hiltViewModel(),
                     modifier = Modifier
                         .fillMaxSize()
                         .imePadding(),
@@ -221,6 +148,53 @@ class MainActivity : ComponentActivity() {
             requireMediaController().removeListener(listener)
             MediaController.releaseFuture(mediaControllerFuture)
         }
+    }
+
+    private suspend fun onControllerStateEvent(event: MainState.MediaState.ControllerState) = when (event) {
+        is MainState.MediaState.ControllerState.Event -> {
+            when (event) {
+                is MainState.MediaState.ControllerState.Event.Play -> requireMediaController().run {
+                    when (event) {
+                        is MainState.MediaState.ControllerState.Event.Play.With -> {
+                            setMediaItems(event.items)
+                            seekToDefaultPosition(event.index)
+                        }
+                        else -> Unit
+                    }
+
+                    prepare()
+                    play()
+                }
+                is MainState.MediaState.ControllerState.Event.Pause -> {
+                    requireMediaController().pause()
+                }
+                is MainState.MediaState.ControllerState.Event.Next -> {
+                    requireMediaController().seekToNext()
+                }
+                is MainState.MediaState.ControllerState.Event.Previous -> {
+                    requireMediaController().seekToPrevious()
+                }
+            }
+
+            event.onEvent()
+        }
+        is MainState.MediaState.ControllerState.Default -> Unit
+    }
+
+    private suspend fun onRepeatStateEvent(event: MainState.MediaState.RepeatState) = when (event) {
+        is MainState.MediaState.RepeatState.Event.Set -> {
+            requireMediaController().repeatMode = event.repeatMode
+            event.onEvent()
+        }
+        is MainState.MediaState.RepeatState.Default -> Unit
+    }
+
+    private suspend fun onShuffleStateEvent(event: MainState.MediaState.ShuffleState) = when (event) {
+        is MainState.MediaState.ShuffleState.Event.Set -> {
+            requireMediaController().shuffleModeEnabled = event.shuffleMode
+            event.onEvent()
+        }
+        is MainState.MediaState.ShuffleState.Default -> Unit
     }
 
     private suspend fun requireMediaController(): MediaController = suspendCoroutine {

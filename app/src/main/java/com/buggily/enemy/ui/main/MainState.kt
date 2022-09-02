@@ -2,16 +2,37 @@ package com.buggily.enemy.ui.main
 
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import androidx.navigation.NavDestination
 import com.buggily.enemy.domain.album.Album
+import com.buggily.enemy.domain.search.Search
 import com.buggily.enemy.domain.track.Track
+import com.buggily.enemy.ui.EnemyDestination
 
 data class MainState(
+    val navigationState: NavigationState,
     val collapsableState: CollapsableState,
     val controllerState: ControllerState,
     val mediaState: MediaState,
     val playState: PlayState,
     val trackState: TrackState,
 ) {
+
+    data class NavigationState(
+        val destination: NavDestination?,
+        val onDestinationChange: (NavDestination?) -> Unit,
+    ) {
+
+        val enemyDestination: EnemyDestination?
+            get() = EnemyDestination.get(destination)
+
+        companion object {
+            val default: NavigationState
+                get() = NavigationState(
+                    destination = null,
+                    onDestinationChange = {},
+                )
+        }
+    }
 
     data class CollapsableState(
         val isCollapsable: Boolean,
@@ -22,14 +43,14 @@ data class MainState(
     ) {
 
         data class SearchState(
-            val isSearch: Boolean,
+            val search: Search,
             val onSearchClick: () -> Unit,
         ) {
 
             companion object {
                 val default: SearchState
                     get() = SearchState(
-                        isSearch = false,
+                        search = Search.default,
                         onSearchClick = {},
                     )
             }
@@ -282,6 +303,7 @@ data class MainState(
     companion object {
         val default: MainState
             get() = MainState(
+                navigationState = NavigationState.default,
                 collapsableState = CollapsableState.default,
                 controllerState = ControllerState.default,
                 mediaState = MediaState.default,

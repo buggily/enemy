@@ -1,7 +1,7 @@
 package com.buggily.enemy.domain.map.theme.dynamic
 
 import com.buggily.enemy.domain.map.BidirectionalMapper
-import com.buggily.enemy.data.Theme.Dynamic as Input
+import com.buggily.enemy.data.theme.Theme.Dynamic as Input
 import com.buggily.enemy.domain.theme.Theme.Dynamic as Output
 
 class DynamicMapper : BidirectionalMapper<Input, Output> {

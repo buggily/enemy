@@ -14,8 +14,8 @@ object ThemeSourceProvider {
 
     @Provides
     fun provides(
-        preferencesDataStore: DataStore<Preferences>,
+        dataStore: DataStore<Preferences>,
     ): ThemeSource = ThemeSource(
-        preferencesDataStore = preferencesDataStore,
+        dataStore = dataStore,
     )
 }

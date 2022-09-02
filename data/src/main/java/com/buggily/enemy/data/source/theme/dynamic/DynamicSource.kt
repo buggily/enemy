@@ -4,20 +4,20 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.buggily.enemy.data.Theme
+import com.buggily.enemy.data.theme.Theme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class DynamicSource(
-    private val preferencesDataStore: DataStore<Preferences>,
+    private val dataStore: DataStore<Preferences>,
 ) : DynamicSourceable {
 
-    override fun get(): Flow<Theme.Dynamic> = preferencesDataStore.data.map { it[KEY] }.map {
+    override fun get(): Flow<Theme.Dynamic> = dataStore.data.map { it[KEY] }.map {
         Theme.Dynamic.get(it)
     }
 
     override suspend fun set(dynamic: Theme.Dynamic) {
-        preferencesDataStore.edit { it[KEY] = dynamic.identity }
+        dataStore.edit { it[KEY] = dynamic.identity }
     }
 
     private companion object {

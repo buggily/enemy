@@ -1,5 +1,6 @@
-package com.buggily.enemy.di
+package com.buggily.enemy.domain.di.map.search
 
+import com.buggily.enemy.domain.map.search.SearchMapper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -7,9 +8,8 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-object DebounceProvider {
+object SearchMapperProvider {
 
     @Provides
-    @DebounceQualifier
-    fun provides(): Long = 1000
+    fun provides(): SearchMapper = SearchMapper()
 }

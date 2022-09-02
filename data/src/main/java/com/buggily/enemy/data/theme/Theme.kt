@@ -1,4 +1,4 @@
-package com.buggily.enemy.data
+package com.buggily.enemy.data.theme
 
 sealed class Theme {
 

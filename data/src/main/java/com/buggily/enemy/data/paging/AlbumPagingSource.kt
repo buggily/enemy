@@ -1,7 +1,7 @@
 package com.buggily.enemy.data.paging
 
 import androidx.paging.PagingConfig
-import com.buggily.enemy.data.Album
+import com.buggily.enemy.data.album.Album
 import com.buggily.enemy.data.query.Query
 import com.buggily.enemy.data.query.album.AlbumQuerySource
 

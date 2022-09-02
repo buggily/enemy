@@ -1,4 +1,4 @@
-package com.buggily.enemy.data
+package com.buggily.enemy.data.track
 
 data class Track(
     val id: Long?,

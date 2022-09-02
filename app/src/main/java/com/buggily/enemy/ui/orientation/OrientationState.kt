@@ -51,6 +51,10 @@ data class OrientationState(
         }
     }
 
+    data class HomeState(
+        val onHomeClick: () -> Unit,
+    )
+
     sealed class PermissionState {
 
         object Default : PermissionState()

@@ -14,8 +14,8 @@ class DynamicSourceModule {
 
     @Provides
     fun provides(
-        preferencesDataStore: DataStore<Preferences>,
+        dataStore: DataStore<Preferences>,
     ): DynamicSource = DynamicSource(
-        preferencesDataStore = preferencesDataStore,
+        dataStore = dataStore,
     )
 }

@@ -17,51 +17,30 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.flowWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.buggily.enemy.R
 import com.buggily.enemy.domain.album.Album
 import com.buggily.enemy.ext.nullableItems
 import com.buggily.enemy.ui.ContentAlpha
-import com.buggily.enemy.ui.EnemyState
 import com.buggily.enemy.ui.ext.ArtImage
-import com.buggily.enemy.ui.home.HomeViewModel
-import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun AlbumsScreen(
-    albumState: EnemyState.AlbumState,
+    albumState: AlbumsState.AlbumState,
     viewModel: AlbumsViewModel,
-    homeViewModel: HomeViewModel,
     modifier: Modifier = Modifier,
 ) {
-    val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
-    val lifecycle: Lifecycle = lifecycleOwner.lifecycle
-
     val albums: LazyPagingItems<Result<Album>> = viewModel.albums.collectAsLazyPagingItems()
-    val state: AlbumsState by viewModel.state.collectAsStateWithLifecycle()
-
-    LaunchedEffect(Unit) {
-        homeViewModel.search.flowWithLifecycle(lifecycle).collectLatest {
-            state.searchState.onSearchChange(it)
-        }
-    }
 
     AlbumsScreen(
         albumState = albumState,
@@ -72,7 +51,7 @@ fun AlbumsScreen(
 
 @Composable
 private fun AlbumsScreen(
-    albumState: EnemyState.AlbumState,
+    albumState: AlbumsState.AlbumState,
     albums: LazyPagingItems<Result<Album>>,
     modifier: Modifier = Modifier,
 ) {

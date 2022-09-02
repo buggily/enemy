@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import org.junit.Rule
 import org.junit.Test
-import com.buggily.enemy.data.Theme as DataTheme
+import com.buggily.enemy.data.theme.Theme as DataTheme
 import com.buggily.enemy.domain.theme.Theme as DomainTheme
 
 class SettingsViewModelTest {

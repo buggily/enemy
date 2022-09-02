@@ -18,6 +18,15 @@ object Dependency {
     }
 
     object DataStore {
+
+        const val IDENTITY = "androidx.datastore:datastore:${Version.DataStore.IDENTITY}"
+
+        object Proto {
+            const val IDENTITY = "com.google.protobuf:protoc:${Version.DataStore.Proto.IDENTITY}"
+            const val JAVA = "com.google.protobuf:protobuf-javalite:${Version.DataStore.Proto.IDENTITY}"
+            const val KOTLIN = "com.google.protobuf:protobuf-kotlin-lite:${Version.DataStore.Proto.IDENTITY}"
+        }
+
         object Preferences {
             const val IDENTITY = "androidx.datastore:datastore-preferences:${Version.DataStore.IDENTITY}"
         }

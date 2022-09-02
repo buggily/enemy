@@ -1,7 +1,7 @@
 package com.buggily.enemy.domain.map.theme
 
 import com.buggily.enemy.domain.map.BidirectionalMapper
-import com.buggily.enemy.data.Theme as Input
+import com.buggily.enemy.data.theme.Theme as Input
 import com.buggily.enemy.domain.theme.Theme as Output
 
 class ThemeMapper : BidirectionalMapper<Input, Output> {

@@ -2,7 +2,7 @@ package com.buggily.enemy.domain.map.track
 
 import com.buggily.enemy.domain.map.QueryMapper
 import com.buggily.enemy.domain.use.GetDuration
-import com.buggily.enemy.data.Track as Input
+import com.buggily.enemy.data.track.Track as Input
 import com.buggily.enemy.domain.track.Track as Output
 
 class TrackMapper(

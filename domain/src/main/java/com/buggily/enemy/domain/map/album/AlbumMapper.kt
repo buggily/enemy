@@ -1,9 +1,8 @@
 package com.buggily.enemy.domain.map.album
 
 import com.buggily.enemy.domain.map.QueryMapper
-import com.buggily.enemy.data.Album as Input
+import com.buggily.enemy.data.album.Album as Input
 import com.buggily.enemy.domain.album.Album as Output
-
 
 class AlbumMapper : QueryMapper<Input, Output> {
 

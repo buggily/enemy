@@ -1,7 +1,7 @@
 package com.buggily.enemy.data.repository.album
 
 import androidx.paging.PagingData
-import com.buggily.enemy.data.Album
+import com.buggily.enemy.data.album.Album
 import kotlinx.coroutines.flow.Flow
 
 interface AlbumRepositable {

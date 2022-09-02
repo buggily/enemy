@@ -1,23 +1,25 @@
 package com.buggily.enemy.ui.home
 
 import androidx.lifecycle.ViewModel
-import com.buggily.enemy.di.DebounceQualifier
+import androidx.lifecycle.viewModelScope
+import com.buggily.enemy.domain.search.Search
+import com.buggily.enemy.domain.use.search.GetSearch
+import com.buggily.enemy.domain.use.search.SetSearch
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    @DebounceQualifier debounce: Long,
+    getSearch: GetSearch,
+    private val setSearch: SetSearch,
 ) : ViewModel() {
-
-    val search: Flow<String>
 
     private val _state: MutableStateFlow<HomeState>
     val state: StateFlow<HomeState> get() = _state
@@ -25,38 +27,50 @@ class HomeViewModel @Inject constructor(
     init {
         HomeState.default.copy(
             searchState = HomeState.SearchState.default.copy(
-                onIsSearchChange = ::onIsSearchChange,
                 onSearchChange = ::onSearchChange,
                 onSearchClearClick = ::onSearchClearClick,
             ),
         ).let { _state = MutableStateFlow(it) }
 
-        search = state.map {
-            it.searchState.search
-        }.debounce(debounce).distinctUntilChanged()
+        viewModelScope.launch {
+            getSearch().stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(),
+                initialValue = HomeState.SearchState.default.search,
+            ).collectLatest { onIsSearchChange(it.isVisible) }
+
+            setSearch(HomeState.SearchState.default.search)
+        }
     }
 
-    private fun onIsSearchChange(isSearch: Boolean) = setIsSearchOfSearchState(
-        isSearch = isSearch,
+    private fun onSearchChange(searchValue: String) = state.value.let {
+        val search: Search = it.searchState.search.copy(
+            value = searchValue,
+        )
+
+        viewModelScope.launch {
+            onSearchChange(search)
+            setSearch(search)
+        }
+    }
+
+    private fun onIsSearchChange(isSearch: Boolean) = state.value.let {
+        val search: Search = it.searchState.search.copy(
+            isVisible = isSearch,
+        )
+
+        onSearchChange(search)
+    }
+
+    private fun onSearchClearClick() = onSearchChange(
+        searchValue = HomeState.SearchState.default.search.value,
     )
 
-    private fun onSearchChange(search: String) = setSearchOfSearchState(
+    private fun onSearchChange(search: Search) = setSearchOfSearchState(
         search = search,
     )
 
-    private fun onSearchClearClick() = setSearchOfSearchState(
-        search = HomeState.SearchState.default.search,
-    )
-
-    private fun setIsSearchOfSearchState(isSearch: Boolean) = state.value.let {
-        val searchState: HomeState.SearchState = it.searchState.copy(
-            isSearch = isSearch,
-        )
-
-        setSearchState(searchState)
-    }
-
-    private fun setSearchOfSearchState(search: String) = state.value.let {
+    private fun setSearchOfSearchState(search: Search) = state.value.let {
         val searchState: HomeState.SearchState = it.searchState.copy(
             search = search,
         )

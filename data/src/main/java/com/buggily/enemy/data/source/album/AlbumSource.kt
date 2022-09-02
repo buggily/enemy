@@ -4,7 +4,7 @@ import android.provider.MediaStore
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import com.buggily.enemy.data.Album
+import com.buggily.enemy.data.album.Album
 import com.buggily.enemy.data.paging.AlbumPagingSource
 import com.buggily.enemy.data.query.Query
 import com.buggily.enemy.data.query.album.AlbumQuerySource

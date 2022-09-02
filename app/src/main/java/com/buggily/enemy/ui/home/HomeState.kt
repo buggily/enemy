@@ -1,26 +1,28 @@
 package com.buggily.enemy.ui.home
 
+import com.buggily.enemy.domain.search.Search
+
 data class HomeState(
     val searchState: SearchState,
 ) {
 
+    data class SettingsState(
+        val onSettingsClick: () -> Unit,
+    )
+
     data class SearchState(
-        val isSearch: Boolean,
-        val search: String,
-        val onIsSearchChange: (Boolean) -> Unit,
+        val search: Search,
         val onSearchChange: (String) -> Unit,
         val onSearchClearClick: () -> Unit,
     ) {
 
         val isSearchClear: Boolean
-            get() = search.isNotEmpty()
+            get() = search.value.isNotEmpty()
 
         companion object {
             val default: SearchState
                 get() = SearchState(
-                    isSearch = false,
-                    search = String(),
-                    onIsSearchChange = {},
+                    search = Search.default,
                     onSearchChange = {},
                     onSearchClearClick = {},
                 )

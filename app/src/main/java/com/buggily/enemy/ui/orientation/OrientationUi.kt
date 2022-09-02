@@ -16,13 +16,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
-import com.buggily.enemy.ui.EnemyState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 @Composable
 fun OrientationScreen(
-    enemyState: EnemyState,
+    homeState: OrientationState.HomeState,
     viewModel: OrientationViewModel,
     modifier: Modifier = Modifier,
 ) {
@@ -54,7 +53,7 @@ fun OrientationScreen(
                 is OrientationState.PermissionState.EventState -> {
                     when (it) {
                         is OrientationState.PermissionState.EventState.Grant -> {
-                            enemyState.orientationState.onHomeClick()
+                            homeState.onHomeClick()
                         }
                         is OrientationState.PermissionState.EventState.Pend -> {
                             launcher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)

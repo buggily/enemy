@@ -12,12 +12,17 @@ object Version {
     }
 
     object Hilt {
-        const val IDENTITY = "2.43.1"
+        const val IDENTITY = "2.43.2"
         const val ANDROID = "1.0.0"
     }
 
     object DataStore {
+
         const val IDENTITY = "1.0.0"
+
+        object Proto {
+            const val IDENTITY = "3.19.4"
+        }
     }
 
     object Paging {

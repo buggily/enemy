@@ -7,7 +7,7 @@ import android.provider.MediaStore
 import androidx.core.database.getIntOrNull
 import androidx.core.database.getLongOrNull
 import androidx.core.database.getStringOrNull
-import com.buggily.enemy.data.Track
+import com.buggily.enemy.data.track.Track
 import com.buggily.enemy.data.query.QuerySource
 
 class TrackQuerySource(

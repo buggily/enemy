@@ -1,7 +1,7 @@
 package com.buggily.enemy.data.paging
 
 import androidx.paging.PagingConfig
-import com.buggily.enemy.data.Track
+import com.buggily.enemy.data.track.Track
 import com.buggily.enemy.data.query.Query
 import com.buggily.enemy.data.query.track.TrackQuerySource
 

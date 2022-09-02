@@ -4,7 +4,7 @@ import android.provider.MediaStore
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import com.buggily.enemy.data.Track
+import com.buggily.enemy.data.track.Track
 import com.buggily.enemy.data.paging.TrackPagingSource
 import com.buggily.enemy.data.query.Query
 import com.buggily.enemy.data.query.track.TrackQuerySource

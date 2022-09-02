@@ -1,6 +1,6 @@
 package com.buggily.enemy.data.repository.theme
 
-import com.buggily.enemy.data.Theme
+import com.buggily.enemy.data.theme.Theme
 import com.buggily.enemy.data.source.theme.ThemeSourceable
 import kotlinx.coroutines.flow.Flow
 

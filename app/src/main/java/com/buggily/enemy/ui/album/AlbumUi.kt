@@ -52,33 +52,32 @@ import com.buggily.enemy.ui.ext.ArtImage
 import com.buggily.enemy.ui.ext.Gradient
 import com.buggily.enemy.ui.ext.IconFloatingActionButton
 import com.buggily.enemy.ui.main.MainState
-import com.buggily.enemy.ui.main.MainViewModel
 
 @Composable
 fun AlbumScreen(
+    playState: MainState.PlayState,
+    trackState: MainState.TrackState,
     viewModel: AlbumViewModel,
-    mainViewModel: MainViewModel,
     modifier: Modifier = Modifier,
 ) {
     val state: AlbumState by viewModel.state.collectAsStateWithLifecycle()
-    val mainState: MainState by mainViewModel.state.collectAsStateWithLifecycle()
     val tracks: LazyPagingItems<Result<Track>> = viewModel.tracks.collectAsLazyPagingItems()
 
     AlbumScreen(
-        albumState = state.albumState,
-        playState = mainState.playState,
-        trackState = mainState.trackState,
         tracks = tracks,
+        albumState = state.albumState,
+        playState = playState,
+        trackState = trackState,
         modifier = modifier,
     )
 }
 
 @Composable
 private fun AlbumScreen(
+    tracks: LazyPagingItems<Result<Track>>,
     albumState: AlbumState.State,
     playState: MainState.PlayState,
     trackState: MainState.TrackState,
-    tracks: LazyPagingItems<Result<Track>>,
     modifier: Modifier = Modifier,
 ) {
     val weightMultiplicand: Int = when (LocalConfiguration.current.orientationCompat) {
@@ -100,8 +99,8 @@ private fun AlbumScreen(
         )
 
         AlbumTracksColumn(
-            trackState = trackState,
             tracks = tracks,
+            trackState = trackState,
             modifier = Modifier
                 .fillMaxSize()
                 .weight(2f),
@@ -260,8 +259,8 @@ private fun AlbumHeaderText(
 
 @Composable
 private fun AlbumTracksColumn(
-    trackState: MainState.TrackState,
     tracks: LazyPagingItems<Result<Track>>,
+    trackState: MainState.TrackState,
     modifier: Modifier = Modifier,
 ) {
     val padding: Dp = dimensionResource(R.dimen.padding_large)

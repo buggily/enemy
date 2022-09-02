@@ -1,6 +1,6 @@
 package com.buggily.enemy.data.repository.track.dynamic
 
-import com.buggily.enemy.data.Theme
+import com.buggily.enemy.data.theme.Theme
 import kotlinx.coroutines.flow.Flow
 
 interface DynamicRepositable {

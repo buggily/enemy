@@ -4,9 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.navigation.NavDestination
 import com.buggily.enemy.domain.album.Album
+import com.buggily.enemy.domain.search.Search
 import com.buggily.enemy.domain.theme.Theme
 import com.buggily.enemy.domain.track.Track
+import com.buggily.enemy.domain.use.search.GetSearch
+import com.buggily.enemy.domain.use.search.SetSearch
 import com.buggily.enemy.domain.use.theme.GetTheme
 import com.buggily.enemy.domain.use.theme.dynamic.GetDynamic
 import com.buggily.enemy.domain.use.track.GetTracksByAlbumId
@@ -14,12 +18,10 @@ import com.buggily.enemy.ext.firstIndex
 import com.buggily.enemy.ext.indexOfOrNull
 import com.buggily.enemy.map.TrackMapper
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -29,11 +31,11 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     getTheme: GetTheme,
     getDynamic: GetDynamic,
+    getSearch: GetSearch,
     private val getTracksByAlbumId: GetTracksByAlbumId,
+    private val setSearch: SetSearch,
     private val mapper: TrackMapper,
 ) : ViewModel() {
-
-    val isSearch: Flow<Boolean>
 
     val theme: StateFlow<Theme> = getTheme().stateIn(
         scope = viewModelScope,
@@ -52,6 +54,9 @@ class MainViewModel @Inject constructor(
 
     init {
         MainState.default.copy(
+            navigationState = MainState.NavigationState.default.copy(
+                onDestinationChange = ::onDestinationChange,
+            ),
             collapsableState = MainState.CollapsableState.default.copy(
                 onCollapsableClick = ::onCollapsableClick,
                 searchState = MainState.CollapsableState.SearchState.default.copy(
@@ -83,9 +88,13 @@ class MainViewModel @Inject constructor(
             ),
         ).let { _state = MutableStateFlow(it) }
 
-        isSearch = state.map {
-            it.collapsableState.searchState.isSearch
-        }.distinctUntilChanged()
+        viewModelScope.launch {
+            getSearch().stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(),
+                initialValue = MainState.CollapsableState.SearchState.default.search,
+            ).collectLatest { setSearchOfCollapsableSearchState(it) }
+        }
     }
 
     fun setIsPlaying(isPlaying: Boolean) = state.value.let {
@@ -151,6 +160,14 @@ class MainViewModel @Inject constructor(
         )
 
         setPreviousStateOfControllerState(previousState)
+    }
+
+    private fun onDestinationChange(destination: NavDestination?) = state.value.let {
+        val navigationState: MainState.NavigationState = it.navigationState.copy(
+            destination = destination,
+        )
+
+        setNavigationState(navigationState)
     }
 
     private fun onPlayClick() = state.value.let {
@@ -227,9 +244,12 @@ class MainViewModel @Inject constructor(
     private fun onSearchClick() = state.value.let {
         val collapsableState: MainState.CollapsableState = it.collapsableState
         val searchState: MainState.CollapsableState.SearchState = collapsableState.searchState
-        val isSearch: Boolean = !searchState.isSearch
 
-        setIsSearchOfCollapsableSearchState(isSearch)
+        val search : Search = searchState.search.run {
+            copy(isVisible = !isVisible)
+        }
+
+        viewModelScope.launch { setSearch(search) }
     }
 
     private fun onRepeatClick() = state.value.let {
@@ -262,9 +282,9 @@ class MainViewModel @Inject constructor(
         setShuffleStateOfMediaState(shuffleState)
     }
 
-    private fun setIsSearchOfCollapsableSearchState(isSearch: Boolean) = state.value.let {
+    private fun setSearchOfCollapsableSearchState(search: Search) = state.value.let {
         val searchState: MainState.CollapsableState.SearchState = it.collapsableState.searchState.copy(
-            isSearch = isSearch,
+            search = search,
         )
 
         setSearchStateOfCollapsableState(searchState)
@@ -360,6 +380,10 @@ class MainViewModel @Inject constructor(
         )
 
         setMediaState(mediaState)
+    }
+
+    private fun setNavigationState(navigationState: MainState.NavigationState) = _state.update {
+        it.copy(navigationState = navigationState)
     }
 
     private fun setCollapsableState(collapsableState: MainState.CollapsableState) = _state.update {

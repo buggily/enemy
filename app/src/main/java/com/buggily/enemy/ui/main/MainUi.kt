@@ -20,9 +20,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -36,48 +34,49 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.media3.common.MediaItem
-import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.buggily.enemy.R
 import com.buggily.enemy.ext.isHorizontalImeVisible
 import com.buggily.enemy.ext.isNonNull
 import com.buggily.enemy.ui.ContentAlpha
 import com.buggily.enemy.ui.EnemyDestination
-import com.buggily.enemy.ui.EnemyState
 import com.buggily.enemy.ui.album.AlbumScreen
+import com.buggily.enemy.ui.albums.AlbumsState
 import com.buggily.enemy.ui.ext.ArtImage
 import com.buggily.enemy.ui.ext.CollapsableButton
 import com.buggily.enemy.ui.ext.IconButton
 import com.buggily.enemy.ui.ext.IconFloatingActionButton
 import com.buggily.enemy.ui.ext.SingleLineText
 import com.buggily.enemy.ui.home.HomeScreen
+import com.buggily.enemy.ui.home.HomeState
 import com.buggily.enemy.ui.orientation.OrientationScreen
+import com.buggily.enemy.ui.orientation.OrientationState
 import com.buggily.enemy.ui.settings.SettingsScreen
-import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun MainScreen(
     viewModel: MainViewModel,
-    enemyState: EnemyState,
     modifier: Modifier = Modifier,
 ) {
     val state: MainState by viewModel.state.collectAsStateWithLifecycle()
 
     MainScreen(
-        navController = enemyState.navController,
+        navigationState = state.navigationState,
         collapsableState = state.collapsableState,
         controllerState = state.controllerState,
         modifier = modifier,
         contentModifier = Modifier.fillMaxSize(),
     ) {
         MainScreenContent(
-            enemyState = enemyState,
+            navigationState = state.navigationState,
+            playState = state.playState,
+            trackState = state.trackState,
             modifier = Modifier.fillMaxSize(),
         )
     }
@@ -85,7 +84,7 @@ fun MainScreen(
 
 @Composable
 private fun MainScreen(
-    navController: NavHostController,
+    navigationState: MainState.NavigationState,
     collapsableState: MainState.CollapsableState,
     controllerState: MainState.ControllerState,
     modifier: Modifier = Modifier,
@@ -104,7 +103,7 @@ private fun MainScreen(
 
             when (isHorizontalImeVisible) {
                 false -> MainCollapsableButton(
-                    navController = navController,
+                    navigationState = navigationState,
                     collapsableState = collapsableState,
                     modifier = Modifier
                         .fillMaxSize(1 / 2f)
@@ -129,11 +128,46 @@ private fun MainScreen(
 
 @Composable
 private fun MainScreenContent(
-    enemyState: EnemyState,
+    navigationState: MainState.NavigationState,
+    playState: MainState.PlayState,
+    trackState: MainState.TrackState,
     modifier: Modifier = Modifier,
 ) {
-    val navController: NavHostController = enemyState.navController
-    val viewModelStoreOwner: ViewModelStoreOwner = enemyState.activityViewModelStoreOwner
+    val navController: NavHostController = rememberNavController()
+    val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
+    val lifecycle: Lifecycle = lifecycleOwner.lifecycle
+
+    LaunchedEffect(Unit) {
+        navController.currentBackStackEntryFlow.flowWithLifecycle(lifecycle).collect {
+            navigationState.onDestinationChange(it.destination)
+        }
+    }
+
+    val homeState = OrientationState.HomeState {
+        navController.navigate(EnemyDestination.Home.route) {
+            launchSingleTop = true
+            restoreState = false
+
+            popUpTo(EnemyDestination.Orientation.route) {
+                inclusive = true
+                saveState = false
+            }
+        }
+    }
+
+    val settingsState = HomeState.SettingsState {
+        navController.navigate(EnemyDestination.Settings.route) {
+            launchSingleTop = true
+            restoreState = false
+        }
+    }
+
+    val albumState = AlbumsState.AlbumState {
+        navController.navigate(EnemyDestination.Album.getRoute(it.id)) {
+            launchSingleTop = true
+            restoreState = false
+        }
+    }
 
     NavHost(
         navController = navController,
@@ -148,7 +182,7 @@ private fun MainScreenContent(
             deepLinks = EnemyDestination.Orientation.deepLinks,
         ) {
             OrientationScreen(
-                enemyState = enemyState,
+                homeState = homeState,
                 viewModel = hiltViewModel(),
                 modifier = contentModifier.systemBarsPadding(),
             )
@@ -160,9 +194,9 @@ private fun MainScreenContent(
             deepLinks = EnemyDestination.Home.deepLinks,
         ) {
             HomeScreen(
-                enemyState = enemyState,
+                albumState = albumState,
+                settingsState = settingsState,
                 viewModel = hiltViewModel(),
-                mainViewModel = hiltViewModel(viewModelStoreOwner),
                 modifier = contentModifier.statusBarsPadding(),
             )
         }
@@ -173,8 +207,9 @@ private fun MainScreenContent(
             deepLinks = EnemyDestination.Album.deepLinks,
         ) {
             AlbumScreen(
+                playState = playState,
+                trackState = trackState,
                 viewModel = hiltViewModel(),
-                mainViewModel = hiltViewModel(viewModelStoreOwner),
                 modifier = contentModifier,
             )
         }
@@ -373,20 +408,10 @@ private fun MainControllerPreviousButton(
 
 @Composable
 private fun MainCollapsableButton(
-    navController: NavHostController,
+    navigationState: MainState.NavigationState,
     collapsableState: MainState.CollapsableState,
     modifier: Modifier = Modifier,
 ) {
-    var destination: NavDestination? by remember { mutableStateOf(navController.currentDestination) }
-    val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
-    val lifecycle: Lifecycle = lifecycleOwner.lifecycle
-
-    LaunchedEffect(Unit) {
-        navController.currentBackStackEntryFlow.flowWithLifecycle(lifecycle).collectLatest {
-            destination = it.destination
-        }
-    }
-
     val searchState: MainState.CollapsableState.SearchState = collapsableState.searchState
     val repeatState: MainState.CollapsableState.RepeatState = collapsableState.repeatState
     val shuffleState: MainState.CollapsableState.ShuffleState = collapsableState.shuffleState
@@ -395,7 +420,7 @@ private fun MainCollapsableButton(
     val painterResId: Int = if (isCollapsable) R.drawable.close else R.drawable.open
     val contentDescriptionResId: Int = if (isCollapsable) R.drawable.close else R.string.open
 
-    val contents: List<@Composable () -> Unit> = when (EnemyDestination.get(destination)) {
+    val contents: List<@Composable () -> Unit> = when (navigationState.enemyDestination) {
         is EnemyDestination.Home -> listOf(
             { MainRepeatButton(repeatState) },
             { MainSearchButton(searchState) },
@@ -427,7 +452,7 @@ private fun MainSearchButton(
     searchState: MainState.CollapsableState.SearchState,
     modifier: Modifier = Modifier,
 ) {
-    val isSearch: Boolean = searchState.isSearch
+    val isSearch: Boolean = searchState.search.isVisible
     val painterResId: Int = if (isSearch) R.drawable.search_disable else R.drawable.search_enable
     val contentDescriptionResId: Int = if (isSearch) R.string.search_disable else R.string.search_enable
 

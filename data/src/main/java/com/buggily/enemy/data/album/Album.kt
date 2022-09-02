@@ -1,4 +1,4 @@
-package com.buggily.enemy.data
+package com.buggily.enemy.data.album
 
 data class Album(
     val id: Long?,

@@ -6,7 +6,7 @@ import android.net.Uri
 import android.provider.MediaStore
 import androidx.core.database.getLongOrNull
 import androidx.core.database.getStringOrNull
-import com.buggily.enemy.data.Album
+import com.buggily.enemy.data.album.Album
 import com.buggily.enemy.data.query.QuerySource
 
 class AlbumQuerySource(
