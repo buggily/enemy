@@ -2,7 +2,7 @@ package com.buggily.enemy.ui.settings
 
 import com.buggily.enemy.CoroutineTestRule
 import com.buggily.enemy.data.repository.theme.ThemeRepositable
-import com.buggily.enemy.data.repository.track.dynamic.DynamicRepositable
+import com.buggily.enemy.data.repository.theme.dynamic.DynamicRepositable
 import com.buggily.enemy.domain.map.theme.ThemeMapper
 import com.buggily.enemy.domain.map.theme.dynamic.DynamicMapper
 import com.buggily.enemy.domain.use.theme.GetTheme

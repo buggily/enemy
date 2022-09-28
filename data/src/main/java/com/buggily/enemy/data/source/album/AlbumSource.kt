@@ -39,7 +39,7 @@ class AlbumSource(
         ).flow
     }
 
-    override fun getByAlbumId(albumId: Long?): Album? {
+    override fun getByAlbumId(albumId: Long): Album? {
         val query = Query(
             selections = Query.Selections(
                 Query.Selection.Expression.Equals(

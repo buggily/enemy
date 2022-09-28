@@ -14,7 +14,7 @@ class GetTracksByAlbumIdPaging(
 ) {
 
     operator fun invoke(
-        albumId: Long?,
+        albumId: Long,
     ): Flow<PagingData<Result<Track>>> = repository.getPagingByAlbumId(albumId).map { paging ->
         paging.map { mapper.mapToResult(it) }
     }

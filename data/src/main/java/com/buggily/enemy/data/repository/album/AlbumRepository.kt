@@ -9,5 +9,5 @@ class AlbumRepository(
     private val source: AlbumSourceable,
 ) : AlbumRepositable {
     override fun getPaging(search: String): Flow<PagingData<Album>> = source.getPaging(search)
-    override fun getByAlbumId(albumId: Long?): Album? = source.getByAlbumId(albumId)
+    override fun getByAlbumId(albumId: Long): Album? = source.getByAlbumId(albumId)
 }

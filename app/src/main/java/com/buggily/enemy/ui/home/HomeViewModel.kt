@@ -38,8 +38,6 @@ class HomeViewModel @Inject constructor(
                 started = SharingStarted.WhileSubscribed(),
                 initialValue = HomeState.SearchState.default.search,
             ).collectLatest { onIsSearchChange(it.isVisible) }
-
-            setSearch(HomeState.SearchState.default.search)
         }
     }
 

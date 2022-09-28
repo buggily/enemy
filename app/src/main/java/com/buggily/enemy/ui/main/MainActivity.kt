@@ -99,11 +99,11 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            val palette = EnemyPalette(paletteTheme)
-            val isLight: Boolean = palette.isLight
+            val palette: EnemyPalette = remember(paletteTheme) { EnemyPalette(paletteTheme) }
+            val isLight: Boolean = remember(paletteTheme) { palette.isLight }
 
             LaunchedEffect(isLight) {
-                insetsController.run {
+                with(insetsController) {
                     isAppearanceLightStatusBars = isLight
                     isAppearanceLightNavigationBars = isLight
                 }

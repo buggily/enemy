@@ -10,7 +10,7 @@ class GetTracksByAlbumId(
 ) {
 
     operator fun invoke(
-        albumId: Long?,
+        albumId: Long,
     ): List<Track> =  repository.getByAlbumId(albumId).mapNotNull {
         mapper.mapTo(it)
     }

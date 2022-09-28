@@ -28,7 +28,7 @@ class AlbumViewModel @Inject constructor(
     val state: StateFlow<AlbumState> get() = _state
 
     init {
-        val albumId: Long? = savedStateHandle[EnemyDestination.Album.ID]
+        val albumId: Long = checkNotNull(savedStateHandle[EnemyDestination.Album.ID])
         tracks = getTracksByAlbumIdPaging(albumId).cachedIn(viewModelScope)
 
         AlbumState.default.copy(

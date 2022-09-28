@@ -9,7 +9,7 @@ class GetAlbumByAlbumId(
     private val mapper: AlbumMapper
 ) {
 
-    operator fun invoke(albumId: Long?): Album? = repository.getByAlbumId(albumId)?.let {
+    operator fun invoke(albumId: Long): Album? = repository.getByAlbumId(albumId)?.let {
         mapper.mapTo(it)
     }
 }

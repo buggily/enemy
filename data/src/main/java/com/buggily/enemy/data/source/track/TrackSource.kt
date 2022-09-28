@@ -4,10 +4,10 @@ import android.provider.MediaStore
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import com.buggily.enemy.data.track.Track
 import com.buggily.enemy.data.paging.TrackPagingSource
 import com.buggily.enemy.data.query.Query
 import com.buggily.enemy.data.query.track.TrackQuerySource
+import com.buggily.enemy.data.track.Track
 import kotlinx.coroutines.flow.Flow
 
 class TrackSource(
@@ -15,7 +15,7 @@ class TrackSource(
     private val source: TrackQuerySource,
 ) : TrackSourceable {
 
-    override fun getByAlbumId(albumId: Long?): List<Track> = Query(
+    override fun getByAlbumId(albumId: Long): List<Track> = Query(
         selections = Query.Selections(
             Query.Selection.Expression.Equals(
                 argIdentity = MediaStore.Audio.Media.ALBUM_ID,
@@ -36,7 +36,7 @@ class TrackSource(
         ),
     ).let { source.load(it) }
 
-    override fun getPagingByAlbumId(albumId: Long?): Flow<PagingData<Track>> {
+    override fun getPagingByAlbumId(albumId: Long): Flow<PagingData<Track>> {
         val source = TrackPagingSource(
             config = config,
             source = source,
