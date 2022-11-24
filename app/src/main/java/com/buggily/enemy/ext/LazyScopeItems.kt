@@ -15,10 +15,12 @@ fun <Item : Any> LazyListScope.nullableItems(
 ) {
     items(
         count = items.itemCount,
-        key = getKey(
-            key = key,
-            items = items,
-        ),
+        key = {
+            getKey(
+                key = key,
+                item = items.peek(it),
+            )
+        },
     ) { itemContent(items[it]) }
 }
 
@@ -29,16 +31,18 @@ fun <Item : Any> LazyGridScope.nullableItems(
 ) {
     items(
         count = items.itemCount,
-        key = getKey(
-            key = key,
-            items = items,
-        ),
+        key = {
+            getKey(
+                key = key,
+                item = items.peek(it),
+            )
+        },
     ) { itemContent(items[it]) }
 }
 
 private fun <Item : Any> getKey(
     key: (Item) -> Any?,
-    items: LazyPagingItems<Item>,
-): (Int) -> Any = { index ->
-    items.peek(index)?.let { key(it) } ?: PagingPlaceholderKey(index)
+    item: Item?,
+): (Int) -> Any = { index: Int ->
+    item?.let { key(it) } ?: PagingPlaceholderKey(index)
 }
