@@ -3,18 +3,15 @@ package com.buggily.enemy.ui.main
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.navigation.NavDestination
-import com.buggily.enemy.domain.album.Album
-import com.buggily.enemy.domain.search.Search
-import com.buggily.enemy.domain.track.Track
+import com.buggily.enemy.core.model.ext.isNonNull
+import com.buggily.enemy.feature.album.AlbumState
 import com.buggily.enemy.ui.EnemyDestination
 
 data class MainState(
-    val navigationState: NavigationState,
-    val collapsableState: CollapsableState,
-    val controllerState: ControllerState,
     val mediaState: MediaState,
-    val playState: PlayState,
-    val trackState: TrackState,
+    val navigationState: NavigationState,
+    val controllerState: ControllerState,
+    val albumTrackState: AlbumState.TrackState,
 ) {
 
     data class NavigationState(
@@ -34,68 +31,6 @@ data class MainState(
         }
     }
 
-    data class CollapsableState(
-        val isCollapsable: Boolean,
-        val onCollapsableClick: () -> Unit,
-        val searchState: SearchState,
-        val repeatState: RepeatState,
-        val shuffleState: ShuffleState,
-    ) {
-
-        data class SearchState(
-            val search: Search,
-            val onSearchClick: () -> Unit,
-        ) {
-
-            companion object {
-                val default: SearchState
-                    get() = SearchState(
-                        search = Search.default,
-                        onSearchClick = {},
-                    )
-            }
-        }
-
-        data class RepeatState(
-            val isRepeat: Boolean,
-            val onRepeatClick: () -> Unit,
-        ) {
-
-            companion object {
-                val default: RepeatState
-                    get() = RepeatState(
-                        isRepeat = false,
-                        onRepeatClick = {},
-                    )
-            }
-        }
-
-        data class ShuffleState(
-            val isShuffle: Boolean,
-            val onShuffleClick: () -> Unit,
-        ) {
-
-            companion object {
-                val default: ShuffleState
-                    get() = ShuffleState(
-                        isShuffle = false,
-                        onShuffleClick = {},
-                    )
-            }
-        }
-
-        companion object {
-            val default: CollapsableState
-                get() = CollapsableState(
-                    isCollapsable = false,
-                    onCollapsableClick = {},
-                    searchState = SearchState.default,
-                    repeatState = RepeatState.default,
-                    shuffleState = ShuffleState.default,
-                )
-        }
-    }
-
     data class ControllerState(
         val playState: PlayState,
         val nextState: NextState,
@@ -103,44 +38,49 @@ data class MainState(
         val itemState: ItemState,
     ) {
 
+        val isVisible: Boolean
+            get() = itemState.item.isNonNull()
+
         data class PlayState(
-            val isPlay: Boolean,
-            val onPlayClick: () -> Unit,
+            val isPlaying: Boolean,
+            val isEnabled: Boolean,
+            val onClick: () -> Unit,
         ) {
 
             companion object {
                 val default: PlayState
                     get() = PlayState(
-                        isPlay = false,
-                        onPlayClick = {},
+                        isPlaying = false,
+                        isEnabled = false,
+                        onClick = {},
                     )
             }
         }
 
         data class NextState(
-            val isNext: Boolean,
-            val onNextClick: () -> Unit,
+            val isEnabled: Boolean,
+            val onClick: () -> Unit,
         ) {
 
             companion object {
                 val default: NextState
                     get() = NextState(
-                        isNext = false,
-                        onNextClick = {},
+                        isEnabled = false,
+                        onClick = {},
                     )
             }
         }
 
         data class PreviousState(
-            val isPrevious: Boolean,
-            val onPreviousClick: () -> Unit,
+            val isEnabled: Boolean,
+            val onClick: () -> Unit,
         ) {
 
             companion object {
                 val default: PreviousState
                     get() = PreviousState(
-                        isPrevious = false,
-                        onPreviousClick = {},
+                        isEnabled = false,
+                        onClick = {},
                     )
             }
         }
@@ -150,10 +90,10 @@ data class MainState(
         ) {
 
             val nameText: String
-                get() = mediaMetadata?.title.toString()
+                get() = mediaMetadata?.title?.toString() ?: String()
 
             val artistText: String
-                get() = mediaMetadata?.artist.toString()
+                get() = mediaMetadata?.artist?.toString() ?: String()
 
             private val mediaMetadata: MediaMetadata?
                 get() = item?.mediaMetadata
@@ -276,39 +216,13 @@ data class MainState(
         }
     }
 
-    data class PlayState(
-        val onPlayClick: (Album) -> Unit,
-    ) {
-
-        companion object {
-            val default: PlayState
-                get() = PlayState(
-                    onPlayClick = {},
-                )
-        }
-    }
-
-    data class TrackState(
-        val onTrackClick: (Track) -> Unit,
-    ) {
-
-        companion object {
-            val default: TrackState
-                get() = TrackState(
-                    onTrackClick = {},
-                )
-        }
-    }
-
     companion object {
         val default: MainState
             get() = MainState(
                 navigationState = NavigationState.default,
-                collapsableState = CollapsableState.default,
                 controllerState = ControllerState.default,
                 mediaState = MediaState.default,
-                playState = PlayState.default,
-                trackState = TrackState.default,
+                albumTrackState = AlbumState.TrackState.default,
             )
     }
 }

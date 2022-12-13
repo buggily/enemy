@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="transparent">#00000000</color>
+
+    <color name="neutral10">#FF1C1B1F</color>
+    <color name="neutral90">#FFE6E1E5</color>
+    <color name="neutral99">#FFFFFBFE</color>
+
+    <color name="ic_launcher_background_splash">@color/neutral99</color>
+    <color name="ic_launcher_foreground_splash">@color/neutral10</color>
 </resources>

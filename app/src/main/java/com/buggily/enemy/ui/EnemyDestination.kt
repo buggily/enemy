@@ -5,6 +5,7 @@ import androidx.navigation.NavDeepLink
 import androidx.navigation.NavDestination
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.buggily.enemy.feature.album.AlbumViewModel
 
 sealed class EnemyDestination {
 
@@ -90,19 +91,19 @@ sealed class EnemyDestination {
             get() = "album"
 
         override val argumentIdentities: List<Argument>
-            get() = getArguments("{$ID}")
+            get() = getArguments("{$id}")
 
         fun getRoute(id: Long): String = getRoute(getArguments(id))
 
         private fun getArguments(id: Any): List<Argument> = listOf(
             Argument.Required(
-                identity = ID,
+                identity = Album.id,
                 expression = id.toString(),
                 type = NavType.LongType,
             ),
         )
 
-        const val ID = "id"
+        private const val id = AlbumViewModel.id
     }
 
     object Settings : EnemyDestination() {

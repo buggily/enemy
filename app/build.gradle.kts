@@ -1,25 +1,20 @@
 plugins {
-    id("com.android.application")
-
-    kotlin("android")
-    kotlin("kapt")
-
-    id("dagger.hilt.android.plugin")
+    id("enemy.android.application")
+    id("enemy.android.application.compose")
+    id("enemy.android.hilt")
 }
 
 android {
-    compileSdk = Build.Sdk.COMPILE
+
+    namespace = "com.buggily.enemy"
 
     defaultConfig {
-        applicationId = Build.ID
+        applicationId = namespace
 
-        minSdk = Build.Sdk.MIN
-        targetSdk = Build.Sdk.TARGET
+        versionCode = 1
+        versionName = "1.0.0"
 
-        versionCode = Version.CODE
-        versionName = Version.NAME
-
-        testInstrumentationRunner = Build.RUNNER
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -34,73 +29,50 @@ android {
         }
     }
 
-    buildFeatures {
-        compose = true
-    }
-
-    hilt {
-        enableAggregatingTask = true
-    }
-
-    compileOptions {
-        sourceCompatibility = Version.JAVA
-        targetCompatibility = Version.JAVA
-    }
-
-    kotlinOptions {
-        jvmTarget = Version.JAVA.toString()
-
-        val optIns: List<String> = Build.OptIn.values.map {
-            "-opt-in=$it"
+    packagingOptions {
+        resources {
+            excludes.add("/META-INF/{AL2.0,LGPL2.1}")
         }
-
-        freeCompilerArgs = freeCompilerArgs + optIns
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = Version.Compose.COMPILER
     }
 }
 
 dependencies {
-    implementation(project(":domain"))
-    implementation(Dependency.Kotlin.Core.KTX)
+    implementation(project(":core:ui"))
+    implementation(project(":core:domain"))
+    implementation(project(":core:model"))
 
-    implementation(Dependency.Hilt.IDENTITY)
-    kapt(Dependency.Hilt.COMPILER)
+    implementation(project(":feature:orientation"))
+    implementation(project(":feature:album"))
+    implementation(project(":feature:preferences"))
 
-    implementation(Dependency.Hilt.Android.NAVIGATION)
-    kapt(Dependency.Hilt.Android.COMPILER)
+    implementation(project(":domain:album"))
+    implementation(project(":domain:track"))
+    implementation(project(":domain:theme"))
 
-    implementation(Dependency.Paging.IDENTITY)
-    implementation(Dependency.Paging.COMPOSE)
+    implementation(libs.kotlin)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
 
-    implementation(Dependency.Compose.ACTIVITY)
-    implementation(Dependency.Compose.MATERIAL)
-    implementation(Dependency.Compose.NAVIGATION)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
 
-    implementation(Dependency.Compose.Ui.IDENTITY)
-    implementation(Dependency.Compose.Ui.Tooling.PREVIEW)
-    debugImplementation(Dependency.Compose.Ui.Tooling.IDENTITY)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.core.splashscreen)
 
-    implementation(Dependency.Compose.Lifecycle.IDENTITY)
-    implementation(Dependency.Compose.Lifecycle.KTX)
-    implementation(Dependency.Compose.Lifecycle.ViewModel.IDENTITY)
-    implementation(Dependency.Compose.Lifecycle.ViewModel.KTX)
+    implementation(libs.androidx.compose)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.material3.windowSizeClass)
 
-    implementation(Dependency.Coil.IDENTITY)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.hilt.navigation.compose)
 
-    implementation(Dependency.Media.IDENTITY)
-    implementation(Dependency.Media.SESSION)
-    implementation(Dependency.Media.UI)
+    implementation(libs.androidx.paging)
+    implementation(libs.androidx.paging.compose)
 
-    testImplementation(project(":data"))
-    testImplementation(Dependency.JUnit.IDENTITY)
-    testImplementation(Dependency.Test.COROUTINE)
+    implementation(libs.androidx.media)
+    implementation(libs.androidx.media.ui)
+    implementation(libs.androidx.media.session)
 
-    androidTestImplementation(Dependency.Test.Android.Compose.JUnit.IDENTITY)
-}
-
-kapt {
-    correctErrorTypes = true
+    implementation(libs.coil)
+    implementation(libs.coil.compose)
 }

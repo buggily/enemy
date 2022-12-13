@@ -6,6 +6,7 @@ import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 
@@ -15,7 +16,7 @@ fun EnemyTheme(
     content: @Composable () -> Unit,
 ) {
     val context: Context = LocalContext.current
-    val colorScheme: ColorScheme = palette.getColorScheme(context)
+    val colorScheme: ColorScheme = remember(palette) { palette.getColorScheme(context) }
 
     MaterialTheme(
         colorScheme = colorScheme,

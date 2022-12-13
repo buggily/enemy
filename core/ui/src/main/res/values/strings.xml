@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="open">open</string>
+    <string name="close">close</string>
+    <string name="clear">clear</string>
+
+    <string name="search">search</string>
+    <string name="search_enable">enable search</string>
+    <string name="search_disable">disable search</string>
+
+    <string name="play">play</string>
+    <string name="pause">pause</string>
+    <string name="next">next</string>
+    <string name="previous">previous</string>
+
+    <string name="settings">settings</string>
+
+    <string name="repeat">repeat</string>
+    <string name="repeat_enable">enable repeat</string>
+    <string name="repeat_disable">disable repeat</string>
+
+    <string name="shuffle">shuffle</string>
+    <string name="shuffle_enable">enable shuffle</string>
+    <string name="shuffle_disable">disable shuffle</string>
+</resources>

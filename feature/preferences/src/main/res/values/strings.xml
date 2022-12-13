@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="theme_scheme">theme</string>
+    <string name="theme_scheme_default">default</string>
+    <string name="theme_scheme_light">light</string>
+    <string name="theme_scheme_dark">dark</string>
+    <string name="theme_dynamic">dynamic</string>
+    <string name="reset">reset</string>
+</resources>

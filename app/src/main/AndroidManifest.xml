@@ -4,19 +4,21 @@
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
 
     <application
         android:name="com.buggily.enemy.ui.EnemyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/name"
+        android:label="@string/enemy"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/theme">
+        android:theme="@style/Theme">
 
         <activity
             android:name="com.buggily.enemy.ui.main.MainActivity"
             android:exported="true"
+            android:theme="@style/Theme.Splash"
             android:windowSoftInputMode="adjustResize">
 
             <intent-filter>
@@ -24,8 +26,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name="androidx.activity.ComponentActivity" />
 
         <service
             android:name="com.buggily.enemy.service.EnemyMediaSessionService"
