@@ -21,7 +21,7 @@ object MediaSessionProvider {
     @Provides
     fun provides(
         @ApplicationContext context: Context,
-        player: Player,
+        @ExoPlayerQualifier player: Player,
     ): MediaSession {
         val callback: MediaSession.Callback = object : MediaSession.Callback {
             override fun onAddMediaItems(

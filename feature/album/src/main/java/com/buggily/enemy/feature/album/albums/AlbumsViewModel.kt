@@ -1,4 +1,4 @@
-package com.buggily.enemy.feature.album
+package com.buggily.enemy.feature.album.albums
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,9 +15,5 @@ class AlbumsViewModel @Inject constructor(
     getAlbumsPaging: GetAlbumsPaging,
 ) : ViewModel() {
 
-    val albums: Flow<PagingData<Album>>
-
-    init {
-        albums = getAlbumsPaging(String()).cachedIn(viewModelScope)
-    }
+    val albums: Flow<PagingData<Album>> = getAlbumsPaging(String()).cachedIn(viewModelScope)
 }

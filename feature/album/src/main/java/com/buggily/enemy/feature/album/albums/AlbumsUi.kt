@@ -1,4 +1,4 @@
-package com.buggily.enemy.feature.album
+package com.buggily.enemy.feature.album.albums
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable

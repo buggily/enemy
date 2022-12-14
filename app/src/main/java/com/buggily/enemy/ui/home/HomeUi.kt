@@ -4,8 +4,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.buggily.enemy.feature.album.AlbumsScreen
-import com.buggily.enemy.feature.album.AlbumsState
+import com.buggily.enemy.feature.album.albums.AlbumsScreen
+import com.buggily.enemy.feature.album.albums.AlbumsState
 
 @Composable
 fun HomeScreen(

@@ -93,11 +93,15 @@ private fun AlbumHeader(
     state: AlbumState,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier) {
-        AlbumHeaderBackground(
-            state = state,
-            modifier = Modifier.fillMaxSize(),
-        )
+    Surface(modifier) {
+        when (val album: Album? = remember(state) { state.album }) {
+            is Album -> AlbumHeaderBackground(
+                album = album,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .alpha(ContentAlpha.low),
+            )
+        }
 
         AlbumHeaderForeground(
             album = state,
@@ -111,23 +115,14 @@ private fun AlbumHeader(
 
 @Composable
 private fun AlbumHeaderBackground(
-    state: AlbumState,
+    album: Album,
     modifier: Modifier = Modifier,
 ) {
-    when (val album: Album? = remember(state) { state.album }) {
-        is Album -> Surface(
-            color = MaterialTheme.colorScheme.secondaryContainer,
-            modifier = modifier,
-        ) {
-            ArtImage(
-                artable = album,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .alpha(ContentAlpha.low),
-            )
-        }
-    }
+    ArtImage(
+        artable = album,
+        contentScale = ContentScale.Crop,
+        modifier = modifier,
+    )
 }
 
 @Composable

@@ -1,45 +1,28 @@
 package com.buggily.enemy.ui.main
 
 import androidx.media3.common.MediaItem
-import androidx.media3.common.MediaMetadata
-import androidx.navigation.NavDestination
 import com.buggily.enemy.core.model.ext.isNonNull
 import com.buggily.enemy.feature.album.AlbumState
-import com.buggily.enemy.ui.EnemyDestination
 
 data class MainState(
     val mediaState: MediaState,
-    val navigationState: NavigationState,
     val controllerState: ControllerState,
+    val shuffleState: ShuffleState,
+    val repeatState: RepeatState,
     val albumTrackState: AlbumState.TrackState,
 ) {
 
-    data class NavigationState(
-        val destination: NavDestination?,
-        val onDestinationChange: (NavDestination?) -> Unit,
-    ) {
-
-        val enemyDestination: EnemyDestination?
-            get() = EnemyDestination.get(destination)
-
-        companion object {
-            val default: NavigationState
-                get() = NavigationState(
-                    destination = null,
-                    onDestinationChange = {},
-                )
-        }
-    }
-
     data class ControllerState(
+        val item: MediaItem?,
+        val isExpanded: Boolean,
         val playState: PlayState,
         val nextState: NextState,
         val previousState: PreviousState,
-        val itemState: ItemState,
+        val onClick: () -> Unit,
     ) {
 
         val isVisible: Boolean
-            get() = itemState.item.isNonNull()
+            get() = item.isNonNull()
 
         data class PlayState(
             val isPlaying: Boolean,
@@ -85,34 +68,58 @@ data class MainState(
             }
         }
 
-        data class ItemState(
-            val item: MediaItem?,
-        ) {
-
-            val nameText: String
-                get() = mediaMetadata?.title?.toString() ?: String()
-
-            val artistText: String
-                get() = mediaMetadata?.artist?.toString() ?: String()
-
-            private val mediaMetadata: MediaMetadata?
-                get() = item?.mediaMetadata
-
-            companion object {
-                val default: ItemState
-                    get() = ItemState(
-                        item = null,
-                    )
-            }
-        }
-
         companion object {
             val default: ControllerState
                 get() = ControllerState(
+                    item = null,
+                    isExpanded = false,
                     playState = PlayState.default,
                     nextState = NextState.default,
                     previousState = PreviousState.default,
-                    itemState = ItemState.default,
+                    onClick = {},
+                )
+        }
+    }
+
+    data class RepeatState(
+        val mode: Mode,
+        val onClick: () -> Unit,
+    ) {
+
+        sealed class Mode {
+
+            sealed class On : Mode() {
+                object One : On()
+                object All : On()
+            }
+
+            object Off : Mode()
+        }
+
+        companion object {
+            val default: RepeatState
+                get() = RepeatState(
+                    mode = Mode.Off,
+                    onClick = {},
+                )
+        }
+    }
+
+    data class ShuffleState(
+        val mode: Mode,
+        val onClick: () -> Unit,
+    ) {
+
+        sealed class Mode {
+            object On : Mode()
+            object Off : Mode()
+        }
+
+        companion object {
+            val default: ShuffleState
+                get() = ShuffleState(
+                    mode = Mode.Off,
+                    onClick = {},
                 )
         }
     }
@@ -219,9 +226,10 @@ data class MainState(
     companion object {
         val default: MainState
             get() = MainState(
-                navigationState = NavigationState.default,
-                controllerState = ControllerState.default,
                 mediaState = MediaState.default,
+                controllerState = ControllerState.default,
+                repeatState = RepeatState.default,
+                shuffleState = ShuffleState.default,
                 albumTrackState = AlbumState.TrackState.default,
             )
     }

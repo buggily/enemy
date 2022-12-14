@@ -1,8 +1,10 @@
 package com.buggily.enemy.ui.main
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -12,6 +14,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.consumedWindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,6 +23,8 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -27,24 +32,19 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.flowWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -53,10 +53,12 @@ import androidx.navigation.compose.rememberNavController
 import com.buggily.enemy.core.ui.ArtImage
 import com.buggily.enemy.core.ui.IconButton
 import com.buggily.enemy.core.ui.SingleLineText
+import com.buggily.enemy.core.ui.ext.artistText
+import com.buggily.enemy.core.ui.ext.nameText
 import com.buggily.enemy.core.ui.theme.ContentAlpha
 import com.buggily.enemy.feature.album.AlbumScreen
 import com.buggily.enemy.feature.album.AlbumState
-import com.buggily.enemy.feature.album.AlbumsState
+import com.buggily.enemy.feature.album.albums.AlbumsState
 import com.buggily.enemy.feature.orientation.OrientationScreen
 import com.buggily.enemy.feature.orientation.OrientationState
 import com.buggily.enemy.feature.preferences.PreferencesScreen
@@ -90,8 +92,9 @@ fun MainScreen(
 ) {
     MainScreen(
         hostState = hostState,
-        navigationState = state.navigationState,
         controllerState = state.controllerState,
+        repeatState = state.repeatState,
+        shuffleState = state.shuffleState,
         albumTrackState = state.albumTrackState,
         modifier = modifier,
     )
@@ -105,11 +108,18 @@ fun MainScreen(
 @Composable
 private fun MainScreen(
     hostState: SnackbarHostState,
-    navigationState: MainState.NavigationState,
     controllerState: MainState.ControllerState,
+    repeatState: MainState.RepeatState,
+    shuffleState: MainState.ShuffleState,
     albumTrackState: AlbumState.TrackState,
     modifier: Modifier = Modifier,
 ) {
+    val controllerModifier: Modifier = if (controllerState.isExpanded) {
+        Modifier.fillMaxHeight()
+    } else {
+        Modifier.height(IntrinsicSize.Min)
+    }
+
     val contentPadding: WindowInsets = if (controllerState.isVisible) {
         WindowInsets(
             left = 0.dp,
@@ -123,11 +133,13 @@ private fun MainScreen(
 
     Scaffold(
         bottomBar = {
-            MainController(
+            MainControllerSheet(
                 controllerState = controllerState,
-                modifier = Modifier
+                repeatState = repeatState,
+                shuffleState = shuffleState,
+                modifier = controllerModifier
                     .fillMaxWidth()
-                    .height(IntrinsicSize.Min),
+                    .clickable { controllerState.onClick() },
             )
         },
         snackbarHost = {
@@ -139,7 +151,6 @@ private fun MainScreen(
         modifier = modifier,
     ) {
         MainScreenContent(
-            navigationState = navigationState,
             albumTrackState = albumTrackState,
             contentInsets = contentPadding,
             modifier = Modifier
@@ -153,21 +164,11 @@ private fun MainScreen(
 
 @Composable
 private fun MainScreenContent(
-    navigationState: MainState.NavigationState,
     albumTrackState: AlbumState.TrackState,
     contentInsets: WindowInsets,
     modifier: Modifier = Modifier,
 ) {
     val navController: NavHostController = rememberNavController()
-    val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
-    val lifecycle: Lifecycle = lifecycleOwner.lifecycle
-
-    LaunchedEffect(Unit) {
-        navController.currentBackStackEntryFlow.flowWithLifecycle(lifecycle).collect {
-            navigationState.onDestinationChange(it.destination)
-        }
-    }
-
     val orientationHomeState = OrientationState.HomeState {
         navController.navigate(EnemyDestination.Home.route) {
             launchSingleTop = true
@@ -254,8 +255,10 @@ private fun MainScreenContent(
 }
 
 @Composable
-private fun MainController(
+private fun MainControllerSheet(
     controllerState: MainState.ControllerState,
+    repeatState: MainState.RepeatState,
+    shuffleState: MainState.ShuffleState,
     modifier: Modifier = Modifier,
 ) {
     AnimatedVisibility(
@@ -264,70 +267,148 @@ private fun MainController(
         exit = shrinkVertically(),
         modifier = modifier,
     ) {
-        Surface(
-            color = MaterialTheme.colorScheme.primaryContainer,
-            modifier = Modifier.fillMaxSize(),
+        Surface(Modifier.fillMaxSize()) {
+            when (val item: MediaItem? = remember(controllerState) { controllerState.item }) {
+                is MediaItem -> MainControllerBackground(
+                    item = item,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .alpha(ContentAlpha.low),
+                )
+            }
+
+            if (controllerState.isExpanded) {
+                MainControllerSheetForeground(
+                    controllerState = controllerState,
+                    repeatState = repeatState,
+                    shuffleState = shuffleState,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(dimensionResource(dimens.padding_large_extra))
+                        .systemBarsPadding(),
+                )
+            } else {
+                MainControllerBottomSheetForeground(
+                    controllerState = controllerState,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(dimensionResource(dimens.padding_large))
+                        .navigationBarsPadding(),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun MainControllerSheetForeground(
+    controllerState: MainState.ControllerState,
+    repeatState: MainState.RepeatState,
+    shuffleState: MainState.ShuffleState,
+    modifier: Modifier = Modifier,
+) {
+    BackHandler { controllerState.onClick() }
+
+    Column(
+        verticalArrangement = Arrangement.spacedBy(
+            space = dimensionResource(dimens.padding_large),
+            alignment = Alignment.Top,
+        ),
+        horizontalAlignment = Alignment.Start,
+        modifier = modifier,
+    ) {
+        when (val item: MediaItem? = remember (controllerState) { controllerState.item }) {
+            is MediaItem -> MainControllerSheetText(
+                item = item,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+
+        Column(
+            verticalArrangement = Arrangement.spacedBy(
+                space = dimensionResource(dimens.padding_large),
+                alignment = Alignment.Bottom,
+            ),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
         ) {
-            MainControllerBackground(
-                itemState = controllerState.itemState,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .alpha(ContentAlpha.low),
+            MainControllerPlaybackControls(
+                playState = controllerState.playState,
+                nextState = controllerState.nextState,
+                previousState = controllerState.previousState,
+                modifier = Modifier.fillMaxWidth(),
             )
 
-            MainControllerForeground(
-                controllerState = controllerState,
-                modifier = Modifier
-                    .padding(dimensionResource(dimens.padding_large))
-                    .navigationBarsPadding(),
+            MainControllerPlaylistControls(
+                repeatState = repeatState,
+                shuffleState = shuffleState,
+                modifier = Modifier.fillMaxWidth(),
             )
         }
     }
 }
 
 @Composable
-private fun MainControllerBackground(
-    itemState: MainState.ControllerState.ItemState,
+private fun MainControllerSheetText(
+    item: MediaItem,
     modifier: Modifier = Modifier,
 ) {
-    when (val item: MediaItem? = remember(itemState) { itemState.item }) {
-        is MediaItem -> ArtImage(
-            item = item,
-            contentScale = ContentScale.Crop,
-            modifier = modifier,
+    Column(
+        verticalArrangement = Arrangement.spacedBy(
+            space = dimensionResource(dimens.padding_medium),
+            alignment = Alignment.Top,
+        ),
+        horizontalAlignment = Alignment.Start,
+        modifier = modifier,
+    ) {
+        SingleLineText(
+            text = item.nameText,
+            style = MaterialTheme.typography.titleLarge,
+        )
+
+        SingleLineText(
+            text = item.artistText,
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.alpha(ContentAlpha.medium),
         )
     }
 }
 
 @Composable
-private fun MainControllerForeground(
+private fun MainControllerBottomSheetForeground(
     controllerState: MainState.ControllerState,
     modifier: Modifier = Modifier,
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(
-            space = dimensionResource(dimens.padding_medium),
+            space = dimensionResource(dimens.padding_large),
             alignment = Alignment.Start,
         ),
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier,
     ) {
-        MainControllerText(
-            itemState = controllerState.itemState,
-            modifier = Modifier.weight(1f),
-        )
+        when (val item: MediaItem? = remember { controllerState.item }) {
+            is MediaItem -> MainControllerBottomSheetText(
+                item = item,
+                modifier = Modifier.weight(1f),
+            )
+        }
 
-        MainControllerControls(
+        MainControllerPlaybackControls(
             playState = controllerState.playState,
             nextState = controllerState.nextState,
             previousState = controllerState.previousState,
+            modifier = Modifier.width(IntrinsicSize.Min),
         )
     }
 }
 
+
 @Composable
-private fun MainControllerText(
-    itemState: MainState.ControllerState.ItemState,
+private fun MainControllerBottomSheetText(
+    item: MediaItem,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -339,12 +420,12 @@ private fun MainControllerText(
         modifier = modifier,
     ) {
         SingleLineText(
-            text = itemState.nameText,
+            text = item.nameText,
             style = MaterialTheme.typography.titleMedium,
         )
 
         SingleLineText(
-            text = itemState.artistText,
+            text = item.artistText,
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.alpha(ContentAlpha.medium),
         )
@@ -352,7 +433,19 @@ private fun MainControllerText(
 }
 
 @Composable
-private fun MainControllerControls(
+private fun MainControllerBackground(
+    item: MediaItem,
+    modifier: Modifier = Modifier,
+) {
+    ArtImage(
+        item = item,
+        contentScale = ContentScale.Crop,
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun MainControllerPlaybackControls(
     playState: MainState.ControllerState.PlayState,
     nextState: MainState.ControllerState.NextState,
     previousState: MainState.ControllerState.PreviousState,
@@ -365,14 +458,40 @@ private fun MainControllerControls(
     ) {
         MainControllerPreviousButton(
             previousState = previousState,
+            modifier = Modifier.weight(1f),
         )
 
         MainControllerPlayButton(
             playState = playState,
+            modifier = Modifier.weight(1f),
         )
 
         MainControllerNextButton(
             nextState = nextState,
+            modifier = Modifier.weight(1f),
+        )
+    }
+}
+
+@Composable
+private fun MainControllerPlaylistControls(
+    repeatState: MainState.RepeatState,
+    shuffleState: MainState.ShuffleState,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier,
+    ) {
+        MainControllerRepeatButton(
+            repeatState = repeatState,
+            modifier = Modifier.weight(1f),
+        )
+
+        MainControllerShuffleButton(
+            shuffleState = shuffleState,
+            modifier = Modifier.weight(1f),
         )
     }
 }
@@ -420,5 +539,63 @@ private fun MainControllerPreviousButton(
         painter = painterResource(drawables.previous),
         contentDescription = stringResource(strings.previous),
         modifier = modifier,
+    )
+}
+
+@Composable
+private fun MainControllerRepeatButton(
+    repeatState: MainState.RepeatState,
+    modifier: Modifier = Modifier,
+) {
+    val painterResId: Int = when (repeatState.mode) {
+        is MainState.RepeatState.Mode.Off -> drawables.repeat_off
+        is MainState.RepeatState.Mode.On.One -> drawables.repeat_on_one
+        is MainState.RepeatState.Mode.On.All -> drawables.repeat_on_all
+    }
+
+    val stringResId: Int = when (repeatState.mode) {
+        is MainState.RepeatState.Mode.Off -> strings.repeat_off
+        is MainState.RepeatState.Mode.On.One -> strings.repeat_on_one
+        is MainState.RepeatState.Mode.On.All -> strings.repeat_on_all
+    }
+
+    val alpha: Float = when (repeatState.mode) {
+        is MainState.RepeatState.Mode.Off -> ContentAlpha.low
+        is MainState.RepeatState.Mode.On -> ContentAlpha.max
+    }
+
+    IconButton(
+        onClick = repeatState.onClick,
+        painter = painterResource(painterResId),
+        contentDescription = stringResource(stringResId),
+        modifier = modifier.alpha(alpha),
+    )
+}
+
+@Composable
+private fun MainControllerShuffleButton(
+    shuffleState: MainState.ShuffleState,
+    modifier: Modifier = Modifier,
+) {
+    val painterResId: Int = when (shuffleState.mode) {
+        is MainState.ShuffleState.Mode.Off -> drawables.shuffle_off
+        is MainState.ShuffleState.Mode.On -> drawables.shuffle_on
+    }
+
+    val stringResId: Int = when (shuffleState.mode) {
+        is MainState.ShuffleState.Mode.Off -> strings.shuffle_off
+        is MainState.ShuffleState.Mode.On -> strings.shuffle_on
+    }
+
+    val alpha: Float = when (shuffleState.mode) {
+        is MainState.ShuffleState.Mode.Off -> ContentAlpha.low
+        is MainState.ShuffleState.Mode.On -> ContentAlpha.max
+    }
+
+    IconButton(
+        onClick = shuffleState.onClick,
+        painter = painterResource(painterResId),
+        contentDescription = stringResource(stringResId),
+        modifier = modifier.alpha(alpha),
     )
 }
