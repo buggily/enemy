@@ -24,7 +24,7 @@ import kotlinx.coroutines.flow.map
 @Composable
 @OptIn(ExperimentalLifecycleComposeApi::class)
 fun OrientationScreen(
-    homeState: OrientationState.HomeState,
+    albumsState: OrientationState.AlbumsState,
     viewModel: OrientationViewModel,
     modifier: Modifier = Modifier,
 ) {
@@ -51,7 +51,7 @@ fun OrientationScreen(
                 is OrientationState.PermissionState.EventState -> {
                     when (it) {
                         is OrientationState.PermissionState.EventState.Grant -> {
-                            homeState.onHomeClick()
+                            albumsState.onHomeClick()
                         }
                         is OrientationState.PermissionState.EventState.Pend -> {
                             val permission: String = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

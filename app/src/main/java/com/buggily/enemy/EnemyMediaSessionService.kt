@@ -1,4 +1,4 @@
-package com.buggily.enemy.service
+package com.buggily.enemy
 
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService

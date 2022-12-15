@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
 
     <application
-        android:name="com.buggily.enemy.ui.EnemyApplication"
+        android:name="com.buggily.enemy.EnemyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/enemy"
@@ -16,7 +16,7 @@
         android:theme="@style/Theme">
 
         <activity
-            android:name="com.buggily.enemy.ui.main.MainActivity"
+            android:name="com.buggily.enemy.EnemyActivity"
             android:exported="true"
             android:theme="@style/Theme.Splash"
             android:windowSoftInputMode="adjustResize">
@@ -28,7 +28,7 @@
         </activity>
 
         <service
-            android:name="com.buggily.enemy.service.EnemyMediaSessionService"
+            android:name="com.buggily.enemy.EnemyMediaSessionService"
             android:exported="true"
             android:foregroundServiceType="mediaPlayback">
 

@@ -37,7 +37,7 @@ data class OrientationState(
         }
     }
 
-    data class HomeState(
+    data class AlbumsState(
         val onHomeClick: () -> Unit,
     )
 

@@ -1,4 +1,4 @@
-package com.buggily.enemy.ui
+package com.buggily.enemy
 
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavDeepLink
@@ -76,10 +76,10 @@ sealed class EnemyDestination {
             get() = emptyList()
     }
 
-    object Home : EnemyDestination() {
+    object Albums : EnemyDestination() {
 
         override val identity: String
-            get() = "home"
+            get() = "albums"
 
         override val argumentIdentities: List<Argument>
             get() = emptyList()
@@ -118,7 +118,7 @@ sealed class EnemyDestination {
     companion object {
         fun get(destination: NavDestination?): EnemyDestination? = listOf(
             Orientation,
-            Home,
+            Albums,
             Album,
             Settings,
         ).find { it.route == destination?.route }

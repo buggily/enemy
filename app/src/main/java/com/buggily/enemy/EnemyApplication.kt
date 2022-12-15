@@ -1,4 +1,4 @@
-package com.buggily.enemy.ui
+package com.buggily.enemy
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp

@@ -1,4 +1,4 @@
-package com.buggily.enemy.ui.main
+package com.buggily.enemy
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -6,6 +6,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -25,7 +27,7 @@ import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.buggily.enemy.core.model.theme.Theme
-import com.buggily.enemy.ui.theme.EnemyPalette
+import com.buggily.enemy.ui.EnemyApp
 import com.buggily.enemy.ui.theme.EnemyTheme
 import com.google.common.util.concurrent.ListenableFuture
 import dagger.hilt.android.AndroidEntryPoint
@@ -38,7 +40,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class EnemyActivity : ComponentActivity() {
 
     @Inject
     lateinit var sessionToken: SessionToken
@@ -46,10 +48,14 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var executor: Executor
 
-    private val viewModel: MainViewModel by viewModels()
+    private val viewModel: EnemyViewModel by viewModels()
     private lateinit var mediaControllerFuture: ListenableFuture<MediaController>
 
-    @OptIn(ExperimentalLifecycleComposeApi::class)
+    @OptIn(
+        ExperimentalLifecycleComposeApi::class,
+        ExperimentalMaterial3WindowSizeClassApi::class,
+    )
+
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
@@ -64,10 +70,21 @@ class MainActivity : ComponentActivity() {
             window.decorView
         )
 
-        val mediaState: Flow<MainState.MediaState> = viewModel.state.map { it.mediaState }
-        val repeatState: Flow<MainState.MediaState.RepeatState> = mediaState.map { it.repeatState }
-        val shuffleState: Flow<MainState.MediaState.ShuffleState> = mediaState.map { it.shuffleState }
-        val controllerState: Flow<MainState.MediaState.ControllerState> = mediaState.map { it.controllerState }
+        val mediaState: Flow<EnemyState.MediaState> = viewModel.state.map {
+            it.mediaState
+        }
+
+        val repeatState: Flow<EnemyState.MediaState.RepeatState> = mediaState.map {
+            it.repeatState
+        }
+
+        val shuffleState: Flow<EnemyState.MediaState.ShuffleState> = mediaState.map {
+            it.shuffleState
+        }
+
+        val controllerState: Flow<EnemyState.MediaState.ControllerState> = mediaState.map {
+            it.controllerState
+        }
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -78,11 +95,12 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            val theme: Theme by viewModel.theme.collectAsStateWithLifecycle()
             val isSystemInDarkTheme: Boolean = isSystemInDarkTheme()
-            val isDynamic: Boolean = theme.dynamic.isOn
+            val theme: Theme by viewModel.theme.collectAsStateWithLifecycle()
 
             val paletteTheme: EnemyPalette.Theme = remember(theme) {
+                val isDynamic: Boolean = theme.dynamic.isOn
+
                 when (theme.scheme) {
                     is Theme.Scheme.Default -> EnemyPalette.Theme.Default(
                         isDynamic = isDynamic,
@@ -108,8 +126,9 @@ class MainActivity : ComponentActivity() {
             }
 
             EnemyTheme(palette) {
-                MainScreen(
+                EnemyApp(
                     viewModel = hiltViewModel(),
+                    windowSizeClass = calculateWindowSizeClass(this),
                     modifier = Modifier.fillMaxSize(),
                 )
             }
@@ -146,12 +165,16 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private suspend fun onControllerStateEvent(event: MainState.MediaState.ControllerState) = when (event) {
-        is MainState.MediaState.ControllerState.Event -> {
+    private suspend fun onControllerStateEvent(
+        event: EnemyState.MediaState.ControllerState,
+    ) = when (event) {
+        is EnemyState.MediaState.ControllerState.Event -> {
             when (event) {
-                is MainState.MediaState.ControllerState.Event.Play -> with(requireMediaController()) {
+                is EnemyState.MediaState.ControllerState.Event.Play -> with(
+                    requireMediaController()
+                ) {
                     when (event) {
-                        is MainState.MediaState.ControllerState.Event.Play.With -> {
+                        is EnemyState.MediaState.ControllerState.Event.Play.With -> {
                             setMediaItems(event.items)
                             seekToDefaultPosition(event.index)
                         }
@@ -161,36 +184,40 @@ class MainActivity : ComponentActivity() {
                     prepare()
                     play()
                 }
-                is MainState.MediaState.ControllerState.Event.Pause -> {
+                is EnemyState.MediaState.ControllerState.Event.Pause -> {
                     requireMediaController().pause()
                 }
-                is MainState.MediaState.ControllerState.Event.Next -> {
+                is EnemyState.MediaState.ControllerState.Event.Next -> {
                     requireMediaController().seekToNext()
                 }
-                is MainState.MediaState.ControllerState.Event.Previous -> {
+                is EnemyState.MediaState.ControllerState.Event.Previous -> {
                     requireMediaController().seekToPrevious()
                 }
             }
 
             event.onEvent()
         }
-        is MainState.MediaState.ControllerState.Default -> Unit
+        is EnemyState.MediaState.ControllerState.Default -> Unit
     }
 
-    private suspend fun onRepeatStateEvent(event: MainState.MediaState.RepeatState) = when (event) {
-        is MainState.MediaState.RepeatState.Event.Set -> {
+    private suspend fun onRepeatStateEvent(
+        event: EnemyState.MediaState.RepeatState,
+    ) = when (event) {
+        is EnemyState.MediaState.RepeatState.Event.Set -> {
             requireMediaController().repeatMode = event.repeatMode
             event.onEvent()
         }
-        is MainState.MediaState.RepeatState.Default -> Unit
+        is EnemyState.MediaState.RepeatState.Default -> Unit
     }
 
-    private suspend fun onShuffleStateEvent(event: MainState.MediaState.ShuffleState) = when (event) {
-        is MainState.MediaState.ShuffleState.Event.Set -> {
+    private suspend fun onShuffleStateEvent(
+        event: EnemyState.MediaState.ShuffleState,
+    ) = when (event) {
+        is EnemyState.MediaState.ShuffleState.Event.Set -> {
             requireMediaController().shuffleModeEnabled = event.shuffleMode
             event.onEvent()
         }
-        is MainState.MediaState.ShuffleState.Default -> Unit
+        is EnemyState.MediaState.ShuffleState.Default -> Unit
     }
 
     private suspend fun requireMediaController(): MediaController = suspendCoroutine {
@@ -201,6 +228,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private val listener: Player.Listener by lazy {
+
         object : Player.Listener {
 
             override fun onIsPlayingChanged(isPlaying: Boolean) {

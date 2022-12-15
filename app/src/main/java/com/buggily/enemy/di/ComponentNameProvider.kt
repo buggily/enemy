@@ -2,7 +2,7 @@ package com.buggily.enemy.di
 
 import android.content.ComponentName
 import android.content.Context
-import com.buggily.enemy.service.EnemyMediaSessionService
+import com.buggily.enemy.EnemyMediaSessionService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

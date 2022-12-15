@@ -1,10 +1,10 @@
-package com.buggily.enemy.ui.main
+package com.buggily.enemy
 
 import androidx.media3.common.MediaItem
 import com.buggily.enemy.core.model.ext.isNonNull
 import com.buggily.enemy.feature.album.AlbumState
 
-data class MainState(
+data class EnemyState(
     val mediaState: MediaState,
     val controllerState: ControllerState,
     val shuffleState: ShuffleState,
@@ -224,8 +224,8 @@ data class MainState(
     }
 
     companion object {
-        val default: MainState
-            get() = MainState(
+        val default: EnemyState
+            get() = EnemyState(
                 mediaState = MediaState.default,
                 controllerState = ControllerState.default,
                 repeatState = RepeatState.default,
