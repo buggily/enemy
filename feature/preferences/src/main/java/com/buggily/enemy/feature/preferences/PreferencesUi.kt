@@ -1,17 +1,24 @@
 package com.buggily.enemy.feature.preferences
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.add
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.consumedWindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -23,8 +30,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.buggily.enemy.core.model.theme.Theme
-import com.buggily.enemy.core.ui.R.string as strings
+import com.buggily.enemy.core.ui.SingleLineText
 import com.buggily.enemy.core.ui.R.dimen as dimens
+import com.buggily.enemy.core.ui.R.string as strings
 
 @Composable
 @OptIn(ExperimentalLifecycleComposeApi::class)
@@ -41,17 +49,39 @@ fun PreferencesScreen(
 }
 
 @Composable
+@OptIn(ExperimentalLayoutApi::class)
 fun PreferencesScreen(
     state: PreferencesState,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
-        verticalArrangement = Arrangement.Top,
+        verticalArrangement = Arrangement.spacedBy(
+            space = dimensionResource(dimens.padding_large_extra),
+            alignment = Alignment.Top,
+        ),
         horizontalAlignment = Alignment.Start,
-        modifier = modifier,
+        contentPadding = WindowInsets(
+            left = dimensionResource(dimens.padding_large),
+            top = dimensionResource(dimens.padding_large),
+            right = dimensionResource(dimens.padding_large),
+            bottom = dimensionResource(dimens.padding_large),
+        )
+            .add(WindowInsets.systemBars)
+            .asPaddingValues(),
+        modifier = modifier.consumedWindowInsets(WindowInsets.systemBars),
     ) {
-        item { PreferencesHeader(Modifier.padding(dimensionResource(dimens.padding_large))) }
-        item { PreferencesContent(state) }
+        item {
+            PreferencesHeader(
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+
+        item {
+            PreferencesContent(
+                state = state,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
     }
 }
 
@@ -59,9 +89,9 @@ fun PreferencesScreen(
 private fun PreferencesHeader(
     modifier: Modifier = Modifier,
 ) {
-    Text(
+    SingleLineText(
         text = stringResource(strings.settings),
-        style = MaterialTheme.typography.displaySmall,
+        style = MaterialTheme.typography.headlineLarge,
         modifier = modifier,
     )
 }
@@ -72,36 +102,23 @@ private fun PreferencesContent(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        verticalArrangement = Arrangement.Top,
+        verticalArrangement = Arrangement.spacedBy(
+            space = dimensionResource(dimens.padding_large),
+            alignment = Alignment.Top,
+        ),
         horizontalAlignment = Alignment.Start,
         modifier = modifier,
     ) {
-        val contentModifier: Modifier = Modifier
-            .fillMaxWidth()
-            .padding(dimensionResource(dimens.padding_large))
-
-        PreferencesThemeScheme(
-            schemeState = state.schemeState,
-            modifier = contentModifier,
-        )
-
-        PreferencesThemeDynamic(
-            dynamicState = state.dynamicState,
-            modifier = contentModifier,
-        )
-
-        PreferencesThemeReset(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { state.resetState.onResetClick() }
-                .padding(dimensionResource(dimens.padding_large)),
+        PreferencesThemeContent(
+            themeState = state.themeState,
+            modifier = Modifier.fillMaxWidth(),
         )
     }
 }
 
 @Composable
-private fun PreferencesThemeScheme(
-    schemeState: PreferencesState.SchemeState,
+private fun PreferencesThemeContent(
+    themeState: PreferencesState.ThemeState,
     modifier: Modifier = Modifier,
 ) {
     PreferencesPreference(
@@ -109,26 +126,55 @@ private fun PreferencesThemeScheme(
         modifier = modifier,
     ) {
         Column(
-            verticalArrangement = Arrangement.Top,
+            verticalArrangement = Arrangement.spacedBy(
+                space = dimensionResource(dimens.padding_large),
+                alignment = Alignment.Top,
+            ),
             horizontalAlignment = Alignment.Start,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            schemeState.schemes.forEach {
-                val scheme: Theme.Scheme = schemeState.scheme
-                val isSelected: Boolean = it == scheme
+            PreferencesThemeScheme(
+                schemeState = themeState.schemeState,
+                modifier = Modifier.fillMaxWidth(),
+            )
 
-                PreferencesThemeSchemeIconButton(
-                    isSelected = isSelected,
-                    scheme = it,
-                    onSchemeClick = schemeState.onSchemeClick,
-                )
-            }
+            PreferencesThemeDynamic(
+                dynamicState = themeState.dynamicState,
+                modifier = Modifier.fillMaxWidth(),
+            )
+
+            PreferencesThemeReset(
+                resetState = themeState.resetState,
+            )
         }
     }
 }
 
 @Composable
-private fun PreferencesThemeSchemeIconButton(
+private fun PreferencesThemeScheme(
+    schemeState: PreferencesState.ThemeState.SchemeState,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.Start,
+        modifier = modifier,
+    ) {
+        schemeState.schemes.forEach {
+            val scheme: Theme.Scheme = schemeState.scheme
+            val isSelected: Boolean = it == scheme
+
+            PreferencesThemeSchemeRadioButton(
+                isSelected = isSelected,
+                scheme = it,
+                onSchemeClick = schemeState.onSchemeClick,
+            )
+        }
+    }
+}
+
+@Composable
+private fun PreferencesThemeSchemeRadioButton(
     isSelected: Boolean,
     scheme: Theme.Scheme,
     onSchemeClick: (Theme.Scheme) -> Unit,
@@ -148,7 +194,7 @@ private fun PreferencesThemeSchemeIconButton(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier,
     ) {
-        Text(
+        SingleLineText(
             text = text,
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.weight(1f),
@@ -164,7 +210,7 @@ private fun PreferencesThemeSchemeIconButton(
 
 @Composable
 private fun PreferencesThemeDynamic(
-    dynamicState: PreferencesState.DynamicState,
+    dynamicState: PreferencesState.ThemeState.DynamicState,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -175,8 +221,9 @@ private fun PreferencesThemeDynamic(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier,
     ) {
-        PreferencesPreferenceHeader(
+        SingleLineText(
             text = stringResource(R.string.theme_dynamic),
+            style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.weight(1f),
         )
 
@@ -189,12 +236,18 @@ private fun PreferencesThemeDynamic(
 
 @Composable
 private fun PreferencesThemeReset(
+    resetState: PreferencesState.ThemeState.ResetState,
     modifier: Modifier = Modifier,
 ) {
-    PreferencesPreferenceHeader(
-        text = stringResource(R.string.reset),
+    TextButton(
+        onClick = resetState.onResetClick,
         modifier = modifier,
-    )
+    ) {
+        Text(
+            text = stringResource(R.string.reset),
+            style = MaterialTheme.typography.bodyLarge,
+        )
+    }
 }
 
 @Composable
@@ -203,41 +256,30 @@ private fun PreferencesPreference(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(
-            space = dimensionResource(dimens.padding_large),
-            alignment = Alignment.Top,
-        ),
-        horizontalAlignment = Alignment.Start,
+    Surface(
+        color = MaterialTheme.colorScheme.tertiaryContainer,
+        shape = MaterialTheme.shapes.large,
         modifier = modifier,
     ) {
-        PreferencesPreferenceHeader(text)
+        Column(
+            verticalArrangement = Arrangement.spacedBy(
+                space = dimensionResource(dimens.padding_large),
+                alignment = Alignment.Top,
+            ),
+            horizontalAlignment = Alignment.Start,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(dimensionResource(dimens.padding_large)),
+        ) {
+            SingleLineText(
+                text = text,
+                style = MaterialTheme.typography.headlineSmall,
+                modifier = modifier,
+            )
 
-        PreferencesContent(
-            content = content,
-            modifier = Modifier.padding(start = dimensionResource(dimens.padding_large)),
-        )
-    }
-}
-
-@Composable
-private fun PreferencesPreferenceHeader(
-    text: String,
-    modifier: Modifier = Modifier,
-) {
-    Text(
-        text = text,
-        style = MaterialTheme.typography.titleLarge,
-        modifier = modifier,
-    )
-}
-
-@Composable
-private fun PreferencesContent(
-    modifier: Modifier = Modifier,
-    content: @Composable () -> Unit,
-) {
-    Box(modifier) {
-        content()
+            Box(Modifier.padding(horizontal = dimensionResource(dimens.padding_large))) {
+                content()
+            }
+        }
     }
 }

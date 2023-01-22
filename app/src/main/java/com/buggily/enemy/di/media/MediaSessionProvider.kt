@@ -30,13 +30,14 @@ object MediaSessionProvider {
                 mediaItems: MutableList<MediaItem>
             ): ListenableFuture<MutableList<MediaItem>> = mediaItems.map {
                 val mediaUri: Uri? = it.requestMetadata.mediaUri
-                val mediaId: String? = mediaUri?.let { ContentUris.parseId(mediaUri) }?.toString()
+                val mediaIdFromUri: Long? = mediaUri?.let { ContentUris.parseId(mediaUri) }
+                val mediaId: String = mediaIdFromUri?.toString() ?: MediaItem.DEFAULT_MEDIA_ID
 
                 it.buildUpon()
-                    .apply { mediaId?.let { setMediaId(mediaId) } }
+                    .setMediaId(mediaId)
                     .setUri(mediaUri)
                     .build()
-            }.let { Futures.immediateFuture(it.toMutableList()) }
+            }.toMutableList().let { Futures.immediateFuture(it) }
         }
 
         return MediaSession.Builder(

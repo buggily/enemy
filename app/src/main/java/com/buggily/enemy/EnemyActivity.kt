@@ -27,7 +27,10 @@ import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.buggily.enemy.core.model.theme.Theme
+import com.buggily.enemy.di.DirectExecutorQualifier
 import com.buggily.enemy.ui.EnemyApp
+import com.buggily.enemy.ui.EnemyState
+import com.buggily.enemy.ui.theme.EnemyPalette
 import com.buggily.enemy.ui.theme.EnemyTheme
 import com.google.common.util.concurrent.ListenableFuture
 import dagger.hilt.android.AndroidEntryPoint
@@ -46,7 +49,8 @@ class EnemyActivity : ComponentActivity() {
     lateinit var sessionToken: SessionToken
 
     @Inject
-    lateinit var executor: Executor
+    @DirectExecutorQualifier
+    lateinit var directExecutor: Executor
 
     private val viewModel: EnemyViewModel by viewModels()
     private lateinit var mediaControllerFuture: ListenableFuture<MediaController>
@@ -58,6 +62,7 @@ class EnemyActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
+
         super.onCreate(savedInstanceState)
 
         WindowCompat.setDecorFitsSystemWindows(
@@ -74,23 +79,9 @@ class EnemyActivity : ComponentActivity() {
             it.mediaState
         }
 
-        val repeatState: Flow<EnemyState.MediaState.RepeatState> = mediaState.map {
-            it.repeatState
-        }
-
-        val shuffleState: Flow<EnemyState.MediaState.ShuffleState> = mediaState.map {
-            it.shuffleState
-        }
-
-        val controllerState: Flow<EnemyState.MediaState.ControllerState> = mediaState.map {
-            it.controllerState
-        }
-
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch { repeatState.collect { onRepeatStateEvent(it) } }
-                launch { shuffleState.collect { onShuffleStateEvent(it) } }
-                launch { controllerState.collect { onControllerStateEvent(it) } }
+                mediaState.collect { onMediaState(it) }
             }
         }
 
@@ -146,7 +137,7 @@ class EnemyActivity : ComponentActivity() {
         lifecycleScope.launch {
             with(requireMediaController()) {
                 viewModel.setIsPlaying(isPlaying)
-                viewModel.setItem(currentMediaItem)
+                viewModel.setMediaItem(currentMediaItem)
                 viewModel.setRepeatMode(repeatMode)
                 viewModel.setHasNext(hasNextMediaItem())
                 viewModel.setHasPrevious(hasPreviousMediaItem())
@@ -165,16 +156,12 @@ class EnemyActivity : ComponentActivity() {
         }
     }
 
-    private suspend fun onControllerStateEvent(
-        event: EnemyState.MediaState.ControllerState,
-    ) = when (event) {
-        is EnemyState.MediaState.ControllerState.Event -> {
+    private suspend fun onMediaState(event: EnemyState.MediaState) = when (event) {
+        is EnemyState.MediaState.Event -> {
             when (event) {
-                is EnemyState.MediaState.ControllerState.Event.Play -> with(
-                    requireMediaController()
-                ) {
+                is EnemyState.MediaState.Event.Play -> with(requireMediaController()) {
                     when (event) {
-                        is EnemyState.MediaState.ControllerState.Event.Play.With -> {
+                        is EnemyState.MediaState.Event.Play.With -> {
                             setMediaItems(event.items)
                             seekToDefaultPosition(event.index)
                         }
@@ -184,46 +171,33 @@ class EnemyActivity : ComponentActivity() {
                     prepare()
                     play()
                 }
-                is EnemyState.MediaState.ControllerState.Event.Pause -> {
+                is EnemyState.MediaState.Event.Pause -> {
                     requireMediaController().pause()
                 }
-                is EnemyState.MediaState.ControllerState.Event.Next -> {
+                is EnemyState.MediaState.Event.Next -> {
                     requireMediaController().seekToNext()
                 }
-                is EnemyState.MediaState.ControllerState.Event.Previous -> {
+                is EnemyState.MediaState.Event.Previous -> {
                     requireMediaController().seekToPrevious()
+                }
+                is EnemyState.MediaState.Event.Repeat -> {
+                    requireMediaController().repeatMode = event.repeatMode
+                }
+                is EnemyState.MediaState.Event.Shuffle -> {
+                    requireMediaController().shuffleModeEnabled = event.shuffleMode
                 }
             }
 
             event.onEvent()
         }
-        is EnemyState.MediaState.ControllerState.Default -> Unit
+        is EnemyState.MediaState.Default -> Unit
     }
 
-    private suspend fun onRepeatStateEvent(
-        event: EnemyState.MediaState.RepeatState,
-    ) = when (event) {
-        is EnemyState.MediaState.RepeatState.Event.Set -> {
-            requireMediaController().repeatMode = event.repeatMode
-            event.onEvent()
-        }
-        is EnemyState.MediaState.RepeatState.Default -> Unit
-    }
-
-    private suspend fun onShuffleStateEvent(
-        event: EnemyState.MediaState.ShuffleState,
-    ) = when (event) {
-        is EnemyState.MediaState.ShuffleState.Event.Set -> {
-            requireMediaController().shuffleModeEnabled = event.shuffleMode
-            event.onEvent()
-        }
-        is EnemyState.MediaState.ShuffleState.Default -> Unit
-    }
-
+    @Suppress("BlockingMethodInNonBlockingContext")
     private suspend fun requireMediaController(): MediaController = suspendCoroutine {
         mediaControllerFuture.addListener(
             { it.resume(mediaControllerFuture.get()) },
-            executor
+            directExecutor
         )
     }
 
@@ -239,11 +213,11 @@ class EnemyActivity : ComponentActivity() {
             override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
                 super.onMediaMetadataChanged(mediaMetadata)
 
-                val item: MediaItem = MediaItem.Builder()
+                val mediaItem: MediaItem = MediaItem.Builder()
                     .setMediaMetadata(mediaMetadata)
                     .build()
 
-                viewModel.setItem(item)
+                viewModel.setMediaItem(mediaItem)
             }
 
             override fun onRepeatModeChanged(repeatMode: Int) {

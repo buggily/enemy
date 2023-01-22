@@ -139,7 +139,7 @@ class Query(
             }
 
         private val columnsIdentity: Array<out String>
-            get() = columns.map { it.run { "CAST($key AS ${value.identity})" } }.toTypedArray()
+            get() = columns.map { with(it) { "CAST($key AS ${value.identity})" } }.toTypedArray()
 
         private val directionIdentity: Int
             get() = direction.identity

@@ -4,12 +4,16 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.consumedWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,7 +22,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -34,6 +37,10 @@ import androidx.paging.compose.items
 import com.buggily.enemy.core.model.album.Album
 import com.buggily.enemy.core.model.track.Track
 import com.buggily.enemy.core.ui.ArtImage
+import com.buggily.enemy.core.ui.ext.artistText
+import com.buggily.enemy.core.ui.ext.durationText
+import com.buggily.enemy.core.ui.ext.nameText
+import com.buggily.enemy.core.ui.ext.trackText
 import com.buggily.enemy.core.ui.theme.ContentAlpha
 import com.buggily.enemy.core.ui.R.dimen as dimens
 
@@ -42,7 +49,6 @@ import com.buggily.enemy.core.ui.R.dimen as dimens
 fun AlbumScreen(
     trackState: AlbumState.TrackState,
     viewModel: AlbumViewModel,
-    contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
 ) {
     val state: AlbumState by viewModel.state.collectAsStateWithLifecycle()
@@ -52,7 +58,6 @@ fun AlbumScreen(
         state = state,
         tracks = tracks,
         trackState = trackState,
-        contentPadding = contentPadding,
         modifier = modifier,
     )
 }
@@ -62,7 +67,6 @@ fun AlbumScreen(
     state: AlbumState,
     tracks: LazyPagingItems<Track>,
     trackState: AlbumState.TrackState,
-    contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -80,7 +84,6 @@ fun AlbumScreen(
         AlbumTracksColumn(
             tracks = tracks,
             trackState = trackState,
-            contentPadding = contentPadding,
             modifier = Modifier
                 .fillMaxSize()
                 .weight(2f),
@@ -93,8 +96,11 @@ private fun AlbumHeader(
     state: AlbumState,
     modifier: Modifier = Modifier,
 ) {
-    Surface(modifier) {
-        when (val album: Album? = remember(state) { state.album }) {
+    Surface(
+        color = MaterialTheme.colorScheme.secondaryContainer,
+        modifier = modifier,
+    ) {
+        when (val album: Album? = state.album) {
             is Album -> AlbumHeaderBackground(
                 album = album,
                 modifier = Modifier
@@ -107,8 +113,8 @@ private fun AlbumHeader(
             album = state,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(dimensionResource(dimens.padding_large))
-                .statusBarsPadding(),
+                .statusBarsPadding()
+                .padding(dimensionResource(dimens.padding_large)),
         )
     }
 }
@@ -160,7 +166,7 @@ private fun AlbumHeaderImage(
     state: AlbumState,
     modifier: Modifier = Modifier,
 ) {
-    when (val album: Album? = remember(state) { state.album }) {
+    when (val album: Album? = state.album) {
         is Album -> Box(modifier) {
             ArtImage(
                 artable = album,
@@ -176,7 +182,7 @@ private fun AlbumHeaderText(
     state: AlbumState,
     modifier: Modifier = Modifier,
 ) {
-    when (val album: Album? = remember(state) { state.album }) {
+    when (val album: Album? = state.album) {
         is Album -> Column(
             verticalArrangement = Arrangement.spacedBy(
                 space = dimensionResource(dimens.padding_small),
@@ -186,13 +192,13 @@ private fun AlbumHeaderText(
             modifier = modifier,
         ) {
             Text(
-                text = album.name,
+                text = album.nameText,
                 textAlign = TextAlign.End,
                 style = MaterialTheme.typography.titleMedium,
             )
 
             Text(
-                text = album.artist.name,
+                text = album.artistText,
                 textAlign = TextAlign.End,
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.alpha(ContentAlpha.medium),
@@ -202,17 +208,17 @@ private fun AlbumHeaderText(
 }
 
 @Composable
+@OptIn(ExperimentalLayoutApi::class)
 private fun AlbumTracksColumn(
     tracks: LazyPagingItems<Track>,
     trackState: AlbumState.TrackState,
-    contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start,
-        contentPadding = contentPadding,
-        modifier = modifier,
+        contentPadding = WindowInsets.navigationBars.asPaddingValues(),
+        modifier = modifier.consumedWindowInsets(WindowInsets.navigationBars),
     ) {
         items(
             items = tracks,
@@ -248,21 +254,21 @@ private fun AlbumTrackItem(
         modifier = modifier,
     ) {
         Text(
-            text = track.position.track.toString(),
+            text = track.trackText,
             textAlign = TextAlign.Start,
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.alpha(ContentAlpha.medium),
         )
 
         Text(
-            text = track.name,
+            text = track.nameText,
             textAlign = TextAlign.Start,
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.weight(1f),
         )
 
         Text(
-            text = track.duration.text,
+            text = track.durationText,
             textAlign = TextAlign.End,
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.alpha(ContentAlpha.medium),

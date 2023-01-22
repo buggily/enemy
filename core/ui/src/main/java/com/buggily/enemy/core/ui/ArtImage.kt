@@ -28,12 +28,12 @@ fun ArtImage(
 
 @Composable
 fun ArtImage(
-    item: MediaItem,
+    mediaItem: MediaItem,
     contentScale: ContentScale,
     modifier: Modifier = Modifier,
 ) {
-    val name: String = item.mediaMetadata.title?.toString() ?: return
-    val artUri: Uri = item.mediaMetadata.artworkUri ?: return
+    val name: String = mediaItem.mediaMetadata.title?.toString() ?: return
+    val artUri: Uri = mediaItem.mediaMetadata.artworkUri ?: return
 
     val artable: Artable = object : Artable {
         override val artUri: Uri = artUri

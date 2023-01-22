@@ -33,9 +33,12 @@ include(":domain:album")
 include(":domain:track")
 include(":domain:theme")
 
-include(":feature:album")
 include(":feature:orientation")
 include(":feature:preferences")
+include(":feature:controller")
+
+include(":feature:albums")
+include(":feature:album")
 
 include(":data:album")
 include(":data:track")

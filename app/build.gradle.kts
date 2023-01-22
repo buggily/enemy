@@ -42,8 +42,11 @@ dependencies {
     implementation(project(":core:model"))
 
     implementation(project(":feature:orientation"))
-    implementation(project(":feature:album"))
     implementation(project(":feature:preferences"))
+    implementation(project(":feature:controller"))
+
+    implementation(project(":feature:albums"))
+    implementation(project(":feature:album"))
 
     implementation(project(":domain:album"))
     implementation(project(":domain:track"))
@@ -69,8 +72,8 @@ dependencies {
     implementation(libs.androidx.paging)
     implementation(libs.androidx.paging.compose)
 
-    implementation(libs.androidx.media)
     implementation(libs.androidx.media.ui)
+    implementation(libs.androidx.media.player)
     implementation(libs.androidx.media.session)
 
     implementation(libs.coil)

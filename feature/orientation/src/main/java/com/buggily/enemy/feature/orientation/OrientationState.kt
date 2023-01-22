@@ -45,25 +45,25 @@ data class OrientationState(
 
         object Default : PermissionState()
 
-        sealed class EventState(
+        sealed class Event(
             val onEvent: () -> Unit,
         ) : PermissionState() {
 
             data class Grant(
                 val onGrant: () -> Unit,
-            ) : EventState(
+            ) : Event(
                 onEvent = onGrant,
             )
 
             data class Pend(
                 val onPend: () -> Unit,
-            ) : EventState(
+            ) : Event(
                 onEvent = onPend,
             )
 
             data class Deny(
                 val onDeny: () -> Unit,
-            ) : EventState(
+            ) : Event(
                 onEvent = onDeny,
             )
         }

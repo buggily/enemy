@@ -20,7 +20,7 @@ class EnemyMediaSessionService : MediaSessionService() {
         release()
     }
 
-    private fun release() = mediaSession.run {
+    private fun release() = with(mediaSession) {
         player.release()
         release()
     }

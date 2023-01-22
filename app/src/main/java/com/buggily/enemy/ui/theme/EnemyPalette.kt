@@ -1,4 +1,4 @@
-package com.buggily.enemy
+package com.buggily.enemy.ui.theme
 
 import android.content.Context
 import androidx.compose.material3.ColorScheme

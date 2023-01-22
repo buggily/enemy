@@ -41,7 +41,7 @@ object CollapsableButton {
         }
 
         private val span: Int
-            get() = range.run { last - first }
+            get() = with(range) { last - first }
 
         private val offset: Int
             get() = range.first

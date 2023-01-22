@@ -30,19 +30,21 @@ class PreferencesViewModel @Inject constructor(
 
     init {
         PreferencesState.default.copy(
-            schemeState = PreferencesState.SchemeState.default.copy(
-                onSchemeClick = ::onSchemeClick,
-                schemes = listOf(
-                    Theme.Scheme.Default,
-                    Theme.Scheme.Light,
-                    Theme.Scheme.Dark,
+            themeState = PreferencesState.ThemeState.default.copy(
+                schemeState = PreferencesState.ThemeState.SchemeState.default.copy(
+                    onSchemeClick = ::onThemeSchemeClick,
+                    schemes = listOf(
+                        Theme.Scheme.Default,
+                        Theme.Scheme.Light,
+                        Theme.Scheme.Dark,
+                    ),
                 ),
-            ),
-            dynamicState = PreferencesState.DynamicState.default.copy(
-                onDynamicCheck = ::onDynamicCheck,
-            ),
-            resetState = PreferencesState.ResetState.default.copy(
-                onResetClick = ::onResetClick,
+                dynamicState = PreferencesState.ThemeState.DynamicState.default.copy(
+                    onDynamicCheck = ::onThemeDynamicCheck,
+                ),
+                resetState = PreferencesState.ThemeState.ResetState.default.copy(
+                    onResetClick = ::onThemeResetClick,
+                ),
             ),
         ).let { _state = MutableStateFlow(it) }
 
@@ -55,15 +57,15 @@ class PreferencesViewModel @Inject constructor(
         }
     }
 
-    private fun onSchemeClick(scheme: Theme.Scheme) = viewModelScope.launch {
+    private fun onThemeSchemeClick(scheme: Theme.Scheme) = viewModelScope.launch {
         setThemeScheme(scheme)
     }
 
-    private fun onDynamicCheck(isChecked: Boolean) = viewModelScope.launch {
+    private fun onThemeDynamicCheck(isChecked: Boolean) = viewModelScope.launch {
         setThemeDynamic(if (isChecked) { Theme.Dynamic.On } else { Theme.Dynamic.Off })
     }
 
-    private fun onResetClick() = viewModelScope.launch {
+    private fun onThemeResetClick() = viewModelScope.launch {
         setTheme(Theme.default)
     }
 
@@ -73,26 +75,44 @@ class PreferencesViewModel @Inject constructor(
     }
 
     private fun setSchemeState(scheme: Theme.Scheme) = state.value.let {
-        val schemeState: PreferencesState.SchemeState = it.schemeState.copy(
+        val themeState: PreferencesState.ThemeState = it.themeState
+        val schemeState: PreferencesState.ThemeState.SchemeState = themeState.schemeState.copy(
             scheme = scheme,
         )
 
-        setSchemeState(schemeState)
+        setSchemeStateOfThemeState(schemeState)
     }
 
     private fun setDynamicState(dynamic: Theme.Dynamic) = state.value.let {
-        val dynamicState: PreferencesState.DynamicState = it.dynamicState.copy(
+        val themeState: PreferencesState.ThemeState = it.themeState
+        val dynamicState: PreferencesState.ThemeState.DynamicState = themeState.dynamicState.copy(
             dynamic = dynamic,
         )
 
-        setDynamicState(dynamicState)
+        setDynamicStateOfThemeState(dynamicState)
     }
 
-    private fun setSchemeState(schemeState: PreferencesState.SchemeState) = _state.update {
-        it.copy(schemeState = schemeState)
+    private fun setSchemeStateOfThemeState(
+        schemeState: PreferencesState.ThemeState.SchemeState,
+    ) = state.value.let {
+        val themeState: PreferencesState.ThemeState = it.themeState.copy(
+            schemeState = schemeState,
+        )
+
+        setThemeState(themeState)
     }
 
-    private fun setDynamicState(dynamicState: PreferencesState.DynamicState) = _state.update {
-        it.copy(dynamicState = dynamicState)
+    private fun setDynamicStateOfThemeState(
+        dynamicState: PreferencesState.ThemeState.DynamicState,
+    ) = state.value.let {
+        val themeState: PreferencesState.ThemeState = it.themeState.copy(
+            dynamicState = dynamicState,
+        )
+
+        setThemeState(themeState)
+    }
+
+    private fun setThemeState(themeState: PreferencesState.ThemeState) = _state.update {
+        it.copy(themeState = themeState)
     }
 }

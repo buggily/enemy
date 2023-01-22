@@ -9,8 +9,9 @@ import java.util.concurrent.Executor
 
 @Module
 @InstallIn(SingletonComponent::class)
-object ExecutorProvider {
+object DirectExecutorProvider {
 
     @Provides
+    @DirectExecutorQualifier
     fun provides(): Executor = MoreExecutors.directExecutor()
 }

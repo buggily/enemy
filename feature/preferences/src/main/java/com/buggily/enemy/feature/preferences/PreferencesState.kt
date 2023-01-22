@@ -3,49 +3,63 @@ package com.buggily.enemy.feature.preferences
 import com.buggily.enemy.core.model.theme.Theme
 
 data class PreferencesState(
-    val schemeState: SchemeState,
-    val dynamicState: DynamicState,
-    val resetState: ResetState,
+    val themeState: ThemeState,
 ) {
 
-    data class SchemeState(
-        val scheme: Theme.Scheme,
-        val schemes: List<Theme.Scheme>,
-        val onSchemeClick: (Theme.Scheme) -> Unit,
+    data class ThemeState(
+        val schemeState: SchemeState,
+        val dynamicState: DynamicState,
+        val resetState: ResetState,
     ) {
 
-        companion object {
-            val default: SchemeState
-                get() = SchemeState(
-                    scheme = Theme.Scheme.Default,
-                    schemes = emptyList(),
-                    onSchemeClick = {},
-                )
+        data class SchemeState(
+            val scheme: Theme.Scheme,
+            val schemes: List<Theme.Scheme>,
+            val onSchemeClick: (Theme.Scheme) -> Unit,
+        ) {
+
+            companion object {
+                val default: SchemeState
+                    get() = SchemeState(
+                        scheme = Theme.Scheme.Default,
+                        schemes = emptyList(),
+                        onSchemeClick = {},
+                    )
+            }
         }
-    }
 
-    data class DynamicState(
-        val dynamic: Theme.Dynamic,
-        val onDynamicCheck: (Boolean) -> Unit,
-    ) {
+        data class DynamicState(
+            val dynamic: Theme.Dynamic,
+            val onDynamicCheck: (Boolean) -> Unit,
+        ) {
 
-        companion object {
-            val default: DynamicState
-                get() = DynamicState(
-                    dynamic = Theme.Dynamic.Default,
-                    onDynamicCheck = {},
-                )
+            companion object {
+                val default: DynamicState
+                    get() = DynamicState(
+                        dynamic = Theme.Dynamic.Default,
+                        onDynamicCheck = {},
+                    )
+            }
         }
-    }
 
-    data class ResetState(
-        val onResetClick: () -> Unit,
-    ) {
+        data class ResetState(
+            val onResetClick: () -> Unit,
+        ) {
+
+            companion object {
+                val default: ResetState
+                    get() = ResetState(
+                        onResetClick = {},
+                    )
+            }
+        }
 
         companion object {
-            val default: ResetState
-                get() = ResetState(
-                    onResetClick = {},
+            val default: ThemeState
+                get() = ThemeState(
+                    schemeState = SchemeState.default,
+                    dynamicState = DynamicState.default,
+                    resetState = ResetState.default,
                 )
         }
     }
@@ -53,9 +67,7 @@ data class PreferencesState(
     companion object {
         val default: PreferencesState
             get() = PreferencesState(
-                schemeState = SchemeState.default,
-                dynamicState = DynamicState.default,
-                resetState = ResetState.default,
+                themeState = ThemeState.default,
             )
     }
 }

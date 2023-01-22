@@ -1,5 +1,7 @@
 package com.buggily.enemy.feature.orientation
 
+import android.Manifest
+import android.os.Build
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -9,6 +11,13 @@ class OrientationViewModel : ViewModel() {
 
     private val _state: MutableStateFlow<OrientationState>
     val state: StateFlow<OrientationState> get() = _state
+
+    val permission: String
+        get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            Manifest.permission.READ_MEDIA_AUDIO
+        } else {
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        }
 
     init {
         OrientationState.default.copy(
@@ -25,19 +34,19 @@ class OrientationViewModel : ViewModel() {
     }
 
     private fun onGrant() = setPermissionState(
-        permissionState = OrientationState.PermissionState.EventState.Grant(
+        permissionState = OrientationState.PermissionState.Event.Grant(
             onGrant = ::resetPermissionState,
         ),
     )
 
     private fun onPend() = setPermissionState(
-        permissionState = OrientationState.PermissionState.EventState.Pend(
+        permissionState = OrientationState.PermissionState.Event.Pend(
             onPend = ::resetPermissionState,
         ),
     )
 
     private fun onDeny() = setPermissionState(
-        permissionState = OrientationState.PermissionState.EventState.Deny(
+        permissionState = OrientationState.PermissionState.Event.Deny(
             onDeny = ::resetPermissionState,
         ),
     )
@@ -46,7 +55,8 @@ class OrientationViewModel : ViewModel() {
         permissionState = OrientationState.PermissionState.Default,
     )
 
-    private fun setPermissionState(permissionState: OrientationState.PermissionState) = _state.update {
-        it.copy(permissionState = permissionState)
-    }
+    private fun setPermissionState(permissionState: OrientationState.PermissionState) =
+        _state.update {
+            it.copy(permissionState = permissionState)
+        }
 }

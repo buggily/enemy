@@ -2,7 +2,6 @@ package com.buggily.enemy.feature.orientation
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
@@ -48,19 +47,13 @@ fun OrientationScreen(
 
         permissionState.flowWithLifecycle(lifecycle).collect {
             when (it) {
-                is OrientationState.PermissionState.EventState -> {
+                is OrientationState.PermissionState.Event -> {
                     when (it) {
-                        is OrientationState.PermissionState.EventState.Grant -> {
+                        is OrientationState.PermissionState.Event.Grant -> {
                             albumsState.onHomeClick()
                         }
-                        is OrientationState.PermissionState.EventState.Pend -> {
-                            val permission: String = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                                Manifest.permission.READ_MEDIA_AUDIO
-                            } else {
-                                Manifest.permission.READ_EXTERNAL_STORAGE
-                            }
-
-                            launcher.launch(permission)
+                        is OrientationState.PermissionState.Event.Pend -> {
+                            launcher.launch(viewModel.permission)
                         }
                         else -> Unit
                     }
@@ -90,7 +83,7 @@ fun OrientationScreen(
 ) {
     Box(modifier) {
         when (permissionState) {
-            is OrientationState.PermissionState.EventState.Deny -> OrientationScreenDeny()
+            is OrientationState.PermissionState.Event.Deny -> OrientationScreenDeny()
             else -> OrientationScreenDefault()
         }
     }
