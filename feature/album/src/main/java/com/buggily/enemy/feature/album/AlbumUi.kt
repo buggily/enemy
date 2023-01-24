@@ -28,6 +28,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -35,14 +36,17 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import com.buggily.enemy.core.model.album.Album
-import com.buggily.enemy.core.model.track.Track
+import com.buggily.enemy.core.model.track.TrackUi
 import com.buggily.enemy.core.ui.ArtImage
+import com.buggily.enemy.core.ui.SingleLineText
 import com.buggily.enemy.core.ui.ext.artistText
+import com.buggily.enemy.core.ui.ext.discText
 import com.buggily.enemy.core.ui.ext.durationText
 import com.buggily.enemy.core.ui.ext.nameText
 import com.buggily.enemy.core.ui.ext.trackText
 import com.buggily.enemy.core.ui.theme.ContentAlpha
 import com.buggily.enemy.core.ui.R.dimen as dimens
+import com.buggily.enemy.core.ui.R.string as strings
 
 @Composable
 @OptIn(ExperimentalLifecycleComposeApi::class)
@@ -52,7 +56,7 @@ fun AlbumScreen(
     modifier: Modifier = Modifier,
 ) {
     val state: AlbumState by viewModel.state.collectAsStateWithLifecycle()
-    val tracks: LazyPagingItems<Track> = viewModel.tracks.collectAsLazyPagingItems()
+    val tracks: LazyPagingItems<TrackUi> = viewModel.tracks.collectAsLazyPagingItems()
 
     AlbumScreen(
         state = state,
@@ -65,7 +69,7 @@ fun AlbumScreen(
 @Composable
 fun AlbumScreen(
     state: AlbumState,
-    tracks: LazyPagingItems<Track>,
+    tracks: LazyPagingItems<TrackUi>,
     trackState: AlbumState.TrackState,
     modifier: Modifier = Modifier,
 ) {
@@ -210,7 +214,7 @@ private fun AlbumHeaderText(
 @Composable
 @OptIn(ExperimentalLayoutApi::class)
 private fun AlbumTracksColumn(
-    tracks: LazyPagingItems<Track>,
+    tracks: LazyPagingItems<TrackUi>,
     trackState: AlbumState.TrackState,
     modifier: Modifier = Modifier,
 ) {
@@ -222,19 +226,29 @@ private fun AlbumTracksColumn(
     ) {
         items(
             items = tracks,
-            key = { it.id },
+            key = {
+                when (it) {
+                    is TrackUi.Item -> it.track.id
+                    is TrackUi.Separator.Disc -> it.disc
+                }
+            }
         ) {
             when (it) {
-                is Track -> AlbumTrackItem(
+                is TrackUi.Item -> AlbumTrackItem(
                     track = it,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { trackState.onTrackClick(it) }
+                        .clickable { trackState.onTrackClick(it.track) }
                         .padding(
                             horizontal = dimensionResource(dimens.padding_large),
                             vertical = dimensionResource(dimens.padding_large_extra),
                         ),
                 )
+                is TrackUi.Separator.Disc -> AlbumDiscItem(
+                    separator = it,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                else -> Unit
             }
         }
     }
@@ -242,7 +256,7 @@ private fun AlbumTracksColumn(
 
 @Composable
 private fun AlbumTrackItem(
-    track: Track,
+    track: TrackUi.Item,
     modifier: Modifier,
 ) {
     Row(
@@ -272,6 +286,25 @@ private fun AlbumTrackItem(
             textAlign = TextAlign.End,
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.alpha(ContentAlpha.medium),
+        )
+    }
+}
+
+@Composable
+private fun AlbumDiscItem(
+    separator: TrackUi.Separator.Disc,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        color = MaterialTheme.colorScheme.tertiaryContainer,
+        modifier = modifier,
+    ) {
+        SingleLineText(
+            text = stringResource(strings.disc, separator.discText),
+            style = MaterialTheme.typography.titleSmall,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(dimensionResource(dimens.padding_large)),
         )
     }
 }
