@@ -21,7 +21,7 @@ fun GreetingText(
 
     SingleLineText(
         text = stringResource(strings.greeting, stringResource(stringResId)),
-        style = MaterialTheme.typography.titleLarge,
+        style = MaterialTheme.typography.titleMedium,
         modifier = modifier,
     )
 }

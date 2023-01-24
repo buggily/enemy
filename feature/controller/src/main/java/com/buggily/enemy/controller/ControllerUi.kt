@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -70,7 +71,9 @@ private fun ControllerForeground(
         when (val mediaItem: MediaItem? = state.mediaItem) {
             is MediaItem -> ControllerText(
                 mediaItem = mediaItem,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
             )
         }
 
@@ -80,9 +83,7 @@ private fun ControllerForeground(
                 alignment = Alignment.CenterVertically,
             ),
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
+            modifier = Modifier.fillMaxWidth(),
         ) {
             ControllerPlaybackControls(
                 playState = state.playState,
@@ -108,19 +109,19 @@ private fun ControllerText(
     Column(
         verticalArrangement = Arrangement.spacedBy(
             space = dimensionResource(dimens.padding_medium),
-            alignment = Alignment.Top,
+            alignment = Alignment.CenterVertically,
         ),
         horizontalAlignment = Alignment.Start,
         modifier = modifier,
     ) {
-        SingleLineText(
+        Text(
             text = mediaItem.nameText,
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.displaySmall,
         )
 
-        SingleLineText(
+        Text(
             text = mediaItem.artistText,
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.displaySmall,
             modifier = Modifier.alpha(ContentAlpha.medium),
         )
     }
