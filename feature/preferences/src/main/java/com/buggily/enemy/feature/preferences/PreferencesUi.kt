@@ -196,7 +196,7 @@ private fun PreferencesThemeSchemeRadioButton(
     ) {
         SingleLineText(
             text = text,
-            style = MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.labelLarge,
             modifier = Modifier.weight(1f),
         )
 
@@ -223,7 +223,7 @@ private fun PreferencesThemeDynamic(
     ) {
         SingleLineText(
             text = stringResource(R.string.theme_dynamic),
-            style = MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.labelLarge,
             modifier = Modifier.weight(1f),
         )
 
@@ -245,7 +245,7 @@ private fun PreferencesThemeReset(
     ) {
         Text(
             text = stringResource(R.string.reset),
-            style = MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.labelLarge,
         )
     }
 }
