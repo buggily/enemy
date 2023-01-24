@@ -11,8 +11,8 @@ data class AlbumsState(
         val onAlbumClick: (Album) -> Unit,
     )
 
-    data class SettingsState(
-        val onSettingsClick: () -> Unit,
+    data class PreferencesState(
+        val onPreferencesClick: () -> Unit,
     )
 
     companion object {

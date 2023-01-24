@@ -52,7 +52,7 @@ import com.buggily.enemy.core.ui.R.string as strings
 fun AlbumsScreen(
     viewModel: AlbumsViewModel,
     albumState: AlbumsState.AlbumState,
-    settingsState: AlbumsState.SettingsState,
+    preferencesState: AlbumsState.PreferencesState,
     modifier: Modifier = Modifier,
 ) {
     val state: AlbumsState by viewModel.state.collectAsStateWithLifecycle()
@@ -62,7 +62,7 @@ fun AlbumsScreen(
         state = state,
         albums = albums,
         albumState = albumState,
-        settingsState = settingsState,
+        preferencesState = preferencesState,
         modifier = modifier,
     )
 }
@@ -72,14 +72,14 @@ private fun AlbumsScreen(
     state: AlbumsState,
     albums: LazyPagingItems<Album>,
     albumState: AlbumsState.AlbumState,
-    settingsState: AlbumsState.SettingsState,
+    preferencesState: AlbumsState.PreferencesState,
     modifier: Modifier = Modifier,
 ) {
     AlbumsAlbumGrid(
         state = state,
         albums = albums,
         albumState = albumState,
-        settingsState = settingsState,
+        preferencesState = preferencesState,
         modifier = modifier,
     )
 }
@@ -94,7 +94,7 @@ private fun AlbumsAlbumGrid(
     state: AlbumsState,
     albums: LazyPagingItems<Album>,
     albumState: AlbumsState.AlbumState,
-    settingsState: AlbumsState.SettingsState,
+    preferencesState: AlbumsState.PreferencesState,
     modifier: Modifier = Modifier,
 ) {
     LazyVerticalGrid(
@@ -123,7 +123,7 @@ private fun AlbumsAlbumGrid(
         ) {
             AlbumHeader(
                 timeOfDay = state.timeOfDay,
-                settingsState = settingsState,
+                preferencesState = preferencesState,
                 modifier = Modifier.fillMaxWidth(),
             )
         }
@@ -153,7 +153,7 @@ private fun AlbumsAlbumGrid(
 @Composable
 private fun AlbumHeader(
     timeOfDay: TimeOfDay?,
-    settingsState: AlbumsState.SettingsState,
+    preferencesState: AlbumsState.PreferencesState,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -169,21 +169,21 @@ private fun AlbumHeader(
             modifier = Modifier.weight(1f),
         )
 
-        AlbumHeaderSettingsIconButton(
-            settingsState = settingsState,
+        AlbumHeaderPreferencesIconButton(
+            preferencesState = preferencesState,
         )
     }
 }
 
 @Composable
-private fun AlbumHeaderSettingsIconButton(
-    settingsState: AlbumsState.SettingsState,
+private fun AlbumHeaderPreferencesIconButton(
+    preferencesState: AlbumsState.PreferencesState,
     modifier: Modifier = Modifier,
 ) {
     IconButton(
-        painter = painterResource(drawables.settings),
-        contentDescription = stringResource(strings.settings),
-        onClick = settingsState.onSettingsClick,
+        painter = painterResource(drawables.preferences),
+        contentDescription = stringResource(strings.preferences),
+        onClick = preferencesState.onPreferencesClick,
         modifier = modifier,
     )
 }

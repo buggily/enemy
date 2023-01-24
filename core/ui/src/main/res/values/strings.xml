@@ -26,5 +26,5 @@
     <string name="shuffle_on">shuffle on</string>
     <string name="shuffle_off">shuffle off</string>
 
-    <string name="settings">settings</string>
+    <string name="preferences">preferences</string>
 </resources>

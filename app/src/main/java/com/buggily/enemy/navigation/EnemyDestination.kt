@@ -169,10 +169,10 @@ sealed class EnemyDestination {
             )
     }
 
-    object Settings : EnemyDestination() {
+    object Preferences : EnemyDestination() {
 
         override val path: String
-            get() = "settings"
+            get() = "preferences"
     }
 
     object Controller : EnemyDestination() {
@@ -186,7 +186,7 @@ sealed class EnemyDestination {
             Albums,
             Orientation,
             Album,
-            Settings,
+            Preferences,
             Controller,
         ).find { it.route == destination?.route }
     }

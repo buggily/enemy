@@ -32,5 +32,6 @@ internal fun Project.configureAndroidCompose(
         add("androidTestImplementation", platform(bom))
 
         add("implementation", libs.getLib("androidx.compose.material3"))
+        add("implementation", libs.getLib("androidx.compose.material3.windowSizeClass"))
     }
 }
