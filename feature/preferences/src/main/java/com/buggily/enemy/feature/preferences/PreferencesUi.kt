@@ -90,7 +90,7 @@ private fun PreferencesHeader(
     modifier: Modifier = Modifier,
 ) {
     SingleLineText(
-        text = stringResource(strings.settings),
+        text = stringResource(strings.preferences),
         style = MaterialTheme.typography.headlineLarge,
         modifier = modifier,
     )

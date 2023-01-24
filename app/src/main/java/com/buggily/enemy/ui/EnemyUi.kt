@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -120,8 +121,8 @@ private fun EnemyApp(
         }
     }
 
-    val albumsSettingsState = AlbumsState.SettingsState {
-        appState.navigate(EnemyDestination.Settings.route) {
+    val albumsPreferencesState = AlbumsState.PreferencesState {
+        appState.navigate(EnemyDestination.Preferences.route) {
             launchSingleTop = true
             restoreState = false
         }
@@ -138,7 +139,8 @@ private fun EnemyApp(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(IntrinsicSize.Min)
-                        .clickable { onControllerClick() },
+                        .clickable { onControllerClick() }
+                        .consumedWindowInsets(WindowInsets.statusBars),
                 )
             }
         },
@@ -174,7 +176,7 @@ private fun EnemyApp(
                 AlbumsScreen(
                     viewModel = hiltViewModel(),
                     albumState = albumsAlbumState,
-                    settingsState = albumsSettingsState,
+                    preferencesState = albumsPreferencesState,
                     modifier = contentModifier,
                 )
             }
@@ -191,8 +193,8 @@ private fun EnemyApp(
             }
 
             composable(
-                route = EnemyDestination.Settings.route,
-                arguments = EnemyDestination.Settings.arguments,
+                route = EnemyDestination.Preferences.route,
+                arguments = EnemyDestination.Preferences.arguments,
             ) {
                 PreferencesScreen(
                     viewModel = hiltViewModel(),

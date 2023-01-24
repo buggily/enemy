@@ -6,9 +6,8 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -41,17 +40,40 @@ fun ControllerScreen(
         color = MaterialTheme.colorScheme.primaryContainer,
         modifier = modifier,
     ) {
+        when (val mediaItem: MediaItem? = state.mediaItem) {
+            is MediaItem -> ControllerBackground(mediaItem)
+        }
+
         ControllerForeground(
             state = state,
             modifier = Modifier
                 .fillMaxSize()
-                .systemBarsPadding()
+                .safeContentPadding()
                 .padding(dimensionResource(dimens.padding_large)),
         )
+    }
+}
 
+@Composable
+fun ControllerBottomSheet(
+    state: ControllerState,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        color = MaterialTheme.colorScheme.primaryContainer,
+        modifier = modifier,
+    ) {
         when (val mediaItem: MediaItem? = state.mediaItem) {
             is MediaItem -> ControllerBackground(mediaItem)
         }
+
+        ControllerBottomSheetForeground(
+            state = state,
+            modifier = Modifier
+                .fillMaxWidth()
+                .safeContentPadding()
+                .padding(dimensionResource(dimens.padding_large)),
+        )
     }
 }
 
@@ -293,29 +315,6 @@ private fun ControllerShuffleButton(
         contentDescription = stringResource(stringResId),
         modifier = modifier.alpha(alpha),
     )
-}
-
-@Composable
-fun ControllerBottomSheet(
-    state: ControllerState,
-    modifier: Modifier = Modifier,
-) {
-    Surface(
-        color = MaterialTheme.colorScheme.primaryContainer,
-        modifier = modifier,
-    ) {
-        when (val mediaItem: MediaItem? = state.mediaItem) {
-            is MediaItem -> ControllerBackground(mediaItem)
-        }
-
-        ControllerBottomSheetForeground(
-            state = state,
-            modifier = Modifier
-                .fillMaxWidth()
-                .navigationBarsPadding()
-                .padding(dimensionResource(dimens.padding_large)),
-        )
-    }
 }
 
 @Composable
