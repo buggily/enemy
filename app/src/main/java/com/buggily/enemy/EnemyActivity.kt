@@ -174,17 +174,29 @@ class EnemyActivity : ComponentActivity() {
                 is EnemyState.MediaState.Event.Pause -> {
                     requireMediaController().pause()
                 }
-                is EnemyState.MediaState.Event.Next -> {
-                    requireMediaController().seekToNext()
+                is EnemyState.MediaState.Event.Next.First -> {
+                    requireMediaController().seekToNextMediaItem()
                 }
-                is EnemyState.MediaState.Event.Previous -> {
-                    requireMediaController().seekToPrevious()
+                is EnemyState.MediaState.Event.Previous.Last -> {
+                    requireMediaController().seekToPreviousMediaItem()
                 }
                 is EnemyState.MediaState.Event.Repeat -> {
                     requireMediaController().repeatMode = event.repeatMode
                 }
                 is EnemyState.MediaState.Event.Shuffle -> {
                     requireMediaController().shuffleModeEnabled = event.shuffleMode
+                }
+                is EnemyState.MediaState.Event.Next.Last -> with(requireMediaController()) {
+                    while (hasNextMediaItem()) {
+                        val isNotRepeating: Boolean = repeatMode == MediaController.REPEAT_MODE_OFF
+                        if (isNotRepeating) seekToNextMediaItem() else break
+                    }
+                }
+                is EnemyState.MediaState.Event.Previous.First -> with(requireMediaController()) {
+                    while (hasPreviousMediaItem()) {
+                        val isNotRepeating: Boolean = repeatMode == MediaController.REPEAT_MODE_OFF
+                        if (isNotRepeating) seekToPreviousMediaItem() else break
+                    }
                 }
             }
 

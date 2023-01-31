@@ -1,5 +1,11 @@
 package com.buggily.enemy.controller
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -13,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -82,6 +89,17 @@ private fun ControllerForeground(
     state: ControllerState,
     modifier: Modifier = Modifier,
 ) {
+    val isRepeating: Boolean = remember(state.repeatState) {
+        when (state.repeatState.mode) {
+            is ControllerState.RepeatState.Mode.On -> true
+            is ControllerState.RepeatState.Mode.Off -> false
+        }
+    }
+
+    val isNotRepeating: Boolean = remember(isRepeating) {
+        !isRepeating
+    }
+
     Column(
         verticalArrangement = Arrangement.spacedBy(
             space = dimensionResource(dimens.padding_large),
@@ -107,12 +125,44 @@ private fun ControllerForeground(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            ControllerPlaybackControls(
-                playState = state.playState,
-                nextState = state.nextState,
-                previousState = state.previousState,
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth(),
-            )
+            ) {
+                AnimatedVisibility(
+                    visible = isNotRepeating,
+                    enter = fadeIn() + expandHorizontally(),
+                    exit = fadeOut() + shrinkHorizontally(),
+                    modifier = Modifier.weight(1f),
+                ) {
+                    ControllerPreviousButton(
+                        isEnabled = state.previousStates.isEnabled,
+                        previousState = state.previousStates.first,
+                    )
+                }
+
+                ControllerPlaybackControls(
+                    playState = state.playState,
+                    nextStates = state.nextStates,
+                    previousStates = state.previousStates,
+                    modifier = Modifier
+                        .weight(3f)
+                        .animateContentSize(),
+                )
+
+                AnimatedVisibility(
+                    visible = isNotRepeating,
+                    enter = fadeIn() + expandHorizontally(),
+                    exit = fadeOut() + shrinkHorizontally(),
+                    modifier = Modifier.weight(1f),
+                ) {
+                    ControllerNextButton(
+                        isEnabled = state.nextStates.isEnabled,
+                        nextState = state.nextStates.last,
+                    )
+                }
+            }
 
             ControllerPlaylistControls(
                 repeatState = state.repeatState,
@@ -164,8 +214,8 @@ private fun ControllerBackground(mediaItem: MediaItem) {
 @Composable
 private fun ControllerPlaybackControls(
     playState: ControllerState.PlayState,
-    nextState: ControllerState.NextState,
-    previousState: ControllerState.PreviousState,
+    nextStates: ControllerState.NextStates,
+    previousStates: ControllerState.PreviousStates,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -173,8 +223,10 @@ private fun ControllerPlaybackControls(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier,
     ) {
+
         ControllerPreviousButton(
-            previousState = previousState,
+            isEnabled = previousStates.isEnabled,
+            previousState = previousStates.last,
             modifier = Modifier.weight(1f),
         )
 
@@ -184,7 +236,8 @@ private fun ControllerPlaybackControls(
         )
 
         ControllerNextButton(
-            nextState = nextState,
+            isEnabled = nextStates.isEnabled,
+            nextState = nextStates.first,
             modifier = Modifier.weight(1f),
         )
     }
@@ -233,28 +286,50 @@ private fun ControllerPlayButton(
 
 @Composable
 private fun ControllerNextButton(
+    isEnabled: Boolean,
     nextState: ControllerState.NextState,
     modifier: Modifier = Modifier,
 ) {
+    val stringResId: Int = when (nextState) {
+        is ControllerState.NextState.First -> strings.next_first
+        is ControllerState.NextState.Last -> strings.next_last
+    }
+
+    val painterResId: Int = when (nextState) {
+        is ControllerState.NextState.First -> drawables.next_first
+        is ControllerState.NextState.Last -> drawables.next_last
+    }
+
     IconButton(
+        enabled = isEnabled,
         onClick = nextState.onClick,
-        enabled = nextState.isEnabled,
-        painter = painterResource(drawables.next),
-        contentDescription = stringResource(strings.next),
+        painter = painterResource(painterResId),
+        contentDescription = stringResource(stringResId),
         modifier = modifier,
     )
 }
 
 @Composable
 private fun ControllerPreviousButton(
+    isEnabled: Boolean,
     previousState: ControllerState.PreviousState,
     modifier: Modifier = Modifier,
 ) {
+    val stringResId: Int = when (previousState) {
+        is ControllerState.PreviousState.First -> strings.previous_first
+        is ControllerState.PreviousState.Last -> strings.previous_last
+    }
+
+    val painterResId: Int = when (previousState) {
+        is ControllerState.PreviousState.First -> drawables.previous_first
+        is ControllerState.PreviousState.Last -> drawables.previous_last
+    }
+
     IconButton(
+        enabled = isEnabled,
         onClick = previousState.onClick,
-        enabled = previousState.isEnabled,
-        painter = painterResource(drawables.previous),
-        contentDescription = stringResource(strings.previous),
+        painter = painterResource(painterResId),
+        contentDescription = stringResource(stringResId),
         modifier = modifier,
     )
 }
@@ -339,8 +414,8 @@ private fun ControllerBottomSheetForeground(
 
         ControllerPlaybackControls(
             playState = state.playState,
-            nextState = state.nextState,
-            previousState = state.previousState,
+            nextStates = state.nextStates,
+            previousStates = state.previousStates,
             modifier = Modifier.width(IntrinsicSize.Min),
         )
     }

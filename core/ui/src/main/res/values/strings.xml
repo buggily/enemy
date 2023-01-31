@@ -10,8 +10,12 @@
 
     <string name="play">play</string>
     <string name="pause">pause</string>
-    <string name="next">next</string>
-    <string name="previous">previous</string>
+
+    <string name="next_first">next</string>
+    <string name="next_last">to last</string>
+
+    <string name="previous_first">to first</string>
+    <string name="previous_last">previous</string>
 
     <string name="repeat_on_one">repeat one</string>
     <string name="repeat_on_all">repeat all</string>
