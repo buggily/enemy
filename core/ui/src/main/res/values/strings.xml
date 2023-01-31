@@ -8,21 +8,15 @@
     <string name="evening">evening</string>
     <string name="day">day</string>
 
-    <string name="open">open</string>
-    <string name="close">close</string>
-    <string name="clear">clear</string>
-
     <string name="play">play</string>
     <string name="pause">pause</string>
     <string name="next">next</string>
     <string name="previous">previous</string>
 
-    <string name="repeat">repeat</string>
     <string name="repeat_on_one">repeat one</string>
     <string name="repeat_on_all">repeat all</string>
     <string name="repeat_off">repeat off</string>
 
-    <string name="shuffle">shuffle</string>
     <string name="shuffle_on">shuffle on</string>
     <string name="shuffle_off">shuffle off</string>
 

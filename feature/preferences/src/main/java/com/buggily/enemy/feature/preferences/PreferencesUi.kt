@@ -244,7 +244,7 @@ private fun PreferencesThemeReset(
         modifier = modifier,
     ) {
         Text(
-            text = stringResource(R.string.reset),
+            text = stringResource(R.string.theme_reset),
             style = MaterialTheme.typography.labelLarge,
         )
     }
