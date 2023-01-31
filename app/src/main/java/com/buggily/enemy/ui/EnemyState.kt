@@ -45,17 +45,43 @@ data class EnemyState(
                     onEvent = onPause,
                 )
 
-                data class Previous(
-                    val onPrevious: () -> Unit,
+                sealed class Previous(
+                    open val onPrevious: () -> Unit,
                 ) : Event(
                     onEvent = onPrevious,
-                )
+                ) {
 
-                data class Next(
-                    val onNext: () -> Unit,
+                    data class First(
+                        override val onPrevious: () -> Unit,
+                    ) : Previous(
+                        onPrevious = onPrevious,
+                    )
+
+                    data class Last(
+                        override val onPrevious: () -> Unit,
+                    ) : Previous(
+                        onPrevious = onPrevious,
+                    )
+                }
+
+                sealed class Next(
+                    open val onNext: () -> Unit,
                 ) : Event(
                     onEvent = onNext,
-                )
+                ) {
+
+                    data class First(
+                        override val onNext: () -> Unit,
+                    ) : Next(
+                        onNext = onNext,
+                    )
+
+                    data class Last(
+                        override val onNext: () -> Unit,
+                    ) : Next(
+                        onNext = onNext,
+                    )
+                }
 
                 data class Repeat(
                     val repeatMode: Int,

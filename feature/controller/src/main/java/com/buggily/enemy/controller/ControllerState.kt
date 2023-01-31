@@ -6,8 +6,8 @@ import com.buggily.enemy.core.model.ext.isNonNull
 data class ControllerState(
     val mediaItem: MediaItem?,
     val playState: PlayState,
-    val nextState: NextState,
-    val previousState: PreviousState,
+    val nextStates: NextStates,
+    val previousStates: PreviousStates,
     val repeatState: RepeatState,
     val shuffleState: ShuffleState,
 ) {
@@ -31,31 +31,101 @@ data class ControllerState(
         }
     }
 
-    data class NextState(
+    data class NextStates(
         val isEnabled: Boolean,
-        val onClick: () -> Unit,
+        val first: NextState.First,
+        val last: NextState.Last,
     ) {
 
         companion object {
-            val default: NextState
-                get() = NextState(
+            val default: NextStates
+                get() = NextStates(
                     isEnabled = false,
-                    onClick = {},
+                    first = NextState.First.default,
+                    last = NextState.Last.default,
                 )
         }
     }
 
-    data class PreviousState(
+    sealed class NextState(
+        open val onClick: () -> Unit,
+    ) {
+
+        data class First(
+            override val onClick: () -> Unit,
+        ) : NextState(
+            onClick = onClick,
+        ) {
+
+            companion object {
+                val default: First
+                    get() = First(
+                        onClick = {},
+                    )
+            }
+        }
+
+        data class Last(
+            override val onClick: () -> Unit,
+        ) : NextState(
+            onClick = onClick,
+        ) {
+
+            companion object {
+                val default: Last
+                    get() = Last(
+                        onClick = {},
+                    )
+            }
+        }
+    }
+
+    data class PreviousStates(
         val isEnabled: Boolean,
-        val onClick: () -> Unit,
+        val first: PreviousState.First,
+        val last: PreviousState.Last,
     ) {
 
         companion object {
-            val default: PreviousState
-                get() = PreviousState(
+            val default: PreviousStates
+                get() = PreviousStates(
                     isEnabled = false,
-                    onClick = {},
+                    first = PreviousState.First.default,
+                    last = PreviousState.Last.default,
                 )
+        }
+    }
+
+    sealed class PreviousState(
+        open val onClick: () -> Unit,
+    ) {
+
+        data class First(
+            override val onClick: () -> Unit,
+        ) : PreviousState(
+            onClick = onClick,
+        ) {
+
+            companion object {
+                val default: First
+                    get() = First(
+                        onClick = {},
+                    )
+            }
+        }
+
+        data class Last(
+            override val onClick: () -> Unit,
+        ) : PreviousState(
+            onClick = onClick,
+        ) {
+
+            companion object {
+                val default: Last
+                    get() = Last(
+                        onClick = {},
+                    )
+            }
         }
     }
 
@@ -107,8 +177,8 @@ data class ControllerState(
             get() = ControllerState(
                 mediaItem = null,
                 playState = PlayState.default,
-                nextState = NextState.default,
-                previousState = PreviousState.default,
+                nextStates = NextStates.default,
+                previousStates = PreviousStates.default,
                 repeatState = RepeatState.default,
                 shuffleState = ShuffleState.default,
             )

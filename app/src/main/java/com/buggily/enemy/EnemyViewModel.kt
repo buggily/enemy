@@ -43,11 +43,21 @@ class EnemyViewModel @Inject constructor(
                 playState = ControllerState.PlayState.default.copy(
                     onClick = ::onPlayClick,
                 ),
-                nextState = ControllerState.NextState.default.copy(
-                    onClick = ::onNextClick,
+                nextStates = ControllerState.NextStates.default.copy(
+                    first = ControllerState.NextState.First.default.copy(
+                        onClick = ::onFirstNextClick,
+                    ),
+                    last = ControllerState.NextState.Last.default.copy(
+                        onClick = ::onLastNextClick,
+                    ),
                 ),
-                previousState = ControllerState.PreviousState.default.copy(
-                    onClick = ::onPreviousClick,
+                previousStates = ControllerState.PreviousStates.default.copy(
+                    first = ControllerState.PreviousState.First.default.copy(
+                        onClick = ::onFirstPreviousClick,
+                    ),
+                    last = ControllerState.PreviousState.Last.default.copy(
+                        onClick = ::onLastPreviousClick,
+                    ),
                 ),
                 repeatState = ControllerState.RepeatState.default.copy(
                     onClick = ::onRepeatClick,
@@ -122,21 +132,21 @@ class EnemyViewModel @Inject constructor(
     fun setHasNext(hasNext: Boolean) = state.value.let {
         val controllerState: ControllerState = it.controllerState
 
-        val nextState: ControllerState.NextState = controllerState.nextState.copy(
+        val nextStates: ControllerState.NextStates = controllerState.nextStates.copy(
             isEnabled = hasNext,
         )
 
-        setNextStateOfControllerState(nextState)
+        setNextStatesOfControllerState(nextStates)
     }
 
     fun setHasPrevious(hasPrevious: Boolean) = state.value.let {
         val controllerState: ControllerState = it.controllerState
 
-        val previousState: ControllerState.PreviousState = controllerState.previousState.copy(
+        val previousStates: ControllerState.PreviousStates = controllerState.previousStates.copy(
             isEnabled = hasPrevious,
         )
 
-        setPreviousStateOfControllerState(previousState)
+        setPreviousStatesOfControllerState(previousStates)
     }
 
     private fun onPlayClick() = state.value.let {
@@ -156,16 +166,32 @@ class EnemyViewModel @Inject constructor(
         setMediaState(mediaState)
     }
 
-    private fun onNextClick() {
-        val mediaState = EnemyState.MediaState.Event.Next(
+    private fun onFirstNextClick() {
+        val mediaState = EnemyState.MediaState.Event.Next.First(
             onNext = ::resetMediaState,
         )
 
         setMediaState(mediaState)
     }
 
-    private fun onPreviousClick() {
-        val mediaState = EnemyState.MediaState.Event.Previous(
+    private fun onLastNextClick() {
+        val mediaState = EnemyState.MediaState.Event.Next.Last(
+            onNext = ::resetMediaState,
+        )
+
+        setMediaState(mediaState)
+    }
+
+    private fun onFirstPreviousClick() {
+        val mediaState = EnemyState.MediaState.Event.Previous.First(
+            onPrevious = ::resetMediaState,
+        )
+
+        setMediaState(mediaState)
+    }
+
+    private fun onLastPreviousClick() {
+        val mediaState = EnemyState.MediaState.Event.Previous.Last(
             onPrevious = ::resetMediaState,
         )
 
@@ -227,21 +253,21 @@ class EnemyViewModel @Inject constructor(
         setControllerState(controllerState)
     }
 
-    private fun setNextStateOfControllerState(
-        nextState: ControllerState.NextState,
+    private fun setNextStatesOfControllerState(
+        nextStates: ControllerState.NextStates,
     ) = state.value.let {
         val controllerState: ControllerState = it.controllerState.copy(
-            nextState = nextState,
+            nextStates = nextStates,
         )
 
         setControllerState(controllerState)
     }
 
-    private fun setPreviousStateOfControllerState(
-        previousState: ControllerState.PreviousState,
+    private fun setPreviousStatesOfControllerState(
+        previousStates: ControllerState.PreviousStates,
     ) = state.value.let {
         val controllerState: ControllerState = it.controllerState.copy(
-            previousState = previousState,
+            previousStates = previousStates,
         )
 
         setControllerState(controllerState)
