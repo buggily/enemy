@@ -1,6 +1,7 @@
 package com.buggily.enemy.ui
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -154,7 +155,8 @@ private fun EnemyApp(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .consumedWindowInsets(padding),
+                .consumedWindowInsets(padding)
+                .animateContentSize(),
         ) {
             val contentModifier: Modifier = Modifier.fillMaxSize()
 
