@@ -1,6 +1,6 @@
 package com.buggily.enemy.feature.orientation
 
-import android.Manifest
+import android.content.Context
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -22,7 +22,6 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -41,13 +40,9 @@ fun OrientationScreen(
     modifier: Modifier = Modifier,
 ) {
     val state: OrientationState by viewModel.state.collectAsStateWithLifecycle()
-    val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
-    val lifecycle: Lifecycle = lifecycleOwner.lifecycle
 
-    val permissionResult: Int = ContextCompat.checkSelfPermission(
-        LocalContext.current,
-        Manifest.permission.READ_EXTERNAL_STORAGE
-    )
+    val context: Context = LocalContext.current
+    val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
 
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
         viewModel.onResult(it)
@@ -58,7 +53,7 @@ fun OrientationScreen(
             it.permissionState
         }
 
-        permissionState.flowWithLifecycle(lifecycle).collect {
+        permissionState.flowWithLifecycle(lifecycleOwner.lifecycle).collect {
             when (it) {
                 is OrientationState.PermissionState.Event -> {
                     when (it) {
@@ -85,7 +80,10 @@ fun OrientationScreen(
             text = stringResource(R.string.orientation_continue),
             modifier = Modifier.padding(dimensionResource(dimens.padding_large)),
         ) {
-            viewModel.onResultCheck(permissionResult)
+            ContextCompat.checkSelfPermission(
+                context,
+                readPermission
+            ).let { viewModel.onResultCheck(it) }
         }
     }
 }
