@@ -26,6 +26,7 @@ include(":core:model")
 include(":core:domain")
 include(":core:query")
 include(":core:paging")
+include(":core:ext")
 
 include(":core:test")
 

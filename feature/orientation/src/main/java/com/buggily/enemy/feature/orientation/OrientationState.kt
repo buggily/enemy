@@ -1,45 +1,17 @@
 package com.buggily.enemy.feature.orientation
 
 data class OrientationState(
-    val grantState: GrantState,
-    val pendState: PendState,
-    val denyState: DenyState,
+    val statusState: StatusState,
     val permissionState: PermissionState,
 ) {
-
-    data class GrantState(
-        val onGrant: () -> Unit,
-    ) {
-
-        companion object {
-            val default: GrantState
-                get() = GrantState {}
-        }
-    }
-
-    data class PendState(
-        val onPend: () -> Unit,
-    ) {
-
-        companion object {
-            val default: PendState
-                get() = PendState {}
-        }
-    }
-
-    data class DenyState(
-        val onDeny: () -> Unit,
-    ) {
-
-        companion object {
-            val default: DenyState
-                get() = DenyState {}
-        }
-    }
-
     data class AlbumsState(
-        val onHomeClick: () -> Unit,
+        val onGrant: () -> Unit,
     )
+
+    sealed class StatusState {
+        object Default : StatusState()
+        object Deny  : StatusState()
+    }
 
     sealed class PermissionState {
 
@@ -60,21 +32,13 @@ data class OrientationState(
             ) : Event(
                 onEvent = onPend,
             )
-
-            data class Deny(
-                val onDeny: () -> Unit,
-            ) : Event(
-                onEvent = onDeny,
-            )
         }
     }
 
     companion object {
         val default: OrientationState
             get() = OrientationState(
-                grantState = GrantState.default,
-                pendState = PendState.default,
-                denyState = DenyState.default,
+                statusState = StatusState.Default,
                 permissionState = PermissionState.Default,
             )
     }

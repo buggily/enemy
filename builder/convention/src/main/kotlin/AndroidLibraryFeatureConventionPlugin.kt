@@ -20,6 +20,7 @@ class AndroidLibraryFeatureConventionPlugin : Plugin<Project> {
             add("implementation", project(":core:ui"))
             add("implementation", project(":core:model"))
             add("implementation", project(":core:domain"))
+            add("implementation", project(":core:ext"))
 
             add("implementation", libs.getLib("androidx.hilt.navigation.compose"))
             add("kapt", libs.getLib("androidx.hilt.compiler"))

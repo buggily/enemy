@@ -1,5 +1,6 @@
 package com.buggily.enemy.ui
 
+import android.content.pm.PackageManager
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
@@ -20,9 +21,12 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -36,6 +40,7 @@ import com.buggily.enemy.albums.AlbumsState
 import com.buggily.enemy.controller.ControllerBottomSheet
 import com.buggily.enemy.controller.ControllerScreen
 import com.buggily.enemy.controller.ControllerState
+import com.buggily.enemy.core.ext.readPermission
 import com.buggily.enemy.feature.album.AlbumScreen
 import com.buggily.enemy.feature.album.AlbumState
 import com.buggily.enemy.feature.orientation.OrientationScreen
@@ -103,8 +108,20 @@ private fun EnemyApp(
         }
     }
 
+    val onNotGranted: () -> Unit = {
+        appState.navigate(EnemyDestination.Orientation.route) {
+            launchSingleTop = true
+            restoreState = false
+
+            popUpTo(EnemyDestination.startDestination.route) {
+                inclusive = true
+                saveState = false
+            }
+        }
+    }
+
     val orientationAlbumsState = OrientationState.AlbumsState {
-        appState.navigate(EnemyDestination.Albums.route) {
+        appState.navigate(EnemyDestination.startDestination.route) {
             launchSingleTop = true
             restoreState = false
 
@@ -149,9 +166,19 @@ private fun EnemyApp(
         contentWindowInsets = WindowInsets.ime,
         modifier = modifier.consumedWindowInsets(WindowInsets.ime),
     ) { padding: PaddingValues ->
+        val permissionResult: Int = ContextCompat.checkSelfPermission(
+            LocalContext.current,
+            readPermission
+        )
+
+        LaunchedEffect(Unit) {
+            val isGranted: Boolean = permissionResult == PackageManager.PERMISSION_GRANTED
+            if (!isGranted) onNotGranted()
+        }
+
         NavHost(
             navController = appState.navController,
-            startDestination = EnemyDestination.Orientation.route,
+            startDestination = EnemyDestination.startDestination.route,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
