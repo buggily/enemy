@@ -182,9 +182,13 @@ sealed class EnemyDestination {
     }
 
     companion object {
+
+        val startDestination: EnemyDestination
+            get() = Albums
+
         fun get(destination: NavDestination?): EnemyDestination? = listOf(
-            Albums,
             Orientation,
+            Albums,
             Album,
             Preferences,
             Controller,

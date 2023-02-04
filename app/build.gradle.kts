@@ -40,6 +40,7 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":core:domain"))
     implementation(project(":core:model"))
+    implementation(project(":core:ext"))
 
     implementation(project(":feature:orientation"))
     implementation(project(":feature:preferences"))
