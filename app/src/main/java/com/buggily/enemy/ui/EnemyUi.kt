@@ -139,13 +139,6 @@ private fun EnemyApp(
         }
     }
 
-    val albumsPreferencesState = AlbumsState.PreferencesState {
-        appState.navigate(EnemyDestination.Preferences.route) {
-            launchSingleTop = true
-            restoreState = false
-        }
-    }
-
     Scaffold(
         bottomBar = {
             AnimatedVisibility(
@@ -205,7 +198,6 @@ private fun EnemyApp(
                 AlbumsScreen(
                     viewModel = hiltViewModel(),
                     albumState = albumsAlbumState,
-                    preferencesState = albumsPreferencesState,
                     modifier = contentModifier,
                 )
             }

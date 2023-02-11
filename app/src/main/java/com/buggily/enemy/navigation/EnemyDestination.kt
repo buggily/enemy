@@ -78,8 +78,11 @@ sealed class EnemyDestination {
 
     abstract val path: String
 
-    open val pageArgumentConfigs: List<Argument.Config.Page> = emptyList()
-    open val queryArgumentConfigs: List<Argument.Config.Query> = emptyList()
+    open val pageArgumentConfigs: List<Argument.Config.Page>
+        get() = emptyList()
+
+    open val queryArgumentConfigs: List<Argument.Config.Query>
+        get() = emptyList()
 
     val arguments: List<NamedNavArgument>
         get() = argumentConfigs.map {
