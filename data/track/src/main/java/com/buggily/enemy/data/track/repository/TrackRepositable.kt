@@ -5,6 +5,9 @@ import com.buggily.enemy.core.model.track.Track
 import kotlinx.coroutines.flow.Flow
 
 interface TrackRepositable {
+
+    fun getPaging(search: String): Flow<PagingData<Track>>
+
     fun getByAlbumId(albumId: Long): List<Track>
     fun getPagingByAlbumId(albumId: Long): Flow<PagingData<Track>>
 }

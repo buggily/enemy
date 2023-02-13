@@ -4,6 +4,18 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import com.buggily.enemy.core.model.track.Track
 
+val Track.nameText: String
+    get() = name
+
+val Track.trackText: String
+    get() = position.track.toString()
+
+val Track.artistText: String
+    get() = artist.name
+
+val Track.durationText: String
+    get() = duration.text
+
 fun Track.map(): MediaItem {
     val requestMetadata: MediaItem.RequestMetadata = MediaItem.RequestMetadata.Builder()
         .setMediaUri(mediaUri)

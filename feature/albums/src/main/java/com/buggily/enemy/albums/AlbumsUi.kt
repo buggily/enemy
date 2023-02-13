@@ -6,13 +6,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.consumedWindowInsets
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.MaterialTheme
@@ -95,10 +92,8 @@ private fun AlbumsAlbumGrid(
             top = dimensionResource(dimens.padding_large),
             right = dimensionResource(dimens.padding_large),
             bottom = dimensionResource(dimens.padding_large),
-        )
-            .add(WindowInsets.systemBars)
-            .asPaddingValues(),
-        modifier = modifier.consumedWindowInsets(WindowInsets.systemBars),
+        ).asPaddingValues(),
+        modifier = modifier,
     ) {
         items(
             items = albums,
@@ -115,7 +110,7 @@ private fun AlbumsAlbumGrid(
                         )
                         .aspectRatio(1f)
                         .animateItemPlacement()
-                        .clickable { albumState.onAlbumClick(it) },
+                        .clickable { albumState.onClick(it) },
                 )
             }
         }
@@ -141,7 +136,7 @@ private fun AlbumHeaderPreferencesIconButton(
     IconButton(
         painter = painterResource(drawables.preferences),
         contentDescription = stringResource(strings.preferences),
-        onClick = preferencesState.onPreferencesClick,
+        onClick = preferencesState.onClick,
         modifier = modifier,
     )
 }

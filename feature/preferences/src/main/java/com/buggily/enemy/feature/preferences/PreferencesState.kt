@@ -15,7 +15,7 @@ data class PreferencesState(
         data class SchemeState(
             val scheme: Theme.Scheme,
             val schemes: List<Theme.Scheme>,
-            val onSchemeClick: (Theme.Scheme) -> Unit,
+            val onClick: (Theme.Scheme) -> Unit,
         ) {
 
             companion object {
@@ -23,33 +23,33 @@ data class PreferencesState(
                     get() = SchemeState(
                         scheme = Theme.Scheme.Default,
                         schemes = emptyList(),
-                        onSchemeClick = {},
+                        onClick = {},
                     )
             }
         }
 
         data class DynamicState(
             val dynamic: Theme.Dynamic,
-            val onDynamicCheck: (Boolean) -> Unit,
+            val onCheck: (Boolean) -> Unit,
         ) {
 
             companion object {
                 val default: DynamicState
                     get() = DynamicState(
                         dynamic = Theme.Dynamic.Default,
-                        onDynamicCheck = {},
+                        onCheck = {},
                     )
             }
         }
 
         data class ResetState(
-            val onResetClick: () -> Unit,
+            val onClick: () -> Unit,
         ) {
 
             companion object {
                 val default: ResetState
                     get() = ResetState(
-                        onResetClick = {},
+                        onClick = {},
                     )
             }
         }

@@ -14,12 +14,19 @@ class TrackRepository(
     private val getDuration: GetDuration,
 ) : TrackRepositable {
 
+    override fun getPaging(
+        search: String,
+    ): Flow<PagingData<Track>>  = source.getPaging(
+        search = search,
+    ).map {
+        it.map { track -> track.map(getDuration) }
+    }
+
     override fun getByAlbumId(
         albumId: Long,
     ): List<Track> = source.getByAlbumId(albumId).map {
         it.map(getDuration)
     }
-
 
     override fun getPagingByAlbumId(
         albumId: Long,

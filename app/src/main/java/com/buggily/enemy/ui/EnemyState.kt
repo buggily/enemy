@@ -3,11 +3,13 @@ package com.buggily.enemy.ui
 import androidx.media3.common.MediaItem
 import com.buggily.enemy.controller.ControllerState
 import com.buggily.enemy.feature.album.AlbumState
+import com.buggily.enemy.tracks.TracksState
 
 data class EnemyState(
     val mediaState: MediaState,
     val controllerState: ControllerState,
     val albumTrackState: AlbumState.TrackState,
+    val tracksTrackState: TracksState.TrackState,
 ) {
 
     sealed class MediaState {
@@ -105,6 +107,7 @@ data class EnemyState(
                 mediaState = MediaState.Default,
                 controllerState = ControllerState.default,
                 albumTrackState = AlbumState.TrackState.default,
+                tracksTrackState = TracksState.TrackState.default,
             )
     }
 }

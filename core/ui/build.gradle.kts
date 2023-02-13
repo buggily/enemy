@@ -9,6 +9,7 @@ android {
 
 dependencies {
     implementation(project(":core:model"))
+    implementation(project(":core:ext"))
 
     implementation(libs.androidx.paging)
     implementation(libs.androidx.paging.compose)

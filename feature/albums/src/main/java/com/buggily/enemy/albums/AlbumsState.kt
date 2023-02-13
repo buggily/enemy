@@ -5,10 +5,10 @@ import com.buggily.enemy.core.model.album.Album
 object AlbumsState {
 
     data class AlbumState(
-        val onAlbumClick: (Album) -> Unit,
+        val onClick: (Album) -> Unit,
     )
 
     data class PreferencesState(
-        val onPreferencesClick: () -> Unit,
+        val onClick: () -> Unit,
     )
 }

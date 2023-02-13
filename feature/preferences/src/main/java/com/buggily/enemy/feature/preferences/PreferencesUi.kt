@@ -167,7 +167,7 @@ private fun PreferencesThemeScheme(
             PreferencesThemeSchemeRadioButton(
                 isSelected = isSelected,
                 scheme = it,
-                onSchemeClick = schemeState.onSchemeClick,
+                onSchemeClick = schemeState.onClick,
             )
         }
     }
@@ -229,7 +229,7 @@ private fun PreferencesThemeDynamic(
 
         Switch(
             checked = dynamicState.dynamic.isOn,
-            onCheckedChange = dynamicState.onDynamicCheck,
+            onCheckedChange = dynamicState.onCheck,
         )
     }
 }
@@ -240,7 +240,7 @@ private fun PreferencesThemeReset(
     modifier: Modifier = Modifier,
 ) {
     TextButton(
-        onClick = resetState.onResetClick,
+        onClick = resetState.onClick,
         modifier = modifier,
     ) {
         Text(

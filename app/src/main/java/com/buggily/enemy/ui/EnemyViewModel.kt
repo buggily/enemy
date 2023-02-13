@@ -1,4 +1,4 @@
-package com.buggily.enemy
+package com.buggily.enemy.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,7 +12,7 @@ import com.buggily.enemy.core.ui.ext.map
 import com.buggily.enemy.domain.theme.GetTheme
 import com.buggily.enemy.domain.track.GetTracksByAlbumId
 import com.buggily.enemy.feature.album.AlbumState
-import com.buggily.enemy.ui.EnemyState
+import com.buggily.enemy.tracks.TracksState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -67,7 +67,10 @@ class EnemyViewModel @Inject constructor(
                 ),
             ),
             albumTrackState = AlbumState.TrackState.default.copy(
-                onTrackClick = ::onTrackClick,
+                onClick = ::onAlbumTrackClick,
+            ),
+            tracksTrackState = TracksState.TrackState.default.copy(
+                onClick = ::onTrackClick,
             ),
         ).let { _state = MutableStateFlow(it) }
     }
@@ -198,7 +201,7 @@ class EnemyViewModel @Inject constructor(
         setMediaState(mediaState)
     }
 
-    private fun onTrackClick(track: Track) = viewModelScope.launch {
+    private fun onAlbumTrackClick(track: Track) = viewModelScope.launch {
         val album: Track.Album = track.album
         val tracks: List<Track> = getTracksByAlbumId(album.id)
 
@@ -208,6 +211,18 @@ class EnemyViewModel @Inject constructor(
         val mediaState = EnemyState.MediaState.Event.Play.With(
             index = index,
             items = items,
+            onPlay = ::resetMediaState,
+        )
+
+        setMediaState(mediaState)
+    }
+
+    private fun onTrackClick(track: Track) = viewModelScope.launch {
+        val item: MediaItem = track.map()
+
+        val mediaState = EnemyState.MediaState.Event.Play.With(
+            index = 0,
+            items = listOf(item),
             onPlay = ::resetMediaState,
         )
 

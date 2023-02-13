@@ -34,8 +34,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.buggily.enemy.EnemyViewModel
-import com.buggily.enemy.albums.AlbumsScreen
 import com.buggily.enemy.albums.AlbumsState
 import com.buggily.enemy.controller.ControllerBottomSheet
 import com.buggily.enemy.controller.ControllerScreen
@@ -47,6 +45,8 @@ import com.buggily.enemy.feature.orientation.OrientationScreen
 import com.buggily.enemy.feature.orientation.OrientationState
 import com.buggily.enemy.feature.preferences.PreferencesScreen
 import com.buggily.enemy.navigation.EnemyDestination
+import com.buggily.enemy.tracks.TracksState
+import com.buggily.enemy.ui.browse.BrowseScreen
 
 @Composable
 fun rememberEnemyAppState(
@@ -82,6 +82,7 @@ fun EnemyApp(
         hostState = hostState,
         controllerState = state.controllerState,
         albumTrackState = state.albumTrackState,
+        tracksTrackState = state.tracksTrackState,
         modifier = modifier,
     )
 }
@@ -97,6 +98,7 @@ private fun EnemyApp(
     hostState: SnackbarHostState,
     controllerState: ControllerState,
     albumTrackState: AlbumState.TrackState,
+    tracksTrackState: TracksState.TrackState,
     modifier: Modifier = Modifier,
 ) {
     val isControllerVisible: Boolean = appState.isControllerVisible && controllerState.isVisible
@@ -192,12 +194,13 @@ private fun EnemyApp(
             }
 
             composable(
-                route = EnemyDestination.Albums.route,
-                arguments = EnemyDestination.Albums.arguments,
+                route = EnemyDestination.Browse.route,
+                arguments = EnemyDestination.Browse.arguments,
             ) {
-                AlbumsScreen(
+                BrowseScreen(
                     viewModel = hiltViewModel(),
                     albumState = albumsAlbumState,
+                    trackState = tracksTrackState,
                     modifier = contentModifier,
                 )
             }
