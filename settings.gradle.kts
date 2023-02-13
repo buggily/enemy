@@ -41,6 +41,8 @@ include(":feature:controller")
 include(":feature:albums")
 include(":feature:album")
 
+include(":feature:tracks")
+
 include(":data:album")
 include(":data:track")
 include(":data:theme")

@@ -1,11 +1,8 @@
-package com.buggily.enemy.feature.album
+package com.buggily.enemy.tracks
 
-import com.buggily.enemy.core.model.album.Album
 import com.buggily.enemy.core.model.track.Track
 
-data class AlbumState(
-    val album: Album?,
-) {
+object TracksState {
 
     data class TrackState(
         val onClick: (Track) -> Unit,
@@ -17,12 +14,5 @@ data class AlbumState(
                     onClick = {},
                 )
         }
-    }
-
-    companion object {
-        val default: AlbumState
-            get() = AlbumState(
-                album = null,
-            )
     }
 }

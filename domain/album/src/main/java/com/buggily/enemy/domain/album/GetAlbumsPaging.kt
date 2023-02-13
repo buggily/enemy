@@ -6,5 +6,9 @@ class GetAlbumsPaging(
     private val repository: AlbumRepositable,
 ) {
 
-    operator fun invoke(search: String) = repository.getPaging(search)
+    operator fun invoke(
+        search: String,
+    ) = repository.getPaging(
+        search = search,
+    )
 }

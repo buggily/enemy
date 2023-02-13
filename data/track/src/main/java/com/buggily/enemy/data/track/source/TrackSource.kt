@@ -15,6 +15,39 @@ class TrackSource(
     private val source: TrackQuerySource,
 ) : TrackSourceable {
 
+    override fun getPaging(
+        search: String,
+    ): Flow<PagingData<Track>> {
+        val source = TrackPagingSource(
+            config = config,
+            source = source,
+            query = Query(
+                selections = Query.Selections(
+                    Query.Selection.Expression.Like(
+                        argIdentity = MediaStore.Audio.Media.TITLE,
+                        expressionIdentity = "%$search%",
+                    ),
+                    Query.Selection.Operator.And,
+                    Query.Selection.Expression.Unequals(
+                        argIdentity = MediaStore.Audio.Media.IS_MUSIC,
+                        expressionIdentity = 0,
+                    ),
+                ),
+                sort = Query.Sort(
+                    columns = mapOf(
+                        MediaStore.Audio.Media.TITLE to Query.Sort.Type.Text,
+                    ),
+                    direction = Query.Sort.Direction.Descending,
+                ),
+            ),
+        )
+
+        return Pager(
+            config = config,
+            pagingSourceFactory = { source },
+        ).flow
+    }
+
     override fun getByAlbumId(albumId: Long): List<Track> = Query(
         selections = Query.Selections(
             Query.Selection.Expression.Equals(

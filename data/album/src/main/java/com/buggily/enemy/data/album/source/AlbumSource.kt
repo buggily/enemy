@@ -15,7 +15,9 @@ class AlbumSource(
     private val source: AlbumQuerySource,
 ) : AlbumSourceable {
 
-    override fun getPaging(search: String): Flow<PagingData<Album>> {
+    override fun getPaging(
+        search: String,
+    ): Flow<PagingData<Album>> {
         val source = AlbumPagingSource(
             config = config,
             source = source,

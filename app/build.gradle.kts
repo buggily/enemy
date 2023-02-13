@@ -49,6 +49,8 @@ dependencies {
     implementation(project(":feature:albums"))
     implementation(project(":feature:album"))
 
+    implementation(project(":feature:tracks"))
+
     implementation(project(":domain:album"))
     implementation(project(":domain:track"))
     implementation(project(":domain:theme"))

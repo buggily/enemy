@@ -78,8 +78,11 @@ sealed class EnemyDestination {
 
     abstract val path: String
 
-    open val pageArgumentConfigs: List<Argument.Config.Page> = emptyList()
-    open val queryArgumentConfigs: List<Argument.Config.Query> = emptyList()
+    open val pageArgumentConfigs: List<Argument.Config.Page>
+        get() = emptyList()
+
+    open val queryArgumentConfigs: List<Argument.Config.Query>
+        get() = emptyList()
 
     val arguments: List<NamedNavArgument>
         get() = argumentConfigs.map {
@@ -136,10 +139,10 @@ sealed class EnemyDestination {
             get() = "orientation"
     }
 
-    object Albums : EnemyDestination() {
+    object Browse : EnemyDestination() {
 
         override val path: String
-            get() = "albums"
+            get() = "browse"
     }
 
     object Album : EnemyDestination() {
@@ -184,14 +187,19 @@ sealed class EnemyDestination {
     companion object {
 
         val startDestination: EnemyDestination
-            get() = Albums
+            get() = Browse
 
-        fun get(destination: NavDestination?): EnemyDestination? = listOf(
-            Orientation,
-            Albums,
-            Album,
-            Preferences,
-            Controller,
-        ).find { it.route == destination?.route }
+        fun get(destination: NavDestination?): EnemyDestination? = values.find {
+            it.route == destination?.route
+        }
+
+        private val values: List<EnemyDestination>
+            get() = listOf(
+                Orientation,
+                Browse,
+                Album,
+                Preferences,
+                Controller,
+            )
     }
 }

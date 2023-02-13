@@ -30,6 +30,7 @@ import com.buggily.enemy.core.model.theme.Theme
 import com.buggily.enemy.di.DirectExecutorQualifier
 import com.buggily.enemy.ui.EnemyApp
 import com.buggily.enemy.ui.EnemyState
+import com.buggily.enemy.ui.EnemyViewModel
 import com.buggily.enemy.ui.theme.EnemyPalette
 import com.buggily.enemy.ui.theme.EnemyTheme
 import com.google.common.util.concurrent.ListenableFuture

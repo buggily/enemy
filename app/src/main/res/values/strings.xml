@@ -1,3 +1,5 @@
 <resources>
     <string name="enemy">enemy</string>
+    <string name="albums">albums</string>
+    <string name="tracks">tracks</string>
 </resources>

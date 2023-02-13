@@ -32,7 +32,7 @@ class PreferencesViewModel @Inject constructor(
         PreferencesState.default.copy(
             themeState = PreferencesState.ThemeState.default.copy(
                 schemeState = PreferencesState.ThemeState.SchemeState.default.copy(
-                    onSchemeClick = ::onThemeSchemeClick,
+                    onClick = ::onThemeSchemeClick,
                     schemes = listOf(
                         Theme.Scheme.Default,
                         Theme.Scheme.Light,
@@ -40,10 +40,10 @@ class PreferencesViewModel @Inject constructor(
                     ),
                 ),
                 dynamicState = PreferencesState.ThemeState.DynamicState.default.copy(
-                    onDynamicCheck = ::onThemeDynamicCheck,
+                    onCheck = ::onThemeDynamicCheck,
                 ),
                 resetState = PreferencesState.ThemeState.ResetState.default.copy(
-                    onResetClick = ::onThemeResetClick,
+                    onClick = ::onThemeResetClick,
                 ),
             ),
         ).let { _state = MutableStateFlow(it) }

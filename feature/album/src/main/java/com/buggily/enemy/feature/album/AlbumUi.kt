@@ -4,16 +4,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.consumedWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -38,6 +33,7 @@ import androidx.paging.compose.items
 import com.buggily.enemy.core.model.album.Album
 import com.buggily.enemy.core.model.track.TrackUi
 import com.buggily.enemy.core.ui.ArtImage
+import com.buggily.enemy.core.ui.R
 import com.buggily.enemy.core.ui.SingleLineText
 import com.buggily.enemy.core.ui.ext.artistText
 import com.buggily.enemy.core.ui.ext.discText
@@ -212,7 +208,6 @@ private fun AlbumHeaderText(
 }
 
 @Composable
-@OptIn(ExperimentalLayoutApi::class)
 private fun AlbumTracksColumn(
     tracks: LazyPagingItems<TrackUi>,
     trackState: AlbumState.TrackState,
@@ -221,8 +216,7 @@ private fun AlbumTracksColumn(
     LazyColumn(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start,
-        contentPadding = WindowInsets.navigationBars.asPaddingValues(),
-        modifier = modifier.consumedWindowInsets(WindowInsets.navigationBars),
+        modifier = modifier,
     ) {
         items(
             items = tracks,
@@ -231,21 +225,21 @@ private fun AlbumTracksColumn(
                     is TrackUi.Item -> it.track.id
                     is TrackUi.Separator.Disc -> it.disc
                 }
-            }
+            },
         ) {
             when (it) {
                 is TrackUi.Item -> AlbumTrackItem(
-                    track = it,
+                    trackItem = it,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { trackState.onTrackClick(it.track) }
+                        .clickable { trackState.onClick(it.track) }
                         .padding(
                             horizontal = dimensionResource(dimens.padding_large),
                             vertical = dimensionResource(dimens.padding_large_extra),
                         ),
                 )
                 is TrackUi.Separator.Disc -> AlbumDiscItem(
-                    separator = it,
+                    trackSeparator = it,
                     modifier = Modifier.fillMaxWidth(),
                 )
                 else -> Unit
@@ -256,33 +250,33 @@ private fun AlbumTracksColumn(
 
 @Composable
 private fun AlbumTrackItem(
-    track: TrackUi.Item,
+    trackItem: TrackUi.Item,
     modifier: Modifier,
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(
-            space = dimensionResource(dimens.padding_large),
+            space = dimensionResource(R.dimen.padding_large),
             alignment = Alignment.Start,
         ),
         verticalAlignment = Alignment.Top,
         modifier = modifier,
     ) {
         Text(
-            text = track.trackText,
+            text = trackItem.trackText,
             textAlign = TextAlign.Start,
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.alpha(ContentAlpha.medium),
         )
 
         Text(
-            text = track.nameText,
+            text = trackItem.nameText,
             textAlign = TextAlign.Start,
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.weight(1f),
         )
 
         Text(
-            text = track.durationText,
+            text = trackItem.durationText,
             textAlign = TextAlign.End,
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.alpha(ContentAlpha.medium),
@@ -292,7 +286,7 @@ private fun AlbumTrackItem(
 
 @Composable
 private fun AlbumDiscItem(
-    separator: TrackUi.Separator.Disc,
+    trackSeparator: TrackUi.Separator.Disc,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -300,7 +294,10 @@ private fun AlbumDiscItem(
         modifier = modifier,
     ) {
         SingleLineText(
-            text = stringResource(strings.disc, separator.discText),
+            text = stringResource(
+                strings.disc,
+                trackSeparator.discText
+            ),
             style = MaterialTheme.typography.titleSmall,
             modifier = Modifier
                 .fillMaxWidth()
