@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.MaterialTheme
@@ -22,21 +21,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.buggily.enemy.core.model.album.Album
 import com.buggily.enemy.core.ui.ArtImage
-import com.buggily.enemy.core.ui.IconButton
 import com.buggily.enemy.core.ui.ext.artistText
 import com.buggily.enemy.core.ui.ext.items
 import com.buggily.enemy.core.ui.ext.nameText
 import com.buggily.enemy.core.ui.theme.ContentAlpha
 import com.buggily.enemy.core.ui.R.dimen as dimens
-import com.buggily.enemy.core.ui.R.drawable as drawables
-import com.buggily.enemy.core.ui.R.string as strings
 
 @Composable
 @OptIn(ExperimentalLifecycleComposeApi::class)
@@ -116,31 +110,6 @@ private fun AlbumsAlbumGrid(
             }
         }
     }
-}
-
-@Composable
-private fun AlbumHeader(
-    preferencesState: AlbumsState.PreferencesState,
-    modifier: Modifier = Modifier,
-) {
-    AlbumHeaderPreferencesIconButton(
-        preferencesState = preferencesState,
-        modifier = modifier,
-    )
-}
-
-@Composable
-private fun AlbumHeaderPreferencesIconButton(
-    preferencesState: AlbumsState.PreferencesState,
-    modifier: Modifier = Modifier,
-) {
-    IconButton(
-        painter = painterResource(drawables.preferences),
-        contentDescription = stringResource(strings.preferences),
-        onClick = preferencesState.onClick,
-        modifier = modifier,
-        contentModifier = Modifier.size(dimensionResource(dimens.icon_medium)),
-    )
 }
 
 @Composable

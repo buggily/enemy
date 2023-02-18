@@ -3,6 +3,10 @@ package com.buggily.enemy.ui
 import android.content.pm.PackageManager
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -145,6 +149,8 @@ private fun EnemyApp(
         bottomBar = {
             AnimatedVisibility(
                 visible = isControllerVisible,
+                enter = fadeIn() + expandVertically(),
+                exit = fadeOut() + shrinkVertically(),
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 ControllerBottomSheet(
