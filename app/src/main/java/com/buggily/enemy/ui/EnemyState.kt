@@ -17,86 +17,93 @@ data class EnemyState(
             object Default : MediaState()
 
             sealed class Event(
-                val onEvent: () -> Unit,
+                open val onEvent: () -> Unit,
             ) : MediaState() {
 
                 sealed class Play(
-                    open val onPlay: () -> Unit,
+                    override val onEvent: () -> Unit,
                 ) : Event(
-                    onEvent = onPlay,
+                    onEvent = onEvent,
                 ) {
 
                     data class With(
                         val index: Int,
                         val items: List<MediaItem>,
-                        override val onPlay: () -> Unit,
+                        override val onEvent: () -> Unit,
                     ) : Play(
-                        onPlay = onPlay,
+                        onEvent = onEvent,
                     )
 
                     data class Without(
-                        override val onPlay: () -> Unit,
+                        override val onEvent: () -> Unit,
                     ) : Play(
-                        onPlay = onPlay,
+                        onEvent = onEvent,
                     )
                 }
 
                 data class Pause(
-                    val onPause: () -> Unit,
+                    override val onEvent: () -> Unit,
                 ) : Event(
-                    onEvent = onPause,
+                    onEvent = onEvent,
                 )
 
                 sealed class Previous(
-                    open val onPrevious: () -> Unit,
+                    override val onEvent: () -> Unit,
                 ) : Event(
-                    onEvent = onPrevious,
+                    onEvent = onEvent,
                 ) {
 
                     data class First(
-                        override val onPrevious: () -> Unit,
+                        override val onEvent: () -> Unit,
                     ) : Previous(
-                        onPrevious = onPrevious,
+                        onEvent = onEvent,
                     )
 
                     data class Last(
-                        override val onPrevious: () -> Unit,
+                        override val onEvent: () -> Unit,
                     ) : Previous(
-                        onPrevious = onPrevious,
+                        onEvent = onEvent,
                     )
                 }
 
                 sealed class Next(
-                    open val onNext: () -> Unit,
+                    override val onEvent: () -> Unit,
                 ) : Event(
-                    onEvent = onNext,
+                    onEvent = onEvent,
                 ) {
 
                     data class First(
-                        override val onNext: () -> Unit,
+                        override val onEvent: () -> Unit,
                     ) : Next(
-                        onNext = onNext,
+                        onEvent = onEvent,
                     )
 
                     data class Last(
-                        override val onNext: () -> Unit,
+                        override val onEvent: () -> Unit,
                     ) : Next(
-                        onNext = onNext,
+                        onEvent = onEvent,
                     )
                 }
 
                 data class Repeat(
+                    override val onEvent: () -> Unit,
                     val repeatMode: Int,
-                    val onRepeat: () -> Unit,
                 ) : Event(
-                    onEvent = onRepeat,
+                    onEvent = onEvent
                 )
 
                 data class Shuffle(
+                    override val onEvent: () -> Unit,
                     val shuffleMode: Boolean,
-                    val onShuffle: () -> Unit,
                 ) : Event(
-                    onEvent = onShuffle,
+                    onEvent = onEvent,
+                )
+
+                data class Seek(
+                    override val onEvent: () -> Unit,
+                    val milliseconds: Long,
+                ) : Event(
+                    onEvent = onEvent,
                 )
             }
     }

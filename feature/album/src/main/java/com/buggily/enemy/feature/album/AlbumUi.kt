@@ -37,8 +37,8 @@ import com.buggily.enemy.core.ui.R
 import com.buggily.enemy.core.ui.SingleLineText
 import com.buggily.enemy.core.ui.ext.artistText
 import com.buggily.enemy.core.ui.ext.discText
-import com.buggily.enemy.core.ui.ext.durationText
 import com.buggily.enemy.core.ui.ext.nameText
+import com.buggily.enemy.core.ui.ext.runtimeText
 import com.buggily.enemy.core.ui.ext.trackText
 import com.buggily.enemy.core.ui.theme.ContentAlpha
 import com.buggily.enemy.core.ui.R.dimen as dimens
@@ -276,7 +276,7 @@ private fun AlbumTrackItem(
         )
 
         Text(
-            text = trackItem.durationText,
+            text = trackItem.runtimeText,
             textAlign = TextAlign.End,
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.alpha(ContentAlpha.medium),

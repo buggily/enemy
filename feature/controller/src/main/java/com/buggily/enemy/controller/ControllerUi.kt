@@ -14,8 +14,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -108,14 +110,12 @@ private fun ControllerForeground(
         horizontalAlignment = Alignment.Start,
         modifier = modifier,
     ) {
-        when (val mediaItem: MediaItem? = state.mediaItem) {
-            is MediaItem -> ControllerText(
-                mediaItem = mediaItem,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-            )
-        }
+        ControllerText(
+            mediaItem = state.mediaItem,
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+        )
 
         Column(
             verticalArrangement = Arrangement.spacedBy(
@@ -125,6 +125,11 @@ private fun ControllerForeground(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth(),
         ) {
+            ControllerSeekBar(
+                seekState = state.seekState,
+                modifier = Modifier.fillMaxWidth(),
+            )
+
             Row(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
@@ -175,7 +180,7 @@ private fun ControllerForeground(
 
 @Composable
 private fun ControllerText(
-    mediaItem: MediaItem,
+    mediaItem: MediaItem?,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -187,12 +192,12 @@ private fun ControllerText(
         modifier = modifier,
     ) {
         Text(
-            text = mediaItem.nameText,
+            text = mediaItem?.nameText ?: String(),
             style = MaterialTheme.typography.displaySmall,
         )
 
         Text(
-            text = mediaItem.artistText,
+            text = mediaItem?.artistText ?: String(),
             style = MaterialTheme.typography.displaySmall,
             modifier = Modifier.alpha(ContentAlpha.medium),
         )
@@ -281,6 +286,7 @@ private fun ControllerPlayButton(
         painter = painterResource(painterResId),
         contentDescription = stringResource(stringResId),
         modifier = modifier,
+        contentModifier = Modifier.size(dimensionResource(dimens.icon_large)),
     )
 }
 
@@ -306,6 +312,7 @@ private fun ControllerNextButton(
         painter = painterResource(painterResId),
         contentDescription = stringResource(stringResId),
         modifier = modifier,
+        contentModifier = Modifier.size(dimensionResource(dimens.icon_medium)),
     )
 }
 
@@ -331,6 +338,7 @@ private fun ControllerPreviousButton(
         painter = painterResource(painterResId),
         contentDescription = stringResource(stringResId),
         modifier = modifier,
+        contentModifier = Modifier.size(dimensionResource(dimens.icon_medium)),
     )
 }
 
@@ -361,6 +369,7 @@ private fun ControllerRepeatButton(
         painter = painterResource(painterResId),
         contentDescription = stringResource(stringResId),
         modifier = modifier.alpha(alpha),
+        contentModifier = Modifier.size(dimensionResource(dimens.icon_medium)),
     )
 }
 
@@ -389,6 +398,59 @@ private fun ControllerShuffleButton(
         painter = painterResource(painterResId),
         contentDescription = stringResource(stringResId),
         modifier = modifier.alpha(alpha),
+        contentModifier = Modifier.size(dimensionResource(dimens.icon_medium)),
+    )
+}
+
+@Composable
+private fun ControllerSeekBar(
+    seekState: ControllerState.SeekState,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(
+            space = dimensionResource(dimens.padding_small),
+            alignment = Alignment.CenterVertically,
+        ),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier,
+    ) {
+        Slider(
+            value = seekState.value,
+            valueRange = seekState.range,
+            onValueChange = seekState.onChange,
+            onValueChangeFinished = seekState.onChangeFinish,
+        )
+
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(
+                space = dimensionResource(dimens.padding_large),
+                alignment = Alignment.CenterHorizontally,
+            ),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            ControllerSeekBarText(
+                text = seekState.current.text,
+                modifier = Modifier.weight(1f),
+            )
+
+            ControllerSeekBarText(
+                text = seekState.runtime.text,
+                modifier = Modifier,
+            )
+        }
+    }
+}
+
+@Composable
+private fun ControllerSeekBarText(
+    text: String,
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.bodyLarge,
+        modifier = modifier,
     )
 }
 
@@ -405,12 +467,10 @@ private fun ControllerBottomSheetForeground(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier,
     ) {
-        when (val mediaItem: MediaItem? = state.mediaItem) {
-            is MediaItem -> ControllerBottomSheetText(
-                mediaItem = mediaItem,
-                modifier = Modifier.weight(1f),
-            )
-        }
+        ControllerBottomSheetText(
+            mediaItem = state.mediaItem,
+            modifier = Modifier.weight(1f),
+        )
 
         ControllerPlaybackControls(
             playState = state.playState,
@@ -424,7 +484,7 @@ private fun ControllerBottomSheetForeground(
 
 @Composable
 private fun ControllerBottomSheetText(
-    mediaItem: MediaItem,
+    mediaItem: MediaItem?,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -436,12 +496,12 @@ private fun ControllerBottomSheetText(
         modifier = modifier,
     ) {
         SingleLineText(
-            text = mediaItem.nameText,
+            text = mediaItem?.nameText ?: String(),
             style = MaterialTheme.typography.titleMedium,
         )
 
         SingleLineText(
-            text = mediaItem.artistText,
+            text = mediaItem?.artistText ?: String(),
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.alpha(ContentAlpha.medium),
         )

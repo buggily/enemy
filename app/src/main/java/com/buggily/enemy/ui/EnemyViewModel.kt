@@ -4,8 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.session.MediaController
+import com.buggily.core.domain.GetRuntime
 import com.buggily.enemy.controller.ControllerState
-import com.buggily.enemy.core.model.ext.indexOfOrNull
+import com.buggily.enemy.core.ext.indexOfOrNull
+import com.buggily.enemy.core.ext.isNegative
 import com.buggily.enemy.core.model.theme.Theme
 import com.buggily.enemy.core.model.track.Track
 import com.buggily.enemy.core.ui.ext.map
@@ -21,11 +23,15 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.time.Duration
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 @HiltViewModel
 class EnemyViewModel @Inject constructor(
     getTheme: GetTheme,
     private val getTracksByAlbumId: GetTracksByAlbumId,
+    private val getRuntime: GetRuntime,
 ) : ViewModel() {
 
     val theme: StateFlow<Theme> = getTheme().stateIn(
@@ -65,6 +71,10 @@ class EnemyViewModel @Inject constructor(
                 shuffleState = ControllerState.ShuffleState.default.copy(
                     onClick = ::onShuffleClick,
                 ),
+                seekState = ControllerState.SeekState.default.copy(
+                    onChange = ::onSeekChange,
+                    onChangeFinish = ::onSeekChangeFinish,
+                ),
             ),
             albumTrackState = AlbumState.TrackState.default.copy(
                 onClick = ::onAlbumTrackClick,
@@ -76,9 +86,7 @@ class EnemyViewModel @Inject constructor(
     }
 
     fun setIsPlaying(isPlaying: Boolean) = state.value.let {
-        val controllerState: ControllerState = it.controllerState
-
-        val playState: ControllerState.PlayState = controllerState.playState.copy(
+        val playState: ControllerState.PlayState = it.controllerState.playState.copy(
             isPlaying = isPlaying,
         )
 
@@ -86,13 +94,16 @@ class EnemyViewModel @Inject constructor(
     }
 
     fun setIsLoading(isLoading: Boolean) = state.value.let {
-        val controllerState: ControllerState = it.controllerState
-
-        val playState: ControllerState.PlayState = controllerState.playState.copy(
+        val playState: ControllerState.PlayState = it.controllerState.playState.copy(
             isEnabled = !isLoading,
         )
 
         setPlayStateOfControllerState(playState)
+    }
+
+    fun setPosition(position: Long) {
+        val duration: Duration = position.toDuration(DurationUnit.MILLISECONDS)
+        onSeekChange(duration)
     }
 
     fun setMediaItem(mediaItem: MediaItem?) = state.value.let {
@@ -110,8 +121,7 @@ class EnemyViewModel @Inject constructor(
             else -> ControllerState.RepeatState.Mode.Off
         }
 
-        val controllerState: ControllerState = it.controllerState
-        val repeatState: ControllerState.RepeatState = controllerState.repeatState.copy(
+        val repeatState: ControllerState.RepeatState = it.controllerState.repeatState.copy(
             mode = mode,
         )
 
@@ -124,8 +134,7 @@ class EnemyViewModel @Inject constructor(
             false -> ControllerState.ShuffleState.Mode.Off
         }
 
-        val controllerState: ControllerState = it.controllerState
-        val shuffleState: ControllerState.ShuffleState = controllerState.shuffleState.copy(
+        val shuffleState: ControllerState.ShuffleState = it.controllerState.shuffleState.copy(
             mode = mode,
         )
 
@@ -133,9 +142,7 @@ class EnemyViewModel @Inject constructor(
     }
 
     fun setHasNext(hasNext: Boolean) = state.value.let {
-        val controllerState: ControllerState = it.controllerState
-
-        val nextStates: ControllerState.NextStates = controllerState.nextStates.copy(
+        val nextStates: ControllerState.NextStates = it.controllerState.nextStates.copy(
             isEnabled = hasNext,
         )
 
@@ -143,13 +150,21 @@ class EnemyViewModel @Inject constructor(
     }
 
     fun setHasPrevious(hasPrevious: Boolean) = state.value.let {
-        val controllerState: ControllerState = it.controllerState
-
-        val previousStates: ControllerState.PreviousStates = controllerState.previousStates.copy(
+        val previousStates: ControllerState.PreviousStates = it.controllerState.previousStates.copy(
             isEnabled = hasPrevious,
         )
 
         setPreviousStatesOfControllerState(previousStates)
+    }
+
+    fun setDuration(milliseconds: Long) = state.value.let {
+        if (milliseconds.isNegative) return@let
+
+        val seekState: ControllerState.SeekState = it.controllerState.seekState.copy(
+            runtime = getRuntime(milliseconds),
+        )
+
+        setSeekStateOfControllerState(seekState)
     }
 
     private fun onPlayClick() = state.value.let {
@@ -158,11 +173,11 @@ class EnemyViewModel @Inject constructor(
 
         val mediaState: EnemyState.MediaState = if (isPlay) {
             EnemyState.MediaState.Event.Pause(
-                onPause = ::resetMediaState,
+                onEvent = ::resetMediaState,
             )
         } else {
             EnemyState.MediaState.Event.Play.Without(
-                onPlay = ::resetMediaState,
+                onEvent = ::resetMediaState,
             )
         }
 
@@ -171,7 +186,7 @@ class EnemyViewModel @Inject constructor(
 
     private fun onFirstNextClick() {
         val mediaState = EnemyState.MediaState.Event.Next.First(
-            onNext = ::resetMediaState,
+            onEvent = ::resetMediaState,
         )
 
         setMediaState(mediaState)
@@ -179,7 +194,7 @@ class EnemyViewModel @Inject constructor(
 
     private fun onLastNextClick() {
         val mediaState = EnemyState.MediaState.Event.Next.Last(
-            onNext = ::resetMediaState,
+            onEvent = ::resetMediaState,
         )
 
         setMediaState(mediaState)
@@ -187,7 +202,7 @@ class EnemyViewModel @Inject constructor(
 
     private fun onFirstPreviousClick() {
         val mediaState = EnemyState.MediaState.Event.Previous.First(
-            onPrevious = ::resetMediaState,
+            onEvent = ::resetMediaState,
         )
 
         setMediaState(mediaState)
@@ -195,7 +210,7 @@ class EnemyViewModel @Inject constructor(
 
     private fun onLastPreviousClick() {
         val mediaState = EnemyState.MediaState.Event.Previous.Last(
-            onPrevious = ::resetMediaState,
+            onEvent = ::resetMediaState,
         )
 
         setMediaState(mediaState)
@@ -211,7 +226,7 @@ class EnemyViewModel @Inject constructor(
         val mediaState = EnemyState.MediaState.Event.Play.With(
             index = index,
             items = items,
-            onPlay = ::resetMediaState,
+            onEvent = ::resetMediaState,
         )
 
         setMediaState(mediaState)
@@ -223,7 +238,7 @@ class EnemyViewModel @Inject constructor(
         val mediaState = EnemyState.MediaState.Event.Play.With(
             index = 0,
             items = listOf(item),
-            onPlay = ::resetMediaState,
+            onEvent = ::resetMediaState,
         )
 
         setMediaState(mediaState)
@@ -238,7 +253,7 @@ class EnemyViewModel @Inject constructor(
 
         val mediaState = EnemyState.MediaState.Event.Repeat(
             repeatMode = repeatMode,
-            onRepeat = ::resetMediaState,
+            onEvent = ::resetMediaState,
         )
 
         setMediaState(mediaState)
@@ -252,7 +267,31 @@ class EnemyViewModel @Inject constructor(
 
         val mediaState = EnemyState.MediaState.Event.Shuffle(
             shuffleMode = shuffleMode,
-            onShuffle = ::resetMediaState,
+            onEvent = ::resetMediaState,
+        )
+
+        setMediaState(mediaState)
+    }
+
+    private fun onSeekChange(seconds: Float) {
+        val duration: Duration = seconds.toLong().toDuration(DurationUnit.SECONDS)
+        onSeekChange(duration)
+    }
+
+    private fun onSeekChange(duration: Duration) = state.value.let {
+        val seekState: ControllerState.SeekState = it.controllerState.seekState.copy(
+            current = getRuntime(duration),
+        )
+
+        setSeekStateOfControllerState(seekState)
+    }
+
+    private fun onSeekChangeFinish() = state.value.let {
+        val seekState: ControllerState.SeekState = it.controllerState.seekState
+
+        val mediaState = EnemyState.MediaState.Event.Seek(
+            milliseconds = seekState.milliseconds,
+            onEvent = ::resetMediaState,
         )
 
         setMediaState(mediaState)
@@ -303,6 +342,16 @@ class EnemyViewModel @Inject constructor(
     ) = state.value.let {
         val controllerState: ControllerState = it.controllerState.copy(
             shuffleState = shuffleState,
+        )
+
+        setControllerState(controllerState)
+    }
+
+    private fun setSeekStateOfControllerState(
+        seekState: ControllerState.SeekState,
+    ) = state.value.let {
+        val controllerState: ControllerState = it.controllerState.copy(
+            seekState = seekState
         )
 
         setControllerState(controllerState)
