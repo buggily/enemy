@@ -8,8 +8,8 @@ val TrackUi.Item.nameText: String
 val TrackUi.Item.trackText: String
     get() = track.trackText
 
-val TrackUi.Item.durationText: String
-    get() = track.durationText
+val TrackUi.Item.runtimeText: String
+    get() = track.runtimeText
 
 val TrackUi.Separator.Disc.discText: String
     get() = disc.toString()

@@ -1,7 +1,8 @@
 package com.buggily.enemy.controller
 
 import androidx.media3.common.MediaItem
-import com.buggily.enemy.core.model.ext.isNonNull
+import com.buggily.enemy.core.model.Runtime
+import com.buggily.enemy.core.ext.isNonNull
 
 data class ControllerState(
     val mediaItem: MediaItem?,
@@ -10,6 +11,7 @@ data class ControllerState(
     val previousStates: PreviousStates,
     val repeatState: RepeatState,
     val shuffleState: ShuffleState,
+    val seekState: SeekState,
 ) {
 
     val isVisible: Boolean
@@ -172,15 +174,43 @@ data class ControllerState(
         }
     }
 
+    data class SeekState(
+        val current: Runtime,
+        val runtime: Runtime,
+        val onChange: (Float) -> Unit,
+        val onChangeFinish: () -> Unit,
+    ) {
+
+        val milliseconds: Long
+            get() = current.inWholeMilliseconds
+
+        val value: Float
+            get() = current.inWholeSeconds.toFloat()
+
+        val range: ClosedFloatingPointRange<Float>
+            get() = Runtime.default.inWholeSeconds.toFloat()..runtime.inWholeSeconds.toFloat()
+
+        companion object {
+            val default: SeekState
+                get() = SeekState(
+                    current = Runtime.default,
+                    runtime = Runtime.default,
+                    onChange = {},
+                    onChangeFinish = {},
+                )
+        }
+    }
+
     companion object {
         val default: ControllerState
             get() = ControllerState(
                 mediaItem = null,
-                playState = PlayState.default,
+                playState = ControllerState.PlayState.default,
                 nextStates = NextStates.default,
                 previousStates = PreviousStates.default,
                 repeatState = RepeatState.default,
                 shuffleState = ShuffleState.default,
+                seekState = SeekState.default,
             )
     }
 }

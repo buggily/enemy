@@ -1,13 +1,13 @@
 package com.buggily.enemy.data.track.ext
 
-import com.buggily.core.domain.GetDuration
+import com.buggily.core.domain.GetRuntime
 import com.buggily.enemy.core.model.track.Track as Output
 import com.buggily.enemy.local.track.Track as Input
 
-fun Input.map(getDuration: GetDuration): Output = Output(
+fun Input.map(getRuntime: GetRuntime): Output = Output(
     id = id,
     name = name,
-    duration = getDuration(duration),
+    runtime = getRuntime(duration),
     position = Output.Position(
         track = position.track,
         disc = position.disc,

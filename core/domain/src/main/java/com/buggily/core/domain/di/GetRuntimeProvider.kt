@@ -1,6 +1,6 @@
 package com.buggily.core.domain.di
 
-import com.buggily.core.domain.GetDuration
+import com.buggily.core.domain.GetRuntime
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -9,8 +9,8 @@ import java.util.Locale
 
 @Module
 @InstallIn(SingletonComponent::class)
-object GetDurationProvider {
+object GetRuntimeProvider {
 
     @Provides
-    fun provides(locale: Locale): GetDuration = GetDuration(locale)
+    fun provides(locale: Locale): GetRuntime = GetRuntime(locale)
 }

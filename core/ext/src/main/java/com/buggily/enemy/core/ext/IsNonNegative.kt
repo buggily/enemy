@@ -1,4 +1,4 @@
-package com.buggily.enemy.core.model.ext
+package com.buggily.enemy.core.ext
 
 val Int.isNonNegative: Boolean
     get() = !isNegative
