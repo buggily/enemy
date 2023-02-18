@@ -20,8 +20,8 @@ import androidx.paging.compose.items
 import com.buggily.enemy.core.model.track.Track
 import com.buggily.enemy.core.ui.R
 import com.buggily.enemy.core.ui.ext.artistText
-import com.buggily.enemy.core.ui.ext.runtimeText
 import com.buggily.enemy.core.ui.ext.nameText
+import com.buggily.enemy.core.ui.ext.runtimeText
 import com.buggily.enemy.core.ui.theme.ContentAlpha
 import com.buggily.enemy.core.ui.R.dimen as dimens
 
@@ -96,7 +96,9 @@ private fun TrackItem(
             text = track.artistText,
             textAlign = TextAlign.Start,
             style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.alpha(ContentAlpha.medium),
+            modifier = Modifier
+                .alpha(ContentAlpha.medium)
+                .weight(1f),
         )
 
         Text(

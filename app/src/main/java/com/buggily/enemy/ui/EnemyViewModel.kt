@@ -16,9 +16,12 @@ import com.buggily.enemy.domain.track.GetTracksByAlbumId
 import com.buggily.enemy.feature.album.AlbumState
 import com.buggily.enemy.tracks.TracksState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -42,6 +45,8 @@ class EnemyViewModel @Inject constructor(
 
     private var _state: MutableStateFlow<EnemyState>
     val state: StateFlow<EnemyState> get() = _state
+
+    val isPlaying: Flow<Boolean>
 
     init {
         EnemyState.default.copy(
@@ -83,6 +88,18 @@ class EnemyViewModel @Inject constructor(
                 onClick = ::onTrackClick,
             ),
         ).let { _state = MutableStateFlow(it) }
+
+        val controllerState: Flow<ControllerState> = state.map {
+            it.controllerState
+        }
+
+        val playState: Flow<ControllerState.PlayState> = controllerState.map {
+            it.playState
+        }
+
+        isPlaying = playState.map {
+            it.isPlaying
+        }.distinctUntilChanged()
     }
 
     fun setIsPlaying(isPlaying: Boolean) = state.value.let {

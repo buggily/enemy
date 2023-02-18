@@ -26,7 +26,6 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
-import com.buggily.enemy.controller.ControllerState
 import com.buggily.enemy.core.model.theme.Theme
 import com.buggily.enemy.di.DirectExecutorQualifier
 import com.buggily.enemy.ui.EnemyApp
@@ -39,7 +38,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.util.concurrent.Executor
@@ -82,21 +80,11 @@ class EnemyActivity : ComponentActivity() {
             window.decorView
         )
 
-        val controllerState: Flow<ControllerState> = viewModel.state.map {
-            it.controllerState
-        }
-
-        val playState: Flow<ControllerState.PlayState> = controllerState.map {
-            it.playState
-        }
-
-        val isPlaying: Flow<Boolean> = playState.map {
-            it.isPlaying
-        }.distinctUntilChanged()
-
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                isPlaying.collect { if (it) startSetPosition() else stopSetPosition() }
+                viewModel.isPlaying.collect {
+                    if (it) startSetPosition() else stopSetPosition()
+                }
             }
         }
 

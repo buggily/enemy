@@ -77,7 +77,7 @@ object CollapsableButton {
 
 @Composable
 fun CollapsableButton(
-    isCollapsable: Boolean,
+    expanded: Boolean,
     alignment: Alignment,
     modifier: Modifier = Modifier,
     contents: List<@Composable () -> Unit>,
@@ -88,7 +88,7 @@ fun CollapsableButton(
 
     BoxWithConstraints(modifier) {
         val distance: Float = minOf(maxWidth.value, maxHeight.value)
-        val composableModifier: Modifier = Modifier.align(alignment)
+        val alignmentModifier: Modifier = Modifier.align(alignment)
 
         val buttonOffset = CollapsableButton.Offset(
             alignment = alignment,
@@ -96,7 +96,7 @@ fun CollapsableButton(
             intervalCount = intervalCount,
         )
 
-        contents.forEachIndexed { index, it ->
+        contents.forEachIndexed { index: Int, it: @Composable () -> Unit ->
             val offset: Offset = buttonOffset.get(index)
 
             val xDp: Dp = offset.x.dp
@@ -108,17 +108,17 @@ fun CollapsableButton(
             )
 
             AnimatedVisibility(
-                visible = isCollapsable,
+                visible = expanded,
                 enter = fadeIn() + slideIn { intOffset },
                 exit = fadeOut() + slideOut { intOffset },
-                modifier = composableModifier.offset(
+                modifier = alignmentModifier.offset(
                     x = -xDp,
                     y = -yDp,
                 ),
             ) { it() }
         }
 
-        Box(composableModifier) {
+        Box(alignmentModifier) {
             content()
         }
     }

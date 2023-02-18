@@ -24,5 +24,10 @@
     <string name="shuffle_on">shuffle on</string>
     <string name="shuffle_off">shuffle off</string>
 
+    <string name="search">search</string>
     <string name="preferences">preferences</string>
+    <string name="clear">clear</string>
+
+    <string name="search_disable">disable search</string>
+    <string name="search_enable">enable search</string>
 </resources>

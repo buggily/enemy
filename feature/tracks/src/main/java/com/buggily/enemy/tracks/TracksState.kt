@@ -2,7 +2,21 @@ package com.buggily.enemy.tracks
 
 import com.buggily.enemy.core.model.track.Track
 
-object TracksState {
+data class TracksState(
+    val searchState: SearchState,
+) {
+
+    data class SearchState(
+        val value: String,
+    ) {
+
+        companion object {
+            val default: SearchState
+                get() = SearchState(
+                    value = String(),
+                )
+        }
+    }
 
     data class TrackState(
         val onClick: (Track) -> Unit,
@@ -14,5 +28,12 @@ object TracksState {
                     onClick = {},
                 )
         }
+    }
+
+    companion object {
+        val default: TracksState
+            get() = TracksState(
+                searchState = SearchState.default,
+            )
     }
 }
