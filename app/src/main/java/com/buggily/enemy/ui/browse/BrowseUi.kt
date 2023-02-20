@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -37,6 +35,7 @@ import com.buggily.enemy.albums.AlbumsScreen
 import com.buggily.enemy.albums.AlbumsState
 import com.buggily.enemy.albums.AlbumsViewModel
 import com.buggily.enemy.core.ui.IconButton
+import com.buggily.enemy.core.ui.IconFloatingActionButton
 import com.buggily.enemy.core.ui.SingleLineText
 import com.buggily.enemy.core.ui.SingleLineTextField
 import com.buggily.enemy.tracks.TracksScreen
@@ -198,6 +197,7 @@ private fun BrowseSearchTrailingIcon(
             painter = painterResource(drawables.clear),
             contentDescription = stringResource(strings.clear),
             onClick = searchState.onClear,
+            contentModifier = Modifier.size(dimensionResource(dimens.icon_medium)),
         )
     }
 }
@@ -299,7 +299,7 @@ private fun BrowseSearchFloatingActionButton(
     searchState: BrowseState.SearchState,
     modifier: Modifier = Modifier,
 ) {
-    val drawableResId: Int = if (searchState.isVisible) {
+    val painterResId: Int = if (searchState.isVisible) {
         drawables.search_disable
     } else {
         drawables.search_enable
@@ -311,14 +311,11 @@ private fun BrowseSearchFloatingActionButton(
         strings.search_disable
     }
 
-    FloatingActionButton(
+    IconFloatingActionButton(
+        painter = painterResource(painterResId),
+        contentDescription = stringResource(stringResId),
         onClick = searchState.onToggleVisibility,
         modifier = modifier,
-    ) {
-        Icon(
-            painter = painterResource(drawableResId),
-            contentDescription = stringResource(stringResId),
-            modifier = Modifier.size(dimensionResource(dimens.icon_medium)),
-        )
-    }
+        contentModifier = Modifier.size(dimensionResource(dimens.icon_medium)),
+    )
 }
