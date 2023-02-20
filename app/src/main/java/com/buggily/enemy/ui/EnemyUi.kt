@@ -8,6 +8,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,9 +19,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -28,8 +35,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
@@ -51,6 +62,9 @@ import com.buggily.enemy.feature.preferences.PreferencesScreen
 import com.buggily.enemy.navigation.EnemyDestination
 import com.buggily.enemy.tracks.TracksState
 import com.buggily.enemy.ui.browse.BrowseScreen
+import com.buggily.enemy.core.ui.R.dimen as dimens
+import com.buggily.enemy.core.ui.R.drawable as drawables
+import com.buggily.enemy.core.ui.R.string as strings
 
 @Composable
 fun rememberEnemyAppState(
@@ -84,6 +98,7 @@ fun EnemyApp(
     EnemyApp(
         appState = appState,
         hostState = hostState,
+        destinationState = state.destinationState,
         controllerState = state.controllerState,
         albumTrackState = state.albumTrackState,
         tracksTrackState = state.tracksTrackState,
@@ -100,14 +115,15 @@ fun EnemyApp(
 private fun EnemyApp(
     appState: EnemyAppState,
     hostState: SnackbarHostState,
+    destinationState: EnemyState.DestinationState,
     controllerState: ControllerState,
     albumTrackState: AlbumState.TrackState,
     tracksTrackState: TracksState.TrackState,
     modifier: Modifier = Modifier,
 ) {
-    val isControllerVisible: Boolean = appState.isControllerVisible && controllerState.isVisible
-
-    val onControllerClick: () -> Unit = {
+    val appControllerState = EnemyState.AppControllerState(
+        isVisible = appState.isBottomBarVisible,
+    ) {
         appState.navigate(EnemyDestination.Controller.route) {
             launchSingleTop = true
             restoreState = false
@@ -120,8 +136,8 @@ private fun EnemyApp(
             restoreState = false
 
             popUpTo(EnemyDestination.startDestination.route) {
-                inclusive = true
                 saveState = false
+                inclusive = true
             }
         }
     }
@@ -132,8 +148,8 @@ private fun EnemyApp(
             restoreState = false
 
             popUpTo(EnemyDestination.Orientation.route) {
-                inclusive = true
                 saveState = false
+                inclusive = true
             }
         }
     }
@@ -147,21 +163,13 @@ private fun EnemyApp(
 
     Scaffold(
         bottomBar = {
-            AnimatedVisibility(
-                visible = isControllerVisible,
-                enter = fadeIn() + expandVertically(),
-                exit = fadeOut() + shrinkVertically(),
+            EnemyBottomBar(
+                appState = appState,
+                destinationState = destinationState,
+                appControllerState = appControllerState,
+                controllerState = controllerState,
                 modifier = Modifier.fillMaxWidth(),
-            ) {
-                ControllerBottomSheet(
-                    state = controllerState,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(IntrinsicSize.Min)
-                        .clickable { onControllerClick() }
-                        .consumedWindowInsets(WindowInsets.statusBars),
-                )
-            }
+            )
         },
         snackbarHost = { SnackbarHost(hostState) },
         contentWindowInsets = WindowInsets.ime,
@@ -200,8 +208,8 @@ private fun EnemyApp(
             }
 
             composable(
-                route = EnemyDestination.Browse.route,
-                arguments = EnemyDestination.Browse.arguments,
+                route = EnemyDestination.Top.Browse.route,
+                arguments = EnemyDestination.Top.Browse.arguments,
             ) {
                 BrowseScreen(
                     viewModel = hiltViewModel(),
@@ -241,6 +249,114 @@ private fun EnemyApp(
                     modifier = contentModifier,
                 )
             }
+        }
+    }
+}
+
+@Composable
+@OptIn(ExperimentalLayoutApi::class)
+private fun EnemyBottomBar(
+    appState: EnemyAppState,
+    destinationState: EnemyState.DestinationState,
+    appControllerState: EnemyState.AppControllerState,
+    controllerState: ControllerState,
+    modifier: Modifier = Modifier,
+) {
+    AnimatedVisibility(
+        visible = appControllerState.isVisible,
+        enter = fadeIn() + expandVertically(),
+        exit = fadeOut() + shrinkVertically(),
+        modifier = modifier,
+    ) {
+        Column(
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.Start,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            AnimatedVisibility(
+                visible = controllerState.isVisible,
+                enter = fadeIn() + expandVertically(),
+                exit = fadeOut() + shrinkVertically(),
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                EnemyController(
+                    controllerState = controllerState,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(IntrinsicSize.Min)
+                        .clickable { appControllerState.onClick() }
+                        .let {
+                            if (!destinationState.isBottomBarVisible) return@let it
+                            it.consumedWindowInsets(WindowInsets.navigationBars)
+                        },
+                )
+            }
+
+            AnimatedVisibility(
+                visible = destinationState.isBottomBarVisible,
+                enter = fadeIn() + expandVertically(),
+                exit = fadeOut() + shrinkVertically(),
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                EnemyBottomBar(
+                    appState = appState,
+                    destinationState = destinationState,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun EnemyController(
+    controllerState: ControllerState,
+    modifier: Modifier = Modifier,
+) {
+    ControllerBottomSheet(
+        state = controllerState,
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun EnemyBottomBar(
+    appState: EnemyAppState,
+    destinationState: EnemyState.DestinationState,
+    modifier: Modifier = Modifier,
+) {
+    NavigationBar(modifier) {
+        destinationState.destinations.forEach {
+            val painterResId: Int = when (it) {
+                is EnemyDestination.Top.Browse -> drawables.browse
+            }
+
+            val stringResId: Int = when (it) {
+                is EnemyDestination.Top.Browse -> strings.browse
+            }
+
+            NavigationBarItem(
+                selected = appState.isDestinationSelected(it),
+                onClick = {
+                    appState.navigate(it.route) {
+                        popUpTo(EnemyDestination.startDestination.route) {
+                            saveState = true
+                            inclusive = false
+                        }
+
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
+                icon = {
+                    Icon(
+                        painter = painterResource(painterResId),
+                        contentDescription = stringResource(stringResId),
+                        modifier = Modifier.size(dimensionResource(dimens.icon_medium)),
+                    )
+                },
+                modifier = Modifier.navigationBarsPadding(),
+            )
         }
     }
 }

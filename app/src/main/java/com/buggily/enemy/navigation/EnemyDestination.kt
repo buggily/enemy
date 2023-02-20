@@ -139,10 +139,20 @@ sealed class EnemyDestination {
             get() = "orientation"
     }
 
-    object Browse : EnemyDestination() {
+    sealed class Top : EnemyDestination() {
 
-        override val path: String
-            get() = "browse"
+        object Browse : Top() {
+
+            override val path: String
+                get() = "browse"
+        }
+
+        companion object {
+            val values: List<Top>
+                get() = listOf(
+                    Browse,
+                )
+        }
     }
 
     object Album : EnemyDestination() {
@@ -187,7 +197,7 @@ sealed class EnemyDestination {
     companion object {
 
         val startDestination: EnemyDestination
-            get() = Browse
+            get() = Top.Browse
 
         fun get(destination: NavDestination?): EnemyDestination? = values.find {
             it.route == destination?.route
@@ -196,7 +206,7 @@ sealed class EnemyDestination {
         private val values: List<EnemyDestination>
             get() = listOf(
                 Orientation,
-                Browse,
+                Top.Browse,
                 Album,
                 Preferences,
                 Controller,

@@ -39,15 +39,6 @@ data class BrowseState(
         val index: Int
             get() = tabs.indexOf(tab)
 
-        companion object {
-            val default: TabState
-                get() = TabState(
-                    tab = Tab.Albums,
-                    tabs = Tab.values,
-                    onClick = {},
-                )
-        }
-
         sealed class Tab {
 
             object Albums : Tab()
@@ -60,6 +51,15 @@ data class BrowseState(
                         Tracks,
                     )
             }
+        }
+
+        companion object {
+            val default: TabState
+                get() = TabState(
+                    tab = Tab.Albums,
+                    tabs = Tab.values,
+                    onClick = {},
+                )
         }
     }
 

@@ -4,6 +4,7 @@ import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -14,7 +15,7 @@ class EnemyAppState(
     private val windowSizeClass: WindowSizeClass,
 ) {
 
-    val isControllerVisible: Boolean
+    val isBottomBarVisible: Boolean
         @Composable get() = !isDestinationController
 
     private val isDestinationController: Boolean
@@ -23,11 +24,21 @@ class EnemyAppState(
     private val destination: EnemyDestination?
         @Composable get() = EnemyDestination.get(navigationDestination)
 
+    private val navigationHierarchy: Sequence<NavDestination>
+        @Composable get() = navigationDestination?.hierarchy ?: emptySequence()
+
     private val navigationDestination: NavDestination?
         @Composable get() = navigationBackStackEntry?.destination
 
     private val navigationBackStackEntry: NavBackStackEntry?
         @Composable get() = navController.currentBackStackEntryAsState().value
+
+    @Composable
+    fun isDestinationSelected(
+        destination: EnemyDestination,
+    ): Boolean = navigationHierarchy.any {
+        it.route == destination.route
+    }
 
     fun navigate(
         route: String,

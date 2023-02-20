@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
@@ -80,8 +81,8 @@ fun ControllerBottomSheet(
             state = state,
             modifier = Modifier
                 .fillMaxWidth()
-                .safeContentPadding()
-                .padding(dimensionResource(dimens.padding_large)),
+                .padding(dimensionResource(dimens.padding_large))
+                .navigationBarsPadding(),
         )
     }
 }
