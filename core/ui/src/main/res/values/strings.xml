@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="disc">disc %1$s</string>
-    <string name="greeting">good %1$s</string>
-
-    <string name="morning">morning</string>
-    <string name="afternoon">afternoon</string>
-    <string name="evening">evening</string>
-    <string name="day">day</string>
-
-    <string name="browse">browse</string>
 
     <string name="play">play</string>
     <string name="pause">pause</string>
@@ -26,9 +18,8 @@
     <string name="shuffle_on">shuffle on</string>
     <string name="shuffle_off">shuffle off</string>
 
-    <string name="search">search</string>
-    <string name="preferences">preferences</string>
     <string name="clear">clear</string>
+    <string name="create">create</string>
 
     <string name="search_disable">disable search</string>
     <string name="search_enable">enable search</string>

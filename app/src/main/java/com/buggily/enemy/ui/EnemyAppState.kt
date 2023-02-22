@@ -16,13 +16,22 @@ class EnemyAppState(
 ) {
 
     val isBottomBarVisible: Boolean
-        @Composable get() = !isDestinationController
+        @Composable get() = setOf(EnemyDestination.Browse).any {
+            isDestinationInHierarchy(it)
+        }
 
-    private val isDestinationController: Boolean
-        @Composable get() = destination is EnemyDestination.Controller
+    val isControllerVisible: Boolean
+        @Composable get() = setOf(
+            EnemyDestination.Orientation,
+            EnemyDestination.Controller,
+        ).none {
+            isDestinationInHierarchy(it)
+        }
 
-    private val destination: EnemyDestination?
-        @Composable get() = EnemyDestination.get(navigationDestination)
+    val isPreferencesButtonVisible: Boolean
+        @Composable get() = setOf(EnemyDestination.Preferences).none {
+            isDestinationInHierarchy(it)
+        }
 
     private val navigationHierarchy: Sequence<NavDestination>
         @Composable get() = navigationDestination?.hierarchy ?: emptySequence()
@@ -34,10 +43,10 @@ class EnemyAppState(
         @Composable get() = navController.currentBackStackEntryAsState().value
 
     @Composable
-    fun isDestinationSelected(
+    private fun isDestinationInHierarchy(
         destination: EnemyDestination,
     ): Boolean = navigationHierarchy.any {
-        it.route == destination.route
+        EnemyDestination.get(it) == destination
     }
 
     fun navigate(

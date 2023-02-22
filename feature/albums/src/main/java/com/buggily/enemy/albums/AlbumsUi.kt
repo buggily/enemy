@@ -98,11 +98,11 @@ private fun AlbumsAlbumGrid(
                 is Album -> AlbumItem(
                     album = it,
                     modifier = Modifier
-                        .fillMaxSize()
                         .defaultMinSize(
                             minWidth = dimensionResource(dimens.item),
                             minHeight = dimensionResource(dimens.item),
                         )
+                        .fillMaxSize()
                         .aspectRatio(1f)
                         .animateItemPlacement()
                         .clickable { albumState.onClick(it) },

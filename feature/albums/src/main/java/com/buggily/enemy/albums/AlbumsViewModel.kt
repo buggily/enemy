@@ -35,15 +35,11 @@ class AlbumsViewModel @Inject constructor(
         }.cachedIn(viewModelScope)
     }
 
-    fun setSearch(value: String) = state.value.let {
+    fun setSearch(value: String) = _state.update {
         val searchState: AlbumsState.SearchState = it.searchState.copy(
             value = value,
         )
 
-        setSearchState(searchState)
-    }
-
-    private fun setSearchState(searchState: AlbumsState.SearchState) = _state.update {
         it.copy(searchState = searchState)
     }
 }

@@ -2,13 +2,14 @@ package com.buggily.enemy.ui
 
 import androidx.media3.common.MediaItem
 import com.buggily.enemy.controller.ControllerState
+import com.buggily.enemy.core.model.TimeOfDay
 import com.buggily.enemy.feature.album.AlbumState
-import com.buggily.enemy.navigation.EnemyDestination
 import com.buggily.enemy.tracks.TracksState
 
 data class EnemyState(
-    val destinationState: DestinationState,
     val mediaState: MediaState,
+    val greetingState: GreetingState,
+    val searchState: SearchState,
     val controllerState: ControllerState,
     val albumTrackState: AlbumState.TrackState,
     val tracksTrackState: TracksState.TrackState,
@@ -110,22 +111,41 @@ data class EnemyState(
         }
     }
 
-    data class AppControllerState(
+    data class GreetingState(
+        val timeOfDay: TimeOfDay?,
         val isVisible: Boolean,
-        val onClick: () -> Unit,
-    )
-
-    data class DestinationState(
-        val destinations: List<EnemyDestination.Top>,
+        val onVisible: () -> Unit,
     ) {
 
-        val isBottomBarVisible: Boolean
-            get() = destinations.size > 1
+        companion object {
+            val default: GreetingState
+                get() = GreetingState(
+                    timeOfDay = null,
+                    isVisible = true,
+                    onVisible = {},
+                )
+        }
+    }
+
+    data class SearchState(
+        val value: String,
+        val isVisible: Boolean,
+        val onClick: () -> Unit,
+        val onChange: (String) -> Unit,
+        val onClear: () -> Unit,
+    ) {
+
+        val isEnabled: Boolean
+            get() = isVisible
 
         companion object {
-            val default: DestinationState
-                get() = DestinationState(
-                    destinations = EnemyDestination.Top.values,
+            val default: SearchState
+                get() = SearchState(
+                    value = String(),
+                    isVisible = false,
+                    onClick = {},
+                    onChange = {},
+                    onClear = {},
                 )
         }
     }
@@ -133,8 +153,9 @@ data class EnemyState(
     companion object {
         val default: EnemyState
             get() = EnemyState(
-                destinationState = DestinationState.default,
                 mediaState = MediaState.Default,
+                greetingState = GreetingState.default,
+                searchState = SearchState.default,
                 controllerState = ControllerState.default,
                 albumTrackState = AlbumState.TrackState.default,
                 tracksTrackState = TracksState.TrackState.default,

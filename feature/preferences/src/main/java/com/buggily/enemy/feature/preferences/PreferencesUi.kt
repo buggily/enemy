@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.consumedWindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.safeContent
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
@@ -32,7 +32,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.buggily.enemy.core.model.theme.Theme
 import com.buggily.enemy.core.ui.SingleLineText
 import com.buggily.enemy.core.ui.R.dimen as dimens
-import com.buggily.enemy.core.ui.R.string as strings
 
 @Composable
 @OptIn(ExperimentalLifecycleComposeApi::class)
@@ -66,9 +65,9 @@ fun PreferencesScreen(
             right = dimensionResource(dimens.padding_large),
             bottom = dimensionResource(dimens.padding_large),
         )
-            .add(WindowInsets.systemBars)
+            .add(WindowInsets.safeContent)
             .asPaddingValues(),
-        modifier = modifier.consumedWindowInsets(WindowInsets.systemBars),
+        modifier = modifier.consumedWindowInsets(WindowInsets.safeContent),
     ) {
         item {
             PreferencesHeader(
@@ -90,7 +89,7 @@ private fun PreferencesHeader(
     modifier: Modifier = Modifier,
 ) {
     SingleLineText(
-        text = stringResource(strings.preferences),
+        text = stringResource(R.string.preferences),
         style = MaterialTheme.typography.headlineLarge,
         modifier = modifier,
     )

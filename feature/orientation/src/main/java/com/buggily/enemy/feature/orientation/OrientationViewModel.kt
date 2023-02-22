@@ -25,35 +25,27 @@ class OrientationViewModel : ViewModel() {
         if (isGranted) onGrant() else onDeny()
     }
 
-    private fun onGrant() = setPermissionState(
-        permissionState = OrientationState.PermissionState.Event.Grant(
+    private fun onGrant() = _state.update {
+        val permissionState = OrientationState.PermissionState.Event.Grant(
             onGrant = ::resetPermissionState,
-        ),
-    )
+        )
 
-    private fun onPend() = setPermissionState(
-        permissionState = OrientationState.PermissionState.Event.Pend(
-            onPend = ::resetPermissionState,
-        ),
-    )
-
-    private fun onDeny() = setStatusState(
-        statusState = OrientationState.StatusState.Deny,
-    )
-
-    private fun setStatusState(
-        statusState: OrientationState.StatusState,
-    ) = _state.update {
-        it.copy(statusState = statusState)
+        it.copy(permissionState = permissionState)
     }
 
-    private fun resetPermissionState() = setPermissionState(
-        permissionState = OrientationState.PermissionState.Default,
-    )
+    private fun onPend() = _state.update {
+        val permissionState = OrientationState.PermissionState.Event.Pend(
+            onPend = ::resetPermissionState,
+        )
 
-    private fun setPermissionState(
-        permissionState: OrientationState.PermissionState,
-    ) = _state.update {
         it.copy(permissionState = permissionState)
+    }
+
+    private fun onDeny() = _state.update {
+        it.copy(statusState = OrientationState.StatusState.Deny)
+    }
+
+    private fun resetPermissionState() = _state.update {
+        it.copy(permissionState = OrientationState.PermissionState.Default)
     }
 }

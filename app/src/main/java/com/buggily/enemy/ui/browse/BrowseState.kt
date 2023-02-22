@@ -7,25 +7,11 @@ data class BrowseState(
 
     data class SearchState(
         val value: String,
-        val isVisible: Boolean,
-        val onChange: (String) -> Unit,
-        val onClear: () -> Unit,
-        val onToggleVisibility: () -> Unit,
     ) {
-
-        val isClearVisible: Boolean
-            get() {
-                val isDefault: Boolean = value == default.value
-                return !isDefault
-            }
         companion object {
             val default: SearchState
                 get() = SearchState(
-                    value = String(),
-                    isVisible = false,
-                    onChange = {},
-                    onClear = {},
-                    onToggleVisibility = {},
+                    value = String()
                 )
         }
     }
@@ -41,22 +27,42 @@ data class BrowseState(
 
         sealed class Tab {
 
-            object Albums : Tab()
-            object Tracks : Tab()
+            object Albums : Tab() {
+
+                override fun toString(): String = "albums"
+            }
+            object Tracks : Tab() {
+
+                override fun toString(): String = "tracks"
+            }
+
+            object Playlists : Tab() {
+
+                override fun toString(): String = "playlists"
+            }
 
             companion object {
+
+                val default: Tab
+                    get() = Albums
+
                 val values: List<Tab>
                     get() = listOf(
                         Albums,
                         Tracks,
+                        Playlists,
                     )
+
+                fun get(value: String?): Tab? = values.find {
+                    it.toString() == value
+                }
             }
         }
 
         companion object {
             val default: TabState
                 get() = TabState(
-                    tab = Tab.Albums,
+                    tab = Tab.default,
                     tabs = Tab.values,
                     onClick = {},
                 )
