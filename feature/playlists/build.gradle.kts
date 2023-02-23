@@ -5,5 +5,5 @@ plugins {
 }
 
 android {
-    namespace = "com.buggily.enemy.feature.orientation"
+    namespace = "com.buggily.enemy.feature.playlists"
 }

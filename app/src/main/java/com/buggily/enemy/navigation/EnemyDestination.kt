@@ -149,11 +149,7 @@ sealed class EnemyDestination {
         override val pageArgumentConfigs: List<Argument.Config.Page>
             get() = listOf(tabPageArgumentConfig)
 
-        override val queryArgumentConfigs: List<Argument.Config.Query>
-            get() = listOf(isCreateQueryArgumentConfig)
-
         fun getRoute(
-            isCreate: Boolean,
             tab: BrowseState.TabState.Tab,
         ): String {
             val tabPageArgumentExpression: Argument.Expression.Page =
@@ -162,15 +158,9 @@ sealed class EnemyDestination {
                     expression = tab.toString(),
                 )
 
-            val isCreateQueryArgumentExpression: Argument.Expression.Query =
-                Argument.Expression.Query(
-                    name = isCreateQueryArgumentConfig.name,
-                    expression = isCreate.toString(),
-                )
-
             return getRoute(
                 pageArgumentExpressions = listOf(tabPageArgumentExpression),
-                queryArgumentExpressions = listOf(isCreateQueryArgumentExpression),
+                queryArgumentExpressions = emptyList(),
             )
         }
 
@@ -178,13 +168,6 @@ sealed class EnemyDestination {
             get() = Argument.Config.Page(
                 name = BrowseViewModel.tab,
                 type = NavType.StringType,
-            )
-
-        private val isCreateQueryArgumentConfig: Argument.Config.Query
-            get() = Argument.Config.Query(
-                name = BrowseViewModel.isCreate,
-                type = NavType.BoolType,
-                isNullable = false,
             )
     }
 

@@ -48,10 +48,10 @@ import kotlin.coroutines.suspendCoroutine
 @AndroidEntryPoint
 class EnemyActivity : ComponentActivity() {
 
-    private var setPosition: Job? = null
-
     private val viewModel: EnemyViewModel by viewModels()
-    private lateinit var mediaControllerFuture: ListenableFuture<MediaController>
+
+    private var setPosition: Job? = null
+    private lateinit var controllerFuture: ListenableFuture<MediaController>
 
     @Inject
     lateinit var sessionToken: SessionToken
@@ -94,13 +94,13 @@ class EnemyActivity : ComponentActivity() {
             }
         }
 
-        val mediaState: Flow<EnemyState.MediaState> = viewModel.state.map {
-            it.mediaState
+        val controllerEventState: Flow<EnemyState.ControllerEventState> = viewModel.state.map {
+            it.controllerEventState
         }
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                mediaState.collect { onMediaState(it) }
+                controllerEventState.collect { onControllerEvent(it) }
             }
         }
 
@@ -138,6 +138,7 @@ class EnemyActivity : ComponentActivity() {
             EnemyTheme(palette) {
                 EnemyApp(
                     viewModel = hiltViewModel(),
+                    uiViewModel = hiltViewModel(),
                     windowSizeClass = calculateWindowSizeClass(this),
                     modifier = Modifier.fillMaxSize(),
                 )
@@ -148,13 +149,13 @@ class EnemyActivity : ComponentActivity() {
     override fun onStart() {
         super.onStart()
 
-        mediaControllerFuture = MediaController.Builder(
+        controllerFuture = MediaController.Builder(
             this,
             sessionToken
         ).buildAsync()
 
         lifecycleScope.launch {
-            with(requireMediaController()) {
+            with(requireController()) {
                 viewModel.setIsPlaying(isPlaying)
                 viewModel.setIsLoading(isLoading)
                 viewModel.setPosition(currentPosition)
@@ -175,17 +176,17 @@ class EnemyActivity : ComponentActivity() {
         super.onStop()
 
         lifecycleScope.launch {
-            requireMediaController().removeListener(listener)
-            MediaController.releaseFuture(mediaControllerFuture)
+            requireController().removeListener(listener)
+            MediaController.releaseFuture(controllerFuture)
         }
     }
 
-    private suspend fun onMediaState(event: EnemyState.MediaState) = when (event) {
-        is EnemyState.MediaState.Event -> {
+    private suspend fun onControllerEvent(event: EnemyState.ControllerEventState) = when (event) {
+        is EnemyState.ControllerEventState.Event -> {
             when (event) {
-                is EnemyState.MediaState.Event.Play -> with(requireMediaController()) {
+                is EnemyState.ControllerEventState.Event.Play -> with(requireController()) {
                     when (event) {
-                        is EnemyState.MediaState.Event.Play.With -> {
+                        is EnemyState.ControllerEventState.Event.Play.With -> {
                             setMediaItems(event.items)
                             seekToDefaultPosition(event.index)
                         }
@@ -195,31 +196,31 @@ class EnemyActivity : ComponentActivity() {
                     prepare()
                     play()
                 }
-                is EnemyState.MediaState.Event.Pause -> {
-                    requireMediaController().pause()
+                is EnemyState.ControllerEventState.Event.Pause -> {
+                    requireController().pause()
                 }
-                is EnemyState.MediaState.Event.Next.First -> {
-                    requireMediaController().seekToNextMediaItem()
+                is EnemyState.ControllerEventState.Event.Next.First -> {
+                    requireController().seekToNextMediaItem()
                 }
-                is EnemyState.MediaState.Event.Previous.Last -> {
-                    requireMediaController().seekToPreviousMediaItem()
+                is EnemyState.ControllerEventState.Event.Previous.Last -> {
+                    requireController().seekToPreviousMediaItem()
                 }
-                is EnemyState.MediaState.Event.Repeat -> {
-                    requireMediaController().repeatMode = event.repeatMode
+                is EnemyState.ControllerEventState.Event.Repeat -> {
+                    requireController().repeatMode = event.repeatMode
                 }
-                is EnemyState.MediaState.Event.Shuffle -> {
-                    requireMediaController().shuffleModeEnabled = event.shuffleMode
+                is EnemyState.ControllerEventState.Event.Shuffle -> {
+                    requireController().shuffleModeEnabled = event.shuffleMode
                 }
-                is EnemyState.MediaState.Event.Seek -> {
-                    requireMediaController().seekTo(event.milliseconds)
+                is EnemyState.ControllerEventState.Event.Seek -> {
+                    requireController().seekTo(event.milliseconds)
                 }
-                is EnemyState.MediaState.Event.Next.Last -> with(requireMediaController()) {
+                is EnemyState.ControllerEventState.Event.Next.Last -> with(requireController()) {
                     while (hasNextMediaItem()) {
                         val isNotRepeating: Boolean = repeatMode == MediaController.REPEAT_MODE_OFF
                         if (isNotRepeating) seekToNextMediaItem() else break
                     }
                 }
-                is EnemyState.MediaState.Event.Previous.First -> with(requireMediaController()) {
+                is EnemyState.ControllerEventState.Event.Previous.First -> with(requireController()) {
                     while (hasPreviousMediaItem()) {
                         val isNotRepeating: Boolean = repeatMode == MediaController.REPEAT_MODE_OFF
                         if (isNotRepeating) seekToPreviousMediaItem() else break
@@ -229,13 +230,13 @@ class EnemyActivity : ComponentActivity() {
 
             event.onEvent()
         }
-        is EnemyState.MediaState.Default -> Unit
+        is EnemyState.ControllerEventState.Default -> Unit
     }
 
     @Suppress("BlockingMethodInNonBlockingContext")
-    private suspend fun requireMediaController(): MediaController = suspendCoroutine {
-        mediaControllerFuture.addListener(
-            { it.resume(mediaControllerFuture.get()) },
+    private suspend fun requireController(): MediaController = suspendCoroutine {
+        controllerFuture.addListener(
+            { it.resume(controllerFuture.get()) },
             directExecutor
         )
     }
@@ -293,10 +294,10 @@ class EnemyActivity : ComponentActivity() {
     private fun startSetPosition() {
         setPosition = lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                val mediaController: MediaController = requireMediaController()
+                val controller: MediaController = requireController()
 
                 while (true) {
-                    viewModel.setPosition(mediaController.currentPosition)
+                    viewModel.setPosition(controller.currentPosition)
                     delay(timeMillis = 500)
                 }
             }

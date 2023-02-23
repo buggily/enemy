@@ -1,4 +1,4 @@
-package com.buggily.enemy.core.ui
+package com.buggily.enemy.core.ui.composable
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn

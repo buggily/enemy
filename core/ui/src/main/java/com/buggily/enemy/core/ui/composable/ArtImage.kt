@@ -1,4 +1,4 @@
-package com.buggily.enemy.core.ui
+package com.buggily.enemy.core.ui.composable
 
 import android.net.Uri
 import androidx.compose.runtime.Composable

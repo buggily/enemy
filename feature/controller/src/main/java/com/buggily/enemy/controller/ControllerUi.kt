@@ -32,9 +32,9 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.media3.common.MediaItem
-import com.buggily.enemy.core.ui.ArtImage
-import com.buggily.enemy.core.ui.IconButton
-import com.buggily.enemy.core.ui.SingleLineText
+import com.buggily.enemy.core.ui.composable.ArtImage
+import com.buggily.enemy.core.ui.composable.IconButton
+import com.buggily.enemy.core.ui.composable.SingleLineText
 import com.buggily.enemy.core.ui.ext.artistText
 import com.buggily.enemy.core.ui.ext.nameText
 import com.buggily.enemy.core.ui.theme.ContentAlpha

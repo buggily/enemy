@@ -67,11 +67,11 @@ private fun TracksScreen(
                 is Track -> TrackItem(
                     track = it,
                     modifier = itemModifier
+                        .clickable { trackState.onClick(it) }
                         .padding(
                             horizontal = dimensionResource(dimens.padding_large),
                             vertical = dimensionResource(dimens.padding_large_extra),
-                        )
-                        .clickable { trackState.onClick(it) },
+                        ),
                 )
                 else -> Unit
             }

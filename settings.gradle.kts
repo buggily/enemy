@@ -43,6 +43,8 @@ include(":feature:album")
 
 include(":feature:tracks")
 
+include(":feature:playlists")
+
 include(":data:album")
 include(":data:track")
 include(":data:theme")

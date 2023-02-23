@@ -1,4 +1,4 @@
-package com.buggily.enemy.core.ui
+package com.buggily.enemy.core.ui.composable
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton

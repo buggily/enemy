@@ -1,6 +1,7 @@
 package com.buggily.enemy.ui
 
 import android.content.pm.PackageManager
+import androidx.activity.ComponentActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.animateContentSize
@@ -48,7 +49,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
@@ -57,7 +57,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.buggily.enemy.EnemyActivity
 import com.buggily.enemy.R
 import com.buggily.enemy.albums.AlbumsState
 import com.buggily.enemy.controller.ControllerBottomSheet
@@ -65,10 +64,13 @@ import com.buggily.enemy.controller.ControllerScreen
 import com.buggily.enemy.controller.ControllerState
 import com.buggily.enemy.core.ext.readPermission
 import com.buggily.enemy.core.model.TimeOfDay
-import com.buggily.enemy.core.ui.IconButton
-import com.buggily.enemy.core.ui.IconFloatingActionButton
-import com.buggily.enemy.core.ui.SingleLineText
-import com.buggily.enemy.core.ui.SingleLineTextField
+import com.buggily.enemy.core.ui.UiState
+import com.buggily.enemy.core.ui.UiViewModel
+import com.buggily.enemy.core.ui.composable.IconButton
+import com.buggily.enemy.core.ui.composable.IconFloatingActionButton
+import com.buggily.enemy.core.ui.composable.SingleLineText
+import com.buggily.enemy.core.ui.composable.SingleLineTextField
+import com.buggily.enemy.core.ui.ext.ZERO
 import com.buggily.enemy.feature.album.AlbumScreen
 import com.buggily.enemy.feature.album.AlbumState
 import com.buggily.enemy.feature.orientation.OrientationScreen
@@ -79,7 +81,8 @@ import com.buggily.enemy.tracks.TracksState
 import com.buggily.enemy.ui.browse.BrowseScreen
 import com.buggily.enemy.ui.browse.BrowseState
 import com.buggily.enemy.ui.browse.BrowseViewModel
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import com.buggily.enemy.core.ui.R.dimen as dimens
 import com.buggily.enemy.core.ui.R.drawable as drawables
 import com.buggily.enemy.core.ui.R.string as strings
@@ -102,6 +105,7 @@ fun rememberEnemyAppState(
 @OptIn(ExperimentalLifecycleComposeApi::class)
 fun EnemyApp(
     viewModel: EnemyViewModel,
+    uiViewModel: UiViewModel,
     windowSizeClass: WindowSizeClass,
     modifier: Modifier = Modifier,
 ) {
@@ -112,12 +116,14 @@ fun EnemyApp(
 
     val hostState: SnackbarHostState = remember { SnackbarHostState() }
     val state: EnemyState by viewModel.state.collectAsStateWithLifecycle()
+    val uiState: UiState by uiViewModel.state.collectAsStateWithLifecycle()
 
     EnemyApp(
         appState = appState,
         hostState = hostState,
-        searchState = state.searchState,
-        greetingState = state.greetingState,
+        greetingState = uiState.greetingState,
+        searchState = uiState.searchState,
+        fabState = uiState.fabState,
         controllerState = state.controllerState,
         albumTrackState = state.albumTrackState,
         tracksTrackState = state.tracksTrackState,
@@ -134,8 +140,9 @@ fun EnemyApp(
 private fun EnemyApp(
     appState: EnemyAppState,
     hostState: SnackbarHostState,
-    greetingState: EnemyState.GreetingState,
-    searchState: EnemyState.SearchState,
+    greetingState: UiState.GreetingState,
+    searchState: UiState.SearchState,
+    fabState: UiState.FabState,
     controllerState: ControllerState,
     albumTrackState: AlbumState.TrackState,
     tracksTrackState: TracksState.TrackState,
@@ -154,7 +161,11 @@ private fun EnemyApp(
     }
 
     val orientationAlbumsState = OrientationState.AlbumsState {
-        appState.navigate(EnemyDestination.startDestination.route) {
+        val route: String = EnemyDestination.Browse.getRoute(
+            tab = BrowseState.TabState.Tab.Albums,
+        )
+
+        appState.navigate(route) {
             launchSingleTop = true
             restoreState = false
 
@@ -177,17 +188,13 @@ private fun EnemyApp(
             EnemyBottomBar(
                 appState = appState,
                 searchState = searchState,
+                fabState = fabState,
                 controllerState = controllerState,
                 modifier = Modifier.fillMaxWidth(),
             )
         },
         snackbarHost = { SnackbarHost(hostState) },
-        contentWindowInsets = WindowInsets(
-            right = 0.dp,
-            top = 0.dp,
-            left = 0.dp,
-            bottom = 0.dp
-        ),
+        contentWindowInsets = WindowInsets.ZERO,
         modifier = modifier.imePadding(),
     ) { padding: PaddingValues ->
         val permissionResult: Int = ContextCompat.checkSelfPermission(
@@ -241,18 +248,33 @@ private fun EnemyApp(
                 route = EnemyDestination.Browse.route,
                 arguments = EnemyDestination.Browse.arguments,
             ) {
-                val activity: EnemyActivity = LocalContext.current as EnemyActivity
-                val viewModel: EnemyViewModel = hiltViewModel { activity.viewModelStore }
-                val browseViewModel: BrowseViewModel = hiltViewModel()
+                val activity: ComponentActivity = LocalContext.current as ComponentActivity
+                val uiViewModel: UiViewModel = hiltViewModel { activity.viewModelStore }
+                val viewModel: BrowseViewModel = hiltViewModel()
 
                 LaunchedEffect(Unit) {
-                    viewModel.search.collectLatest {
-                        browseViewModel.onSearchChange(it)
+                    val fabEventState: Flow<UiState.FabEventState> = uiViewModel.state.map {
+                        it.fabEventState
+                    }
+
+                    fabEventState.collect {
+                        when (it) {
+                            is UiState.FabEventState.Event -> {
+                                when (it) {
+                                    is UiState.FabEventState.Event.Click -> {
+                                        viewModel.onFloatingActionButtonClick()
+                                    }
+                                }
+
+                                it.onEvent()
+                            }
+                            else -> Unit
+                        }
                     }
                 }
 
                 BrowseScreen(
-                    viewModel = browseViewModel,
+                    viewModel = viewModel,
                     albumState = albumsAlbumState,
                     trackState = tracksTrackState,
                     modifier = contentModifier,
@@ -297,7 +319,8 @@ private fun EnemyApp(
 @OptIn(ExperimentalLayoutApi::class)
 private fun EnemyBottomBar(
     appState: EnemyAppState,
-    searchState: EnemyState.SearchState,
+    searchState: UiState.SearchState,
+    fabState: UiState.FabState,
     controllerState: ControllerState,
     modifier: Modifier = Modifier,
 ) {
@@ -342,6 +365,7 @@ private fun EnemyBottomBar(
             EnemyBottomBar(
                 appState = appState,
                 searchState = searchState,
+                fabState = fabState,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(dimensionResource(R.dimen.bottom_bar)),
@@ -364,7 +388,8 @@ private fun EnemyController(
 @Composable
 private fun EnemyBottomBar(
     appState: EnemyAppState,
-    searchState: EnemyState.SearchState,
+    searchState: UiState.SearchState,
+    fabState: UiState.FabState,
     modifier: Modifier = Modifier,
 ) {
     val iconButtonModifier: Modifier = Modifier.size(dimensionResource(dimens.icon_medium))
@@ -408,7 +433,7 @@ private fun EnemyBottomBar(
             }
 
             EnemyBottomBarFloatingActionButton(
-                appState = appState,
+                fabState = fabState,
                 modifier = Modifier,
             )
         }
@@ -417,7 +442,7 @@ private fun EnemyBottomBar(
 
 @Composable
 private fun EnemyBottomBarSearchIconButton(
-    searchState: EnemyState.SearchState,
+    searchState: UiState.SearchState,
     modifier: Modifier = Modifier,
 ) {
     val painterResId: Int = if (searchState.isEnabled) {
@@ -465,7 +490,7 @@ private fun RowScope.EnemyBottomBarPreferencesIconButton(
 
 @Composable
 private fun EnemyBottomBarSearch(
-    searchState: EnemyState.SearchState,
+    searchState: UiState.SearchState,
     modifier: Modifier = Modifier,
 ) {
     AnimatedVisibility(
@@ -484,14 +509,13 @@ private fun EnemyBottomBarSearch(
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 private fun EnemySearchTextField(
-    searchState: EnemyState.SearchState,
+    searchState: UiState.SearchState,
     modifier: Modifier = Modifier,
 ) {
     SingleLineTextField(
         value = searchState.value,
         onValueChange = searchState.onChange,
         label = { BrowseSearchLabel() },
-        placeholder = { BrowseSearchPlaceholder() },
         trailingIcon = { BrowseSearchTrailingIcon(searchState) },
         colors = TextFieldDefaults.textFieldColors(
             containerColor = Color.Transparent,
@@ -511,18 +535,8 @@ private fun BrowseSearchLabel(
 }
 
 @Composable
-private fun BrowseSearchPlaceholder(
-    modifier: Modifier = Modifier,
-) {
-    SingleLineText(
-        text = stringResource(R.string.search),
-        modifier = modifier,
-    )
-}
-
-@Composable
 private fun BrowseSearchTrailingIcon(
-    searchState: EnemyState.SearchState,
+    searchState: UiState.SearchState,
     modifier: Modifier = Modifier,
 ) {
     IconButton(
@@ -536,22 +550,13 @@ private fun BrowseSearchTrailingIcon(
 
 @Composable
 private fun EnemyBottomBarFloatingActionButton(
-    appState: EnemyAppState,
+    fabState: UiState.FabState,
     modifier: Modifier = Modifier,
 ) {
     IconFloatingActionButton(
         painter = painterResource(drawables.create),
         contentDescription = stringResource(strings.create),
+        onClick = fabState.onClick,
         modifier = modifier,
-    ) {
-        val route: String = EnemyDestination.Browse.getRoute(
-            isCreate = true,
-            tab = BrowseState.TabState.Tab.Playlists,
-        )
-
-        appState.navigate(route) {
-            launchSingleTop = true
-            restoreState = false
-        }
-    }
+    )
 }

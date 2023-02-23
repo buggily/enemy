@@ -5,8 +5,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.session.MediaController
 import com.buggily.core.domain.GetRuntime
-import com.buggily.core.domain.GetTimeOfDay
 import com.buggily.enemy.controller.ControllerState
+import com.buggily.enemy.core.ext.firstIndex
 import com.buggily.enemy.core.ext.indexOfOrNull
 import com.buggily.enemy.core.model.theme.Theme
 import com.buggily.enemy.core.model.track.Track
@@ -20,7 +20,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -34,7 +33,6 @@ import kotlin.time.toDuration
 @HiltViewModel
 class EnemyViewModel @Inject constructor(
     getTheme: GetTheme,
-    private val getTimeOfDay: GetTimeOfDay,
     private val getTracksByAlbumId: GetTracksByAlbumId,
     private val getRuntime: GetRuntime,
 ) : ViewModel() {
@@ -49,19 +47,9 @@ class EnemyViewModel @Inject constructor(
     val state: StateFlow<EnemyState> get() = _state
 
     val isPlaying: Flow<Boolean>
-    val search: Flow<String>
 
     init {
         EnemyState.default.copy(
-            greetingState = EnemyState.GreetingState.default.copy(
-                timeOfDay = getTimeOfDay(),
-                onVisible = ::onGreetingVisible,
-            ),
-            searchState = EnemyState.SearchState.default.copy(
-                onClick = ::onSearchClick,
-                onChange = ::onSearchChange,
-                onClear = ::onSearchClear,
-            ),
             controllerState = ControllerState.default.copy(
                 playState = ControllerState.PlayState.default.copy(
                     onClick = ::onPlayClick,
@@ -100,16 +88,6 @@ class EnemyViewModel @Inject constructor(
                 onClick = ::onTrackClick,
             ),
         ).let { _state = MutableStateFlow(it) }
-
-        val searchState: Flow<EnemyState.SearchState> = state.map {
-            it.searchState
-        }
-
-        search = searchState.map {
-            it.value
-        }
-            .distinctUntilChanged()
-            .debounce(1000)
 
         val controllerState: Flow<ControllerState> = state.map {
             it.controllerState
@@ -210,86 +188,53 @@ class EnemyViewModel @Inject constructor(
         }
     }
 
-    private fun onGreetingVisible() = _state.update {
-        val greetingState: EnemyState.GreetingState = it.greetingState.copy(
-            isVisible = !it.greetingState.isVisible,
-        )
-
-        it.copy(greetingState = greetingState)
-    }
-
-    private fun onSearchClick() = _state.update {
-        val searchState: EnemyState.SearchState = it.searchState.copy(
-            isVisible = !it.searchState.isVisible,
-        )
-
-        it.copy(searchState = searchState)
-    }
-
-    private fun onSearchChange(value: String) = _state.update {
-        val searchState: EnemyState.SearchState = it.searchState.copy(
-            value = value,
-        )
-
-        it.copy(searchState = searchState)
-    }
-
-    private fun onSearchClear() = _state.update {
-        val searchState: EnemyState.SearchState = it.searchState.copy(
-            value = EnemyState.SearchState.default.value,
-            isVisible = !it.searchState.isVisible,
-        )
-
-        it.copy(searchState = searchState)
-    }
-
     private fun onPlayClick() = _state.update {
         val playState: ControllerState.PlayState = it.controllerState.playState
         val isPlay: Boolean = playState.isPlaying
 
-        val mediaState: EnemyState.MediaState = if (isPlay) {
-            EnemyState.MediaState.Event.Pause(
-                onEvent = ::resetMediaState,
+        val controllerEventState: EnemyState.ControllerEventState = if (isPlay) {
+            EnemyState.ControllerEventState.Event.Pause(
+                onEvent = ::resetControllerEventState,
             )
         } else {
-            EnemyState.MediaState.Event.Play.Without(
-                onEvent = ::resetMediaState,
+            EnemyState.ControllerEventState.Event.Play.Without(
+                onEvent = ::resetControllerEventState,
             )
         }
 
-        it.copy(mediaState = mediaState)
+        it.copy(controllerEventState = controllerEventState)
     }
 
     private fun onFirstNextClick() = _state.update {
-        val mediaState = EnemyState.MediaState.Event.Next.First(
-            onEvent = ::resetMediaState,
+        val controllerEventState = EnemyState.ControllerEventState.Event.Next.First(
+            onEvent = ::resetControllerEventState,
         )
 
-        it.copy(mediaState = mediaState)
+        it.copy(controllerEventState = controllerEventState)
     }
 
     private fun onLastNextClick() = _state.update {
-        val mediaState = EnemyState.MediaState.Event.Next.Last(
-            onEvent = ::resetMediaState,
+        val controllerEventState = EnemyState.ControllerEventState.Event.Next.Last(
+            onEvent = ::resetControllerEventState,
         )
 
-        it.copy(mediaState = mediaState)
+        it.copy(controllerEventState = controllerEventState)
     }
 
     private fun onFirstPreviousClick() = _state.update {
-        val mediaState = EnemyState.MediaState.Event.Previous.First(
-            onEvent = ::resetMediaState,
+        val controllerEventState = EnemyState.ControllerEventState.Event.Previous.First(
+            onEvent = ::resetControllerEventState,
         )
 
-        it.copy(mediaState = mediaState)
+        it.copy(controllerEventState = controllerEventState)
     }
 
     private fun onLastPreviousClick() = _state.update {
-        val mediaState = EnemyState.MediaState.Event.Previous.Last(
-            onEvent = ::resetMediaState,
+        val controllerEventState = EnemyState.ControllerEventState.Event.Previous.Last(
+            onEvent = ::resetControllerEventState,
         )
 
-        it.copy(mediaState = mediaState)
+        it.copy(controllerEventState = controllerEventState)
     }
 
     private fun onAlbumTrackClick(track: Track) = viewModelScope.launch {
@@ -299,25 +244,26 @@ class EnemyViewModel @Inject constructor(
         val items: List<MediaItem> = tracks.map { it.map() }
         val index: Int = tracks.indexOfOrNull(track) ?: return@launch
 
-        val mediaState = EnemyState.MediaState.Event.Play.With(
+        val controllerEventState = EnemyState.ControllerEventState.Event.Play.With(
             index = index,
             items = items,
-            onEvent = ::resetMediaState,
+            onEvent = ::resetControllerEventState,
         )
 
-        _state.update { it.copy(mediaState = mediaState) }
+        _state.update { it.copy(controllerEventState = controllerEventState) }
     }
 
     private fun onTrackClick(track: Track) = viewModelScope.launch {
         val item: MediaItem = track.map()
+        val items: List<MediaItem> = listOf(item)
 
-        val mediaState = EnemyState.MediaState.Event.Play.With(
-            index = 0,
-            items = listOf(item),
-            onEvent = ::resetMediaState,
+        val controllerEventState = EnemyState.ControllerEventState.Event.Play.With(
+            index = items.firstIndex,
+            items = items,
+            onEvent = ::resetControllerEventState,
         )
 
-        _state.update { it.copy(mediaState = mediaState) }
+        _state.update { it.copy(controllerEventState = controllerEventState) }
     }
 
     private fun onRepeatClick() = _state.update {
@@ -327,12 +273,12 @@ class EnemyViewModel @Inject constructor(
             ControllerState.RepeatState.Mode.On.All -> MediaController.REPEAT_MODE_OFF
         }
 
-        val mediaState = EnemyState.MediaState.Event.Repeat(
+        val controllerEventState = EnemyState.ControllerEventState.Event.Repeat(
             repeatMode = repeatMode,
-            onEvent = ::resetMediaState,
+            onEvent = ::resetControllerEventState,
         )
 
-        it.copy(mediaState = mediaState)
+        it.copy(controllerEventState = controllerEventState)
     }
 
     private fun onShuffleClick() = _state.update {
@@ -341,12 +287,12 @@ class EnemyViewModel @Inject constructor(
             ControllerState.ShuffleState.Mode.On -> false
         }
 
-        val mediaState = EnemyState.MediaState.Event.Shuffle(
+        val controllerEventState = EnemyState.ControllerEventState.Event.Shuffle(
             shuffleMode = shuffleMode,
-            onEvent = ::resetMediaState,
+            onEvent = ::resetControllerEventState,
         )
 
-        it.copy(mediaState = mediaState)
+        it.copy(controllerEventState = controllerEventState)
     }
 
     private fun onSeekChange(seconds: Float) {
@@ -364,15 +310,15 @@ class EnemyViewModel @Inject constructor(
     private fun onSeekChangeFinish() = _state.update {
         val seekState: ControllerState.SeekState = it.controllerState.seekState
 
-        val mediaState = EnemyState.MediaState.Event.Seek(
+        val controllerEventState = EnemyState.ControllerEventState.Event.Seek(
             milliseconds = seekState.milliseconds,
-            onEvent = ::resetMediaState,
+            onEvent = ::resetControllerEventState,
         )
 
-        it.copy(mediaState = mediaState)
+        it.copy(controllerEventState = controllerEventState)
     }
 
-    private fun resetMediaState() = _state.update {
-        it.copy(mediaState = EnemyState.MediaState.Default)
+    private fun resetControllerEventState() = _state.update {
+        it.copy(controllerEventState = EnemyState.ControllerEventState.Default)
     }
 }

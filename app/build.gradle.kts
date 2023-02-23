@@ -51,6 +51,8 @@ dependencies {
 
     implementation(project(":feature:tracks"))
 
+    implementation(project(":feature:playlists"))
+
     implementation(project(":domain:album"))
     implementation(project(":domain:track"))
     implementation(project(":domain:theme"))

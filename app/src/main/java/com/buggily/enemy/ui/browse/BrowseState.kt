@@ -1,20 +1,8 @@
 package com.buggily.enemy.ui.browse
 
 data class BrowseState(
-    val searchState: SearchState,
     val tabState: TabState,
 ) {
-
-    data class SearchState(
-        val value: String,
-    ) {
-        companion object {
-            val default: SearchState
-                get() = SearchState(
-                    value = String()
-                )
-        }
-    }
 
     data class TabState(
         val tab: Tab,
@@ -43,9 +31,6 @@ data class BrowseState(
 
             companion object {
 
-                val default: Tab
-                    get() = Albums
-
                 val values: List<Tab>
                     get() = listOf(
                         Albums,
@@ -62,7 +47,7 @@ data class BrowseState(
         companion object {
             val default: TabState
                 get() = TabState(
-                    tab = Tab.default,
+                    tab = Tab.Albums,
                     tabs = Tab.values,
                     onClick = {},
                 )
@@ -73,7 +58,6 @@ data class BrowseState(
         val default: BrowseState
             get() = BrowseState(
                 tabState = TabState.default,
-                searchState = SearchState.default,
             )
     }
 }

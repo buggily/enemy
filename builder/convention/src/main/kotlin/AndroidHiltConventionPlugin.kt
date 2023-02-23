@@ -9,6 +9,7 @@ class AndroidHiltConventionPlugin : Plugin<Project> {
 
     override fun apply(target: Project) = with(target) {
         with(pluginManager) {
+            apply("org.jetbrains.kotlin.android")
             apply("org.jetbrains.kotlin.kapt")
             apply("dagger.hilt.android.plugin")
         }

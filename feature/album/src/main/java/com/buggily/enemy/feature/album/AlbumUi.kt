@@ -32,9 +32,9 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import com.buggily.enemy.core.model.album.Album
 import com.buggily.enemy.core.model.track.TrackUi
-import com.buggily.enemy.core.ui.ArtImage
+import com.buggily.enemy.core.ui.composable.ArtImage
 import com.buggily.enemy.core.ui.R
-import com.buggily.enemy.core.ui.SingleLineText
+import com.buggily.enemy.core.ui.composable.SingleLineText
 import com.buggily.enemy.core.ui.ext.artistText
 import com.buggily.enemy.core.ui.ext.discText
 import com.buggily.enemy.core.ui.ext.nameText

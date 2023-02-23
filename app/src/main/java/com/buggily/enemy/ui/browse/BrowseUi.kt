@@ -1,5 +1,6 @@
 package com.buggily.enemy.ui.browse
 
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
@@ -22,6 +24,9 @@ import com.buggily.enemy.R
 import com.buggily.enemy.albums.AlbumsScreen
 import com.buggily.enemy.albums.AlbumsState
 import com.buggily.enemy.albums.AlbumsViewModel
+import com.buggily.enemy.core.ui.UiViewModel
+import com.buggily.enemy.feature.playlists.PlaylistsScreen
+import com.buggily.enemy.feature.playlists.PlaylistsViewModel
 import com.buggily.enemy.tracks.TracksScreen
 import com.buggily.enemy.tracks.TracksState
 import com.buggily.enemy.tracks.TracksViewModel
@@ -54,7 +59,6 @@ private fun BrowseScreen(
 ) {
     BrowseScreen(
         tabState = state.tabState,
-        searchState = state.searchState,
         albumState = albumState,
         trackState = trackState,
         modifier = modifier,
@@ -64,7 +68,6 @@ private fun BrowseScreen(
 @Composable
 private fun BrowseScreen(
     tabState: BrowseState.TabState,
-    searchState: BrowseState.SearchState,
     albumState: AlbumsState.AlbumState,
     trackState: TracksState.TrackState,
     modifier: Modifier = Modifier,
@@ -140,7 +143,9 @@ private fun BrowseContent(
             trackState = trackState,
             modifier = modifier,
         )
-        else -> Unit
+        is BrowseState.TabState.Tab.Playlists -> BrowsePlaylistsContent(
+            modifier = modifier,
+        )
     }
 }
 
@@ -149,17 +154,18 @@ private fun BrowseAlbumsContent(
     albumState: AlbumsState.AlbumState,
     modifier: Modifier = Modifier,
 ) {
-    val viewModel: BrowseViewModel = hiltViewModel()
-    val albumsViewModel: AlbumsViewModel = hiltViewModel()
+    val activity: ComponentActivity = LocalContext.current as ComponentActivity
+    val uiViewModel: UiViewModel = hiltViewModel { activity.viewModelStore }
+    val viewModel: AlbumsViewModel = hiltViewModel()
 
     LaunchedEffect(Unit) {
-        viewModel.search.collectLatest {
-            albumsViewModel.setSearch(it)
+        uiViewModel.search.collectLatest {
+            viewModel.onSearchChange(it)
         }
     }
 
     AlbumsScreen(
-        viewModel = albumsViewModel,
+        viewModel = viewModel,
         albumState = albumState,
         modifier = modifier,
     )
@@ -170,18 +176,39 @@ private fun BrowseTracksContent(
     trackState: TracksState.TrackState,
     modifier: Modifier = Modifier,
 ) {
-    val viewModel: BrowseViewModel = hiltViewModel()
-    val tracksViewModel: TracksViewModel = hiltViewModel()
+    val activity: ComponentActivity = LocalContext.current as ComponentActivity
+    val uiViewModel: UiViewModel = hiltViewModel { activity.viewModelStore }
+    val viewModel: TracksViewModel = hiltViewModel()
 
     LaunchedEffect(Unit) {
-        viewModel.search.collectLatest {
-            tracksViewModel.setSearch(it)
+        uiViewModel.search.collectLatest {
+            viewModel.onSearchChange(it)
         }
     }
 
     TracksScreen(
-        viewModel = tracksViewModel,
+        viewModel = hiltViewModel(),
         trackState = trackState,
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun BrowsePlaylistsContent(
+    modifier: Modifier = Modifier,
+) {
+    val activity: ComponentActivity = LocalContext.current as ComponentActivity
+    val uiViewModel: UiViewModel = hiltViewModel { activity.viewModelStore }
+    val viewModel: PlaylistsViewModel = hiltViewModel()
+
+    LaunchedEffect(Unit) {
+        uiViewModel.search.collectLatest {
+            viewModel.onSearchChange(it)
+        }
+    }
+
+    PlaylistsScreen(
+        viewModel = viewModel,
         modifier = modifier,
     )
 }
