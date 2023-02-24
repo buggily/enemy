@@ -8,7 +8,7 @@
     <dimen name="padding_large_extra_extra">64dp</dimen>
 
     <dimen name="icon_medium">24dp</dimen>
-    <dimen name="icon_large">48dp</dimen>
+    <dimen name="icon_large">32dp</dimen>
 
     <dimen name="item">128dp</dimen>
 </resources>

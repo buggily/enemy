@@ -10,12 +10,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
@@ -31,9 +32,9 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.media3.common.MediaItem
-import com.buggily.enemy.core.ui.ArtImage
-import com.buggily.enemy.core.ui.IconButton
-import com.buggily.enemy.core.ui.SingleLineText
+import com.buggily.enemy.core.ui.composable.ArtImage
+import com.buggily.enemy.core.ui.composable.IconButton
+import com.buggily.enemy.core.ui.composable.SingleLineText
 import com.buggily.enemy.core.ui.ext.artistText
 import com.buggily.enemy.core.ui.ext.nameText
 import com.buggily.enemy.core.ui.theme.ContentAlpha
@@ -81,8 +82,8 @@ fun ControllerBottomSheet(
             state = state,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(dimensionResource(dimens.padding_large))
-                .navigationBarsPadding(),
+                .systemBarsPadding()
+                .padding(dimensionResource(dimens.padding_large)),
         )
     }
 }
@@ -432,8 +433,10 @@ private fun ControllerSeekBar(
         ) {
             ControllerSeekBarText(
                 text = seekState.current.text,
-                modifier = Modifier.weight(1f),
+                modifier = Modifier,
             )
+
+            Spacer(Modifier.weight(1f))
 
             ControllerSeekBarText(
                 text = seekState.runtime.text,

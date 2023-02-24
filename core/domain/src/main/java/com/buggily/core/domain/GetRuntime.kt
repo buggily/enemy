@@ -1,11 +1,11 @@
 package com.buggily.core.domain
 
+import com.buggily.enemy.core.ext.isNonNegative
 import com.buggily.enemy.core.model.Runtime
 import java.util.Locale
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
-import com.buggily.enemy.core.ext.isNonNegative
 
 class GetRuntime(
     private val locale: Locale,
@@ -17,6 +17,7 @@ class GetRuntime(
     }
 
     operator fun invoke(duration: Duration): Runtime {
+        require(duration.isFinite())
         require(duration.isNonNegative())
 
         val minutesDuration: Duration = duration.inWholeMinutes.toDuration(DurationUnit.MINUTES)

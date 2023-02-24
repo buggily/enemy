@@ -74,45 +74,21 @@ class PreferencesViewModel @Inject constructor(
         setDynamicState(dynamic)
     }
 
-    private fun setSchemeState(scheme: Theme.Scheme) = state.value.let {
+    private fun setSchemeState(scheme: Theme.Scheme) = _state.update {
         val themeState: PreferencesState.ThemeState = it.themeState
         val schemeState: PreferencesState.ThemeState.SchemeState = themeState.schemeState.copy(
             scheme = scheme,
         )
 
-        setSchemeStateOfThemeState(schemeState)
+        it.copy(themeState = it.themeState.copy(schemeState = schemeState))
     }
 
-    private fun setDynamicState(dynamic: Theme.Dynamic) = state.value.let {
+    private fun setDynamicState(dynamic: Theme.Dynamic) = _state.update {
         val themeState: PreferencesState.ThemeState = it.themeState
         val dynamicState: PreferencesState.ThemeState.DynamicState = themeState.dynamicState.copy(
             dynamic = dynamic,
         )
 
-        setDynamicStateOfThemeState(dynamicState)
-    }
-
-    private fun setSchemeStateOfThemeState(
-        schemeState: PreferencesState.ThemeState.SchemeState,
-    ) = state.value.let {
-        val themeState: PreferencesState.ThemeState = it.themeState.copy(
-            schemeState = schemeState,
-        )
-
-        setThemeState(themeState)
-    }
-
-    private fun setDynamicStateOfThemeState(
-        dynamicState: PreferencesState.ThemeState.DynamicState,
-    ) = state.value.let {
-        val themeState: PreferencesState.ThemeState = it.themeState.copy(
-            dynamicState = dynamicState,
-        )
-
-        setThemeState(themeState)
-    }
-
-    private fun setThemeState(themeState: PreferencesState.ThemeState) = _state.update {
-        it.copy(themeState = themeState)
+        it.copy(themeState = it.themeState.copy(dynamicState = dynamicState))
     }
 }

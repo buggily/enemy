@@ -3,24 +3,22 @@ package com.buggily.enemy.ui
 import androidx.media3.common.MediaItem
 import com.buggily.enemy.controller.ControllerState
 import com.buggily.enemy.feature.album.AlbumState
-import com.buggily.enemy.navigation.EnemyDestination
 import com.buggily.enemy.tracks.TracksState
 
 data class EnemyState(
-    val destinationState: DestinationState,
-    val mediaState: MediaState,
     val controllerState: ControllerState,
+    val controllerEventState: ControllerEventState,
     val albumTrackState: AlbumState.TrackState,
     val tracksTrackState: TracksState.TrackState,
 ) {
 
-    sealed class MediaState {
+    sealed class ControllerEventState {
 
-        object Default : MediaState()
+        object Default : ControllerEventState()
 
         sealed class Event(
             open val onEvent: () -> Unit,
-        ) : MediaState() {
+        ) : ControllerEventState() {
 
             sealed class Play(
                 override val onEvent: () -> Unit,
@@ -110,32 +108,11 @@ data class EnemyState(
         }
     }
 
-    data class AppControllerState(
-        val isVisible: Boolean,
-        val onClick: () -> Unit,
-    )
-
-    data class DestinationState(
-        val destinations: List<EnemyDestination.Top>,
-    ) {
-
-        val isBottomBarVisible: Boolean
-            get() = destinations.size > 1
-
-        companion object {
-            val default: DestinationState
-                get() = DestinationState(
-                    destinations = EnemyDestination.Top.values,
-                )
-        }
-    }
-
     companion object {
         val default: EnemyState
             get() = EnemyState(
-                destinationState = DestinationState.default,
-                mediaState = MediaState.Default,
                 controllerState = ControllerState.default,
+                controllerEventState = ControllerEventState.Default,
                 albumTrackState = AlbumState.TrackState.default,
                 tracksTrackState = TracksState.TrackState.default,
             )

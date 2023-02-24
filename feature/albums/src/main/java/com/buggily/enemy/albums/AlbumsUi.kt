@@ -21,11 +21,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.buggily.enemy.core.model.album.Album
-import com.buggily.enemy.core.ui.ArtImage
+import com.buggily.enemy.core.ui.composable.ArtImage
 import com.buggily.enemy.core.ui.ext.artistText
 import com.buggily.enemy.core.ui.ext.items
 import com.buggily.enemy.core.ui.ext.nameText
@@ -33,7 +32,6 @@ import com.buggily.enemy.core.ui.theme.ContentAlpha
 import com.buggily.enemy.core.ui.R.dimen as dimens
 
 @Composable
-@OptIn(ExperimentalLifecycleComposeApi::class)
 fun AlbumsScreen(
     viewModel: AlbumsViewModel,
     albumState: AlbumsState.AlbumState,
@@ -98,11 +96,11 @@ private fun AlbumsAlbumGrid(
                 is Album -> AlbumItem(
                     album = it,
                     modifier = Modifier
-                        .fillMaxSize()
                         .defaultMinSize(
                             minWidth = dimensionResource(dimens.item),
                             minHeight = dimensionResource(dimens.item),
                         )
+                        .fillMaxSize()
                         .aspectRatio(1f)
                         .animateItemPlacement()
                         .clickable { albumState.onClick(it) },

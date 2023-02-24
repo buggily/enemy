@@ -1,6 +1,7 @@
 plugins {
     id("enemy.android.library")
     id("enemy.android.library.compose")
+    id("enemy.android.hilt")
 }
 
 android {
@@ -8,6 +9,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:domain"))
     implementation(project(":core:model"))
     implementation(project(":core:ext"))
 

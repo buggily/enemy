@@ -30,20 +30,18 @@ class TracksViewModel @Inject constructor(
             it.searchState
         }
 
-        tracks = searchState.flatMapMerge {
-            getTracksPaging(it.value)
-        }.cachedIn(viewModelScope)
+        val search: Flow<String> = searchState.map {
+            it.value
+        }
+
+        tracks = search.flatMapMerge { getTracksPaging(it) }.cachedIn(viewModelScope)
     }
 
-    fun setSearch(value: String) = state.value.let {
+    fun onSearchChange(value: String) = _state.update {
         val searchState: TracksState.SearchState = it.searchState.copy(
             value = value,
         )
 
-        setSearchState(searchState)
-    }
-
-    private fun setSearchState(searchState: TracksState.SearchState) = _state.update {
         it.copy(searchState = searchState)
     }
 }

@@ -30,20 +30,18 @@ class AlbumsViewModel @Inject constructor(
             it.searchState
         }
 
-        albums = searchState.flatMapMerge {
-            getAlbumsPaging(it.value)
-        }.cachedIn(viewModelScope)
+        val search: Flow<String> = searchState.map {
+            it.value
+        }
+
+        albums = search.flatMapMerge { getAlbumsPaging(it) }.cachedIn(viewModelScope)
     }
 
-    fun setSearch(value: String) = state.value.let {
+    fun onSearchChange(value: String) = _state.update {
         val searchState: AlbumsState.SearchState = it.searchState.copy(
             value = value,
         )
 
-        setSearchState(searchState)
-    }
-
-    private fun setSearchState(searchState: AlbumsState.SearchState) = _state.update {
         it.copy(searchState = searchState)
     }
 }

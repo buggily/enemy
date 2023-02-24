@@ -5,6 +5,8 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.buggily.enemy.feature.album.AlbumViewModel
+import com.buggily.enemy.ui.browse.BrowseState
+import com.buggily.enemy.ui.browse.BrowseViewModel
 
 sealed class EnemyDestination {
 
@@ -53,7 +55,7 @@ sealed class EnemyDestination {
 
         sealed class Expression(
             override val name: String,
-            open val expression: String,
+            open val expression: String?,
         ) : Argument(
             name = name,
         ) {
@@ -68,7 +70,7 @@ sealed class EnemyDestination {
 
             class Query(
                 override val name: String,
-                override val expression: String,
+                override val expression: String?,
             ) : Expression(
                 name = name,
                 expression = expression,
@@ -127,7 +129,7 @@ sealed class EnemyDestination {
         var route: String = route
 
         argumentExpressions.forEach {
-            route = with(it) { route.replace(value, expression) }
+            route = with(it) { route.replace(value, expression.toString()) }
         }
 
         return route
@@ -139,20 +141,34 @@ sealed class EnemyDestination {
             get() = "orientation"
     }
 
-    sealed class Top : EnemyDestination() {
+    object Browse : EnemyDestination() {
 
-        object Browse : Top() {
+        override val path: String
+            get() = "browse"
 
-            override val path: String
-                get() = "browse"
-        }
+        override val pageArgumentConfigs: List<Argument.Config.Page>
+            get() = listOf(tabPageArgumentConfig)
 
-        companion object {
-            val values: List<Top>
-                get() = listOf(
-                    Browse,
+        fun getRoute(
+            tab: BrowseState.TabState.Tab,
+        ): String {
+            val tabPageArgumentExpression: Argument.Expression.Page =
+                Argument.Expression.Page(
+                    name = tabPageArgumentConfig.name,
+                    expression = tab.toString(),
                 )
+
+            return getRoute(
+                pageArgumentExpressions = listOf(tabPageArgumentExpression),
+                queryArgumentExpressions = emptyList(),
+            )
         }
+
+        private val tabPageArgumentConfig: Argument.Config.Page
+            get() = Argument.Config.Page(
+                name = BrowseViewModel.tab,
+                type = NavType.StringType,
+            )
     }
 
     object Album : EnemyDestination() {
@@ -197,7 +213,7 @@ sealed class EnemyDestination {
     companion object {
 
         val startDestination: EnemyDestination
-            get() = Top.Browse
+            get() = Browse
 
         fun get(destination: NavDestination?): EnemyDestination? = values.find {
             it.route == destination?.route
@@ -206,7 +222,7 @@ sealed class EnemyDestination {
         private val values: List<EnemyDestination>
             get() = listOf(
                 Orientation,
-                Top.Browse,
+                Browse,
                 Album,
                 Preferences,
                 Controller,

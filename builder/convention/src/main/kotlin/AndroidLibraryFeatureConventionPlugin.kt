@@ -11,7 +11,6 @@ class AndroidLibraryFeatureConventionPlugin : Plugin<Project> {
         with(pluginManager) {
             apply("enemy.android.library")
             apply("enemy.android.hilt")
-            apply("org.jetbrains.kotlin.kapt")
         }
 
         val libs: VersionCatalog = getLibs()

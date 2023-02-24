@@ -6,8 +6,8 @@ import androidx.media3.common.MediaItem
 import androidx.media3.session.MediaController
 import com.buggily.core.domain.GetRuntime
 import com.buggily.enemy.controller.ControllerState
+import com.buggily.enemy.core.ext.firstIndex
 import com.buggily.enemy.core.ext.indexOfOrNull
-import com.buggily.enemy.core.ext.isNegative
 import com.buggily.enemy.core.model.theme.Theme
 import com.buggily.enemy.core.model.track.Track
 import com.buggily.enemy.core.ui.ext.map
@@ -102,36 +102,35 @@ class EnemyViewModel @Inject constructor(
         }.distinctUntilChanged()
     }
 
-    fun setIsPlaying(isPlaying: Boolean) = state.value.let {
+    fun setIsPlaying(isPlaying: Boolean) = _state.update {
         val playState: ControllerState.PlayState = it.controllerState.playState.copy(
             isPlaying = isPlaying,
         )
 
-        setPlayStateOfControllerState(playState)
+        it.copy(controllerState = it.controllerState.copy(playState = playState))
     }
 
-    fun setIsLoading(isLoading: Boolean) = state.value.let {
+    fun setIsLoading(isLoading: Boolean) = _state.update {
         val playState: ControllerState.PlayState = it.controllerState.playState.copy(
             isEnabled = !isLoading,
         )
 
-        setPlayStateOfControllerState(playState)
+        it.copy(controllerState = it.controllerState.copy(playState = playState))
     }
 
     fun setPosition(position: Long) {
-        val duration: Duration = position.toDuration(DurationUnit.MILLISECONDS)
-        onSeekChange(duration)
+        onSeekChange(position.toDuration(DurationUnit.MILLISECONDS))
     }
 
-    fun setMediaItem(mediaItem: MediaItem?) = state.value.let {
+    fun setMediaItem(mediaItem: MediaItem?) = _state.update {
         val controllerState: ControllerState = it.controllerState.copy(
             mediaItem = mediaItem,
         )
 
-        setControllerState(controllerState)
+        it.copy(controllerState = controllerState)
     }
 
-    fun setRepeatMode(repeatMode: Int) = state.value.let {
+    fun setRepeatMode(repeatMode: Int) = _state.update {
         val mode: ControllerState.RepeatState.Mode = when (repeatMode) {
             MediaController.REPEAT_MODE_ONE -> ControllerState.RepeatState.Mode.On.One
             MediaController.REPEAT_MODE_ALL -> ControllerState.RepeatState.Mode.On.All
@@ -142,10 +141,10 @@ class EnemyViewModel @Inject constructor(
             mode = mode,
         )
 
-        setRepeatStateOfControllerState(repeatState)
+        it.copy(controllerState = it.controllerState.copy(repeatState = repeatState))
     }
 
-    fun setShuffleMode(shuffleMode: Boolean) = state.value.let {
+    fun setShuffleMode(shuffleMode: Boolean) = _state.update {
         val mode: ControllerState.ShuffleState.Mode = when (shuffleMode) {
             true -> ControllerState.ShuffleState.Mode.On
             false -> ControllerState.ShuffleState.Mode.Off
@@ -155,82 +154,87 @@ class EnemyViewModel @Inject constructor(
             mode = mode,
         )
 
-        setShuffleStateOfControllerState(shuffleState)
+        it.copy(controllerState = it.controllerState.copy(shuffleState = shuffleState))
     }
 
-    fun setHasNext(hasNext: Boolean) = state.value.let {
+    fun setHasNext(hasNext: Boolean) = _state.update {
         val nextStates: ControllerState.NextStates = it.controllerState.nextStates.copy(
             isEnabled = hasNext,
         )
 
-        setNextStatesOfControllerState(nextStates)
+        it.copy(controllerState = it.controllerState.copy(nextStates = nextStates))
     }
 
-    fun setHasPrevious(hasPrevious: Boolean) = state.value.let {
+    fun setHasPrevious(hasPrevious: Boolean) = _state.update {
         val previousStates: ControllerState.PreviousStates = it.controllerState.previousStates.copy(
             isEnabled = hasPrevious,
         )
 
-        setPreviousStatesOfControllerState(previousStates)
+        it.copy(controllerState = it.controllerState.copy(previousStates = previousStates))
     }
 
-    fun setDuration(milliseconds: Long) = state.value.let {
-        if (milliseconds.isNegative) return@let
+    fun setDuration(milliseconds: Long) {
+        val start: Long = Duration.ZERO.inWholeMilliseconds
+        val endExclusive: Long = Duration.INFINITE.inWholeMilliseconds
+        val range: LongRange = start until endExclusive
+        if (milliseconds !in range) return
 
-        val seekState: ControllerState.SeekState = it.controllerState.seekState.copy(
-            runtime = getRuntime(milliseconds),
-        )
+        _state.update {
+            val seekState: ControllerState.SeekState = it.controllerState.seekState.copy(
+                runtime = getRuntime(milliseconds),
+            )
 
-        setSeekStateOfControllerState(seekState)
+            it.copy(controllerState = it.controllerState.copy(seekState = seekState))
+        }
     }
 
-    private fun onPlayClick() = state.value.let {
+    private fun onPlayClick() = _state.update {
         val playState: ControllerState.PlayState = it.controllerState.playState
         val isPlay: Boolean = playState.isPlaying
 
-        val mediaState: EnemyState.MediaState = if (isPlay) {
-            EnemyState.MediaState.Event.Pause(
-                onEvent = ::resetMediaState,
+        val controllerEventState: EnemyState.ControllerEventState = if (isPlay) {
+            EnemyState.ControllerEventState.Event.Pause(
+                onEvent = ::resetControllerEventState,
             )
         } else {
-            EnemyState.MediaState.Event.Play.Without(
-                onEvent = ::resetMediaState,
+            EnemyState.ControllerEventState.Event.Play.Without(
+                onEvent = ::resetControllerEventState,
             )
         }
 
-        setMediaState(mediaState)
+        it.copy(controllerEventState = controllerEventState)
     }
 
-    private fun onFirstNextClick() {
-        val mediaState = EnemyState.MediaState.Event.Next.First(
-            onEvent = ::resetMediaState,
+    private fun onFirstNextClick() = _state.update {
+        val controllerEventState = EnemyState.ControllerEventState.Event.Next.First(
+            onEvent = ::resetControllerEventState,
         )
 
-        setMediaState(mediaState)
+        it.copy(controllerEventState = controllerEventState)
     }
 
-    private fun onLastNextClick() {
-        val mediaState = EnemyState.MediaState.Event.Next.Last(
-            onEvent = ::resetMediaState,
+    private fun onLastNextClick() = _state.update {
+        val controllerEventState = EnemyState.ControllerEventState.Event.Next.Last(
+            onEvent = ::resetControllerEventState,
         )
 
-        setMediaState(mediaState)
+        it.copy(controllerEventState = controllerEventState)
     }
 
-    private fun onFirstPreviousClick() {
-        val mediaState = EnemyState.MediaState.Event.Previous.First(
-            onEvent = ::resetMediaState,
+    private fun onFirstPreviousClick() = _state.update {
+        val controllerEventState = EnemyState.ControllerEventState.Event.Previous.First(
+            onEvent = ::resetControllerEventState,
         )
 
-        setMediaState(mediaState)
+        it.copy(controllerEventState = controllerEventState)
     }
 
-    private fun onLastPreviousClick() {
-        val mediaState = EnemyState.MediaState.Event.Previous.Last(
-            onEvent = ::resetMediaState,
+    private fun onLastPreviousClick() = _state.update {
+        val controllerEventState = EnemyState.ControllerEventState.Event.Previous.Last(
+            onEvent = ::resetControllerEventState,
         )
 
-        setMediaState(mediaState)
+        it.copy(controllerEventState = controllerEventState)
     }
 
     private fun onAlbumTrackClick(track: Track) = viewModelScope.launch {
@@ -240,153 +244,81 @@ class EnemyViewModel @Inject constructor(
         val items: List<MediaItem> = tracks.map { it.map() }
         val index: Int = tracks.indexOfOrNull(track) ?: return@launch
 
-        val mediaState = EnemyState.MediaState.Event.Play.With(
+        val controllerEventState = EnemyState.ControllerEventState.Event.Play.With(
             index = index,
             items = items,
-            onEvent = ::resetMediaState,
+            onEvent = ::resetControllerEventState,
         )
 
-        setMediaState(mediaState)
+        _state.update { it.copy(controllerEventState = controllerEventState) }
     }
 
     private fun onTrackClick(track: Track) = viewModelScope.launch {
         val item: MediaItem = track.map()
+        val items: List<MediaItem> = listOf(item)
 
-        val mediaState = EnemyState.MediaState.Event.Play.With(
-            index = 0,
-            items = listOf(item),
-            onEvent = ::resetMediaState,
+        val controllerEventState = EnemyState.ControllerEventState.Event.Play.With(
+            index = items.firstIndex,
+            items = items,
+            onEvent = ::resetControllerEventState,
         )
 
-        setMediaState(mediaState)
+        _state.update { it.copy(controllerEventState = controllerEventState) }
     }
 
-    private fun onRepeatClick() = state.value.let {
+    private fun onRepeatClick() = _state.update {
         val repeatMode: Int = when (it.controllerState.repeatState.mode) {
             ControllerState.RepeatState.Mode.Off -> MediaController.REPEAT_MODE_ONE
             ControllerState.RepeatState.Mode.On.One -> MediaController.REPEAT_MODE_ALL
             ControllerState.RepeatState.Mode.On.All -> MediaController.REPEAT_MODE_OFF
         }
 
-        val mediaState = EnemyState.MediaState.Event.Repeat(
+        val controllerEventState = EnemyState.ControllerEventState.Event.Repeat(
             repeatMode = repeatMode,
-            onEvent = ::resetMediaState,
+            onEvent = ::resetControllerEventState,
         )
 
-        setMediaState(mediaState)
+        it.copy(controllerEventState = controllerEventState)
     }
 
-    private fun onShuffleClick() = state.value.let {
+    private fun onShuffleClick() = _state.update {
         val shuffleMode = when (it.controllerState.shuffleState.mode) {
             ControllerState.ShuffleState.Mode.Off -> true
             ControllerState.ShuffleState.Mode.On -> false
         }
 
-        val mediaState = EnemyState.MediaState.Event.Shuffle(
+        val controllerEventState = EnemyState.ControllerEventState.Event.Shuffle(
             shuffleMode = shuffleMode,
-            onEvent = ::resetMediaState,
+            onEvent = ::resetControllerEventState,
         )
 
-        setMediaState(mediaState)
+        it.copy(controllerEventState = controllerEventState)
     }
 
     private fun onSeekChange(seconds: Float) {
-        val duration: Duration = seconds.toLong().toDuration(DurationUnit.SECONDS)
-        onSeekChange(duration)
+        onSeekChange(seconds.toLong().toDuration(DurationUnit.SECONDS))
     }
 
-    private fun onSeekChange(duration: Duration) = state.value.let {
+    private fun onSeekChange(duration: Duration) = _state.update {
         val seekState: ControllerState.SeekState = it.controllerState.seekState.copy(
             current = getRuntime(duration),
         )
 
-        setSeekStateOfControllerState(seekState)
+        it.copy(controllerState = it.controllerState.copy(seekState = seekState))
     }
 
-    private fun onSeekChangeFinish() = state.value.let {
+    private fun onSeekChangeFinish() = _state.update {
         val seekState: ControllerState.SeekState = it.controllerState.seekState
 
-        val mediaState = EnemyState.MediaState.Event.Seek(
+        val controllerEventState = EnemyState.ControllerEventState.Event.Seek(
             milliseconds = seekState.milliseconds,
-            onEvent = ::resetMediaState,
+            onEvent = ::resetControllerEventState,
         )
 
-        setMediaState(mediaState)
+        it.copy(controllerEventState = controllerEventState)
     }
 
-    private fun setPlayStateOfControllerState(
-        playState: ControllerState.PlayState,
-    ) = state.value.let {
-        val controllerState: ControllerState = it.controllerState.copy(
-            playState = playState,
-        )
-
-        setControllerState(controllerState)
-    }
-
-    private fun setNextStatesOfControllerState(
-        nextStates: ControllerState.NextStates,
-    ) = state.value.let {
-        val controllerState: ControllerState = it.controllerState.copy(
-            nextStates = nextStates,
-        )
-
-        setControllerState(controllerState)
-    }
-
-    private fun setPreviousStatesOfControllerState(
-        previousStates: ControllerState.PreviousStates,
-    ) = state.value.let {
-        val controllerState: ControllerState = it.controllerState.copy(
-            previousStates = previousStates,
-        )
-
-        setControllerState(controllerState)
-    }
-
-    private fun setRepeatStateOfControllerState(
-        repeatState: ControllerState.RepeatState,
-    ) = state.value.let {
-        val controllerState: ControllerState = it.controllerState.copy(
-            repeatState = repeatState,
-        )
-
-        setControllerState(controllerState)
-    }
-
-    private fun setShuffleStateOfControllerState(
-        shuffleState: ControllerState.ShuffleState,
-    ) = state.value.let {
-        val controllerState: ControllerState = it.controllerState.copy(
-            shuffleState = shuffleState,
-        )
-
-        setControllerState(controllerState)
-    }
-
-    private fun setSeekStateOfControllerState(
-        seekState: ControllerState.SeekState,
-    ) = state.value.let {
-        val controllerState: ControllerState = it.controllerState.copy(
-            seekState = seekState
-        )
-
-        setControllerState(controllerState)
-    }
-
-    private fun setMediaState(
-        mediaState: EnemyState.MediaState,
-    ) = _state.update {
-        it.copy(mediaState = mediaState)
-    }
-
-    private fun resetMediaState() = setMediaState(
-        mediaState = EnemyState.MediaState.Default,
-    )
-
-    private fun setControllerState(
-        controllerState: ControllerState,
-    ) = _state.update {
-        it.copy(controllerState = controllerState)
+    private fun resetControllerEventState() = _state.update {
+        it.copy(controllerEventState = EnemyState.ControllerEventState.Default)
     }
 }

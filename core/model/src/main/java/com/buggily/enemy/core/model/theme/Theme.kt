@@ -6,6 +6,7 @@ data class Theme(
 ) {
 
     sealed class Scheme {
+
         object Default : Scheme()
         object Light : Scheme()
         object Dark : Scheme()
