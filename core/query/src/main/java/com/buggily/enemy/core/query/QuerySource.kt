@@ -18,4 +18,9 @@ abstract class QuerySource<Value>(
         query.bundle,
         null
     )?.use { load(it) } ?: emptyList()
+
+    fun loadFirstOrNull(query: Query): Value? = query.apply {
+        limit = Query.Limit(1)
+        offset = Query.Offset(0)
+    }.let { load(it) }.firstOrNull()
 }

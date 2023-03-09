@@ -6,5 +6,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface AlbumSourceable {
     fun getPaging(search: String): Flow<PagingData<Album>>
-    fun getByAlbumId(albumId: Long): Album?
+    suspend fun getById(id: Long): Album
 }

@@ -2,7 +2,7 @@ package com.buggily.core.domain.di
 
 import com.buggily.core.domain.GetInstant
 import com.buggily.core.domain.GetLocalDateTime
-import com.buggily.core.domain.GetTimeZone
+import com.buggily.core.domain.GetLocalDateTimeFromInstant
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,9 +15,9 @@ object GetLocalDateTimeProvider {
     @Provides
     fun provides(
         getInstant: GetInstant,
-        getTimeZone: GetTimeZone,
+        getLocalDateTimeFromInstant: GetLocalDateTimeFromInstant,
     ): GetLocalDateTime = GetLocalDateTime(
         getInstant = getInstant,
-        getTimeZone = getTimeZone,
+        getLocalDateTimeFromInstant = getLocalDateTimeFromInstant,
     )
 }

@@ -17,44 +17,40 @@ class AlbumSource(
 
     override fun getPaging(
         search: String,
-    ): Flow<PagingData<Album>> {
-        val source = AlbumPagingSource(
-            config = config,
-            source = source,
-            query = Query(
-                selections = Query.Selections(
-                    Query.Selection.Expression.Like(
-                        argIdentity = MediaStore.Audio.Albums.ALBUM,
-                        expressionIdentity = "%$search%",
+    ): Flow<PagingData<Album>> = Pager(
+        config = config,
+        pagingSourceFactory = {
+            AlbumPagingSource(
+                config = config,
+                source = source,
+                query = Query(
+                    selections = Query.Selections(
+                        Query.Selection.Expression.Like(
+                            argumentIdentity = MediaStore.Audio.Albums.ALBUM,
+                            expressionIdentity = "%$search%",
+                        ),
+                    ),
+                    sort = Query.Sort(
+                        columns = mapOf(MediaStore.Audio.Albums._ID to Query.Sort.Type.Number),
+                        direction = Query.Sort.Direction.Ascending,
                     ),
                 ),
-                sort = Query.Sort(
-                    columns = mapOf(MediaStore.Audio.Albums._ID to Query.Sort.Type.Number),
-                    direction = Query.Sort.Direction.Ascending,
-                ),
-            ),
-        )
+            )
+        },
+    ).flow
 
-        return Pager(
-            config = config,
-            pagingSourceFactory = { source },
-        ).flow
-    }
-
-    override fun getByAlbumId(albumId: Long): Album? {
-        val query = Query(
-            selections = Query.Selections(
-                Query.Selection.Expression.Equals(
-                    argIdentity = MediaStore.Audio.Albums._ID,
-                    expressionIdentity = albumId,
-                ),
+    override suspend fun getById(
+        id: Long,
+    ): Album = Query(
+        selections = Query.Selections(
+            Query.Selection.Expression.Equals(
+                argumentIdentity = MediaStore.Audio.Albums._ID,
+                expressionIdentity = id,
             ),
-            sort = Query.Sort(
-                columns = mapOf(MediaStore.Audio.Albums._ID to Query.Sort.Type.Number),
-                direction = Query.Sort.Direction.Ascending
-            ),
-        )
-
-        return source.load(query).firstOrNull()
-    }
+        ),
+        sort = Query.Sort(
+            columns = mapOf(MediaStore.Audio.Albums._ID to Query.Sort.Type.Number),
+            direction = Query.Sort.Direction.Ascending
+        ),
+    ).let { checkNotNull(source.loadFirstOrNull(it)) }
 }

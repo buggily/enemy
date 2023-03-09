@@ -27,7 +27,7 @@ object MediaSessionProvider {
             override fun onAddMediaItems(
                 mediaSession: MediaSession,
                 controller: MediaSession.ControllerInfo,
-                mediaItems: MutableList<MediaItem>
+                mediaItems: MutableList<MediaItem>,
             ): ListenableFuture<MutableList<MediaItem>> = mediaItems.map {
                 val mediaUri: Uri? = it.requestMetadata.mediaUri
                 val mediaIdFromUri: Long? = mediaUri?.let { ContentUris.parseId(mediaUri) }

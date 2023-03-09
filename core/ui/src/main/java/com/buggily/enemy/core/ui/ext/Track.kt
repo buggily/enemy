@@ -13,8 +13,8 @@ val Track.trackText: String
 val Track.artistText: String
     get() = artist.name
 
-val Track.runtimeText: String
-    get() = runtime.text
+val Track.durationText: String
+    get() = duration.text
 
 fun Track.map(): MediaItem {
     val requestMetadata: MediaItem.RequestMetadata = MediaItem.RequestMetadata.Builder()

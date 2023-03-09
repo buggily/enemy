@@ -11,12 +11,14 @@ import androidx.compose.ui.text.style.TextAlign
 fun TextButton(
     text: String,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     style: TextStyle = LocalTextStyle.current,
     textAlign: TextAlign? = null,
     onClick: () -> Unit,
 ) {
     TextButton(
         onClick = onClick,
+        enabled = enabled,
         modifier = modifier,
     ) {
         SingleLineText(

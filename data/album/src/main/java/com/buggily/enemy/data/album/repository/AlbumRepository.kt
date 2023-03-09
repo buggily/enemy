@@ -12,9 +12,11 @@ class AlbumRepository(
     private val source: AlbumSourceable,
 ) : AlbumRepositable {
 
-    override fun getByAlbumId(
-        albumId: Long,
-    ): Album? = source.getByAlbumId(albumId)?.map()
+    override suspend fun getById(
+        id: Long,
+    ): Album = source.getById(
+        id = id,
+    ).map()
 
     override fun getPaging(
         search: String,

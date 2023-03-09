@@ -22,58 +22,67 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import com.buggily.enemy.core.ext.readPermission
 import com.buggily.enemy.core.ui.composable.TextButton
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import com.buggily.enemy.core.ui.R.dimen as dimens
 
 @Composable
-@OptIn(ExperimentalLifecycleComposeApi::class)
 fun OrientationScreen(
-    albumsState: OrientationState.AlbumsState,
     viewModel: OrientationViewModel,
     modifier: Modifier = Modifier,
 ) {
-    val state: OrientationState by viewModel.state.collectAsStateWithLifecycle()
+    val uiState: OrientationUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    val context: Context = LocalContext.current
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
+    val lifecycle: Lifecycle = lifecycleOwner.lifecycle
 
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
         viewModel.onResult(it)
     }
 
     LaunchedEffect(Unit) {
-        val permissionEventState: Flow<OrientationState.PermissionEventState> = viewModel.state.map {
-            it.permissionEventState
-        }
-
-        permissionEventState.flowWithLifecycle(lifecycleOwner.lifecycle).collect {
+        viewModel.eventState.flowWithLifecycle(lifecycle).collect {
             when (it) {
-                is OrientationState.PermissionEventState.Event -> {
-                    when (it) {
-                        is OrientationState.PermissionEventState.Event.Grant -> {
-                            albumsState.onGrant()
-                        }
-                        is OrientationState.PermissionEventState.Event.Pend -> {
-                            launcher.launch(readPermission)
-                        }
-                    }
-
-                    it.onEvent()
-                }
-                else -> Unit
+                is OrientationEventState.Event -> launcher.launch(readPermission)
+                is OrientationEventState.Default -> Unit
             }
+
+            if (it is OrientationEventState.Event) it.onEvent()
         }
     }
 
+    Box(modifier) {
+        OrientationScreen(
+            uiState = uiState,
+            modifier = Modifier.fillMaxSize(),
+        )
+    }
+}
+
+@Composable
+private fun OrientationScreen(
+    uiState: OrientationUiState,
+    modifier: Modifier = Modifier,
+) {
     OrientationScreen(
-        permissionState = state.permissionState,
+        permissionState = uiState.permissionState,
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun OrientationScreen(
+    permissionState: OrientationUiState.PermissionState,
+    modifier: Modifier = Modifier,
+) {
+    val context: Context = LocalContext.current
+
+    OrientationScreen(
+        permissionState = permissionState,
         modifier = modifier,
     ) {
         TextButton(
@@ -83,23 +92,23 @@ fun OrientationScreen(
             ContextCompat.checkSelfPermission(
                 context,
                 readPermission
-            ).let { viewModel.onResultCheck(it) }
+            ).let { permissionState.onClick(it) }
         }
     }
 }
 
 @Composable
-fun OrientationScreen(
-    permissionState: OrientationState.PermissionState,
+private fun OrientationScreen(
+    permissionState: OrientationUiState.PermissionState,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
     when (permissionState) {
-        is OrientationState.PermissionState.Default -> OrientationScreenDefault(
+        is OrientationUiState.PermissionState.Default -> OrientationScreenDefault(
             content = content,
             modifier = modifier,
         )
-        is OrientationState.PermissionState.Deny -> OrientationScreenDeny(
+        is OrientationUiState.PermissionState.Deny -> OrientationScreenDeny(
             content = content,
             modifier = modifier,
         )

@@ -1,8 +1,5 @@
 <resources>
     <string name="enemy">enemy</string>
-    <string name="albums">albums</string>
-    <string name="tracks">tracks</string>
-    <string name="playlists">playlists</string>
 
     <string name="greeting">good %1$s</string>
     <string name="morning">morning</string>

@@ -1,20 +1,29 @@
 package com.buggily.enemy.feature.album
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -25,96 +34,280 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import com.buggily.enemy.core.model.album.Album
 import com.buggily.enemy.core.model.track.TrackUi
-import com.buggily.enemy.core.ui.composable.ArtImage
+import com.buggily.enemy.core.ui.LocalWindowSizeClass
 import com.buggily.enemy.core.ui.R
+import com.buggily.enemy.core.ui.composable.ArtImage
 import com.buggily.enemy.core.ui.composable.SingleLineText
 import com.buggily.enemy.core.ui.ext.artistText
 import com.buggily.enemy.core.ui.ext.discText
+import com.buggily.enemy.core.ui.ext.durationText
+import com.buggily.enemy.core.ui.ext.floatResource
 import com.buggily.enemy.core.ui.ext.nameText
-import com.buggily.enemy.core.ui.ext.runtimeText
 import com.buggily.enemy.core.ui.ext.trackText
-import com.buggily.enemy.core.ui.theme.ContentAlpha
 import com.buggily.enemy.core.ui.R.dimen as dimens
 import com.buggily.enemy.core.ui.R.string as strings
 
 @Composable
-@OptIn(ExperimentalLifecycleComposeApi::class)
 fun AlbumScreen(
-    trackState: AlbumState.TrackState,
     viewModel: AlbumViewModel,
     modifier: Modifier = Modifier,
 ) {
-    val state: AlbumState by viewModel.state.collectAsStateWithLifecycle()
+    val uiState: AlbumUiState by viewModel.uiState.collectAsStateWithLifecycle()
     val tracks: LazyPagingItems<TrackUi> = viewModel.tracks.collectAsLazyPagingItems()
 
-    AlbumScreen(
-        state = state,
-        tracks = tracks,
-        trackState = trackState,
-        modifier = modifier,
-    )
-}
-
-@Composable
-fun AlbumScreen(
-    state: AlbumState,
-    tracks: LazyPagingItems<TrackUi>,
-    trackState: AlbumState.TrackState,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.Start,
-        modifier = modifier,
-    ) {
-        AlbumHeader(
-            state = state,
-            modifier = Modifier
-                .fillMaxSize()
-                .weight(1f),
-        )
-
-        AlbumTracksColumn(
+    Box(modifier) {
+        AlbumScreen(
+            uiState = uiState,
             tracks = tracks,
-            trackState = trackState,
-            modifier = Modifier
-                .fillMaxSize()
-                .weight(2f),
+            modifier = Modifier.fillMaxSize(),
         )
     }
 }
 
 @Composable
-private fun AlbumHeader(
-    state: AlbumState,
+private fun AlbumScreen(
+    uiState: AlbumUiState,
+    tracks: LazyPagingItems<TrackUi>,
+    modifier: Modifier = Modifier,
+) {
+    AlbumScreen(
+        album = uiState.album,
+        trackState = uiState.trackState,
+        tracks = tracks,
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun AlbumScreen(
+    album: Album?,
+    trackState: AlbumUiState.TrackState,
+    tracks: LazyPagingItems<TrackUi>,
+    modifier: Modifier = Modifier,
+) {
+    when (LocalWindowSizeClass.current.heightSizeClass) {
+        WindowHeightSizeClass.Compact -> AlbumScreenCompact(
+            album = album,
+            trackState = trackState,
+            tracks = tracks,
+            modifier = modifier,
+        )
+        else -> AlbumScreenMedium(
+            album = album,
+            trackState = trackState,
+            tracks = tracks,
+            modifier = modifier,
+        )
+    }
+}
+
+@Composable
+private fun AlbumScreenCompact(
+    album: Album?,
+    trackState: AlbumUiState.TrackState,
+    tracks: LazyPagingItems<TrackUi>,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        horizontalArrangement = Arrangement.Start,
+        verticalAlignment = Alignment.Top,
+        modifier = modifier,
+    ) {
+        val itemModifier: Modifier = Modifier.fillMaxHeight()
+
+        when (album) {
+            is Album -> {
+                AlbumHeaderCompact(
+                    album = album,
+                    modifier = itemModifier.weight(1f),
+                )
+            }
+        }
+
+        LazyColumn(
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.Start,
+            contentPadding = WindowInsets.systemBars.asPaddingValues(),
+            modifier = itemModifier.weight(2f),
+        ) {
+            items(
+                items = tracks,
+                key = {
+                    when (it) {
+                        is TrackUi.Item -> it.track.id
+                        is TrackUi.Separator.Disc -> it.disc
+                    }
+                },
+            ) {
+                when (it) {
+                    is TrackUi.Item -> AlbumTrackItem(
+                        trackItem = it,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { trackState.onClick(it.track) }
+                            .padding(
+                                horizontal = dimensionResource(dimens.padding_large),
+                                vertical = dimensionResource(dimens.padding_large_extra),
+                            ),
+                    )
+                    is TrackUi.Separator.Disc -> AlbumDiscItem(
+                        trackSeparator = it,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    else -> Unit
+                }
+            }
+        }
+    }
+}
+
+@Composable
+@OptIn(ExperimentalFoundationApi::class)
+private fun AlbumScreenMedium(
+    album: Album?,
+    trackState: AlbumUiState.TrackState,
+    tracks: LazyPagingItems<TrackUi>,
+    modifier: Modifier = Modifier,
+) {
+    LazyColumn(
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.Start,
+        contentPadding = WindowInsets.navigationBars.asPaddingValues(),
+        modifier = modifier,
+    ) {
+        val itemModifier: Modifier = Modifier.fillMaxWidth()
+
+        when (album) {
+            is Album -> stickyHeader {
+                AlbumHeaderMedium(
+                    album = album,
+                    modifier = itemModifier.height(IntrinsicSize.Min),
+                )
+            }
+        }
+
+        items(
+            items = tracks,
+            key = {
+                when (it) {
+                    is TrackUi.Item -> it.track.id
+                    is TrackUi.Separator.Disc -> it.disc
+                }
+            },
+        ) {
+            when (it) {
+                is TrackUi.Item -> AlbumTrackItem(
+                    trackItem = it,
+                    modifier = itemModifier
+                        .clickable { trackState.onClick(it.track) }
+                        .padding(
+                            horizontal = dimensionResource(dimens.padding_large),
+                            vertical = dimensionResource(dimens.padding_large_extra),
+                        ),
+                )
+                is TrackUi.Separator.Disc -> AlbumDiscItem(
+                    trackSeparator = it,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                else -> Unit
+            }
+        }
+    }
+}
+
+@Composable
+private fun AlbumHeaderCompact(
+    album: Album,
     modifier: Modifier = Modifier,
 ) {
     Surface(
         color = MaterialTheme.colorScheme.secondaryContainer,
         modifier = modifier,
     ) {
-        when (val album: Album? = state.album) {
-            is Album -> AlbumHeaderBackground(
-                album = album,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .alpha(ContentAlpha.low),
-            )
-        }
+        val itemModifier: Modifier = Modifier.fillMaxSize()
 
-        AlbumHeaderForeground(
-            album = state,
-            modifier = Modifier
-                .fillMaxSize()
+        AlbumHeaderBackground(
+            album = album,
+            modifier = itemModifier.alpha(floatResource(dimens.alpha_low)),
+        )
+
+        AlbumHeaderCompactForeground(
+            album = album,
+            modifier = itemModifier
+                .systemBarsPadding()
+                .padding(dimensionResource(dimens.padding_large)),
+        )
+    }
+}
+
+@Composable
+private fun AlbumHeaderMedium(
+    album: Album,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        color = MaterialTheme.colorScheme.secondaryContainer,
+        modifier = modifier,
+    ) {
+        val itemModifier: Modifier = Modifier.fillMaxSize()
+
+        AlbumHeaderBackground(
+            album = album,
+            modifier = itemModifier.alpha(floatResource(dimens.alpha_low)),
+        )
+
+        AlbumHeaderMediumForeground(
+            album = album,
+            modifier = itemModifier
                 .statusBarsPadding()
                 .padding(dimensionResource(dimens.padding_large)),
+        )
+    }
+}
+
+@Composable
+private fun AlbumHeaderCompactForeground(
+    album: Album,
+    modifier: Modifier = Modifier,
+) {
+    Box(modifier) {
+        AlbumHeaderText(
+            album = album,
+            modifier = Modifier.fillMaxSize(),
+        )
+    }
+}
+
+@Composable
+private fun AlbumHeaderMediumForeground(
+    album: Album,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(
+            space = dimensionResource(dimens.padding_large),
+            alignment = Alignment.Start,
+        ),
+        verticalAlignment = Alignment.Bottom,
+        modifier = modifier,
+    ) {
+        AlbumHeaderImage(
+            album = album,
+            modifier = Modifier
+                .weight(1f)
+                .aspectRatio(1f)
+                .clip(MaterialTheme.shapes.medium),
+        )
+
+        AlbumHeaderText(
+            album = album,
+            modifier = Modifier.weight(1f)
         )
     }
 }
@@ -132,119 +325,44 @@ private fun AlbumHeaderBackground(
 }
 
 @Composable
-private fun AlbumHeaderForeground(
-    album: AlbumState,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(
-            space = dimensionResource(dimens.padding_large),
-            alignment = Alignment.Start,
-        ),
-        verticalAlignment = Alignment.Bottom,
-        modifier = modifier,
-    ) {
-        AlbumHeaderImage(
-            state = album,
-            modifier = Modifier
-                .fillMaxHeight()
-                .aspectRatio(1f)
-                .clip(MaterialTheme.shapes.medium),
-        )
-
-        AlbumHeaderText(
-            state = album,
-            modifier = Modifier
-                .fillMaxSize()
-                .weight(1f),
-        )
-    }
-}
-
-@Composable
 private fun AlbumHeaderImage(
-    state: AlbumState,
+    album: Album,
     modifier: Modifier = Modifier,
 ) {
-    when (val album: Album? = state.album) {
-        is Album -> Box(modifier) {
-            ArtImage(
-                artable = album,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxWidth(),
-            )
-        }
+    Box(modifier) {
+        ArtImage(
+            artable = album,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxWidth(),
+        )
     }
 }
 
 @Composable
 private fun AlbumHeaderText(
-    state: AlbumState,
+    album: Album,
     modifier: Modifier = Modifier,
 ) {
-    when (val album: Album? = state.album) {
-        is Album -> Column(
-            verticalArrangement = Arrangement.spacedBy(
-                space = dimensionResource(dimens.padding_small),
-                alignment = Alignment.Bottom,
-            ),
-            horizontalAlignment = Alignment.End,
-            modifier = modifier,
-        ) {
-            Text(
-                text = album.nameText,
-                textAlign = TextAlign.End,
-                style = MaterialTheme.typography.titleMedium,
-            )
-
-            Text(
-                text = album.artistText,
-                textAlign = TextAlign.End,
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.alpha(ContentAlpha.medium),
-            )
-        }
-    }
-}
-
-@Composable
-private fun AlbumTracksColumn(
-    tracks: LazyPagingItems<TrackUi>,
-    trackState: AlbumState.TrackState,
-    modifier: Modifier = Modifier,
-) {
-    LazyColumn(
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.Start,
+    Column(
+        verticalArrangement = Arrangement.spacedBy(
+            space = dimensionResource(dimens.padding_small),
+            alignment = Alignment.Bottom,
+        ),
+        horizontalAlignment = Alignment.End,
         modifier = modifier,
     ) {
-        items(
-            items = tracks,
-            key = {
-                when (it) {
-                    is TrackUi.Item -> it.track.id
-                    is TrackUi.Separator.Disc -> it.disc
-                }
-            },
-        ) {
-            when (it) {
-                is TrackUi.Item -> AlbumTrackItem(
-                    trackItem = it,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { trackState.onClick(it.track) }
-                        .padding(
-                            horizontal = dimensionResource(dimens.padding_large),
-                            vertical = dimensionResource(dimens.padding_large_extra),
-                        ),
-                )
-                is TrackUi.Separator.Disc -> AlbumDiscItem(
-                    trackSeparator = it,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-                else -> Unit
-            }
-        }
+        Text(
+            text = album.nameText,
+            textAlign = TextAlign.End,
+            style = MaterialTheme.typography.titleMedium,
+        )
+
+        Text(
+            text = album.artistText,
+            textAlign = TextAlign.End,
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.alpha(floatResource(dimens.alpha_medium)),
+        )
     }
 }
 
@@ -265,7 +383,7 @@ private fun AlbumTrackItem(
             text = trackItem.trackText,
             textAlign = TextAlign.Start,
             style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.alpha(ContentAlpha.medium),
+            modifier = Modifier.alpha(floatResource(dimens.alpha_medium)),
         )
 
         Text(
@@ -276,10 +394,10 @@ private fun AlbumTrackItem(
         )
 
         Text(
-            text = trackItem.runtimeText,
+            text = trackItem.durationText,
             textAlign = TextAlign.End,
             style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.alpha(ContentAlpha.medium),
+            modifier = Modifier.alpha(floatResource(dimens.alpha_medium)),
         )
     }
 }

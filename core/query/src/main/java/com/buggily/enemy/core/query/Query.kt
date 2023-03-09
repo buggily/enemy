@@ -16,8 +16,8 @@ class Query(
             putAll(selections.bundle)
             putAll(sort.bundle)
 
-            limit?.run { putAll(bundle) }
-            offset?.run { putAll(bundle) }
+            limit?.let { putAll(it.bundle) }
+            offset?.let { putAll(it.bundle) }
         }
 
     class Selections(
@@ -30,9 +30,9 @@ class Query(
                     it.identity
                 }
 
-                val expressions: List<Selection.Expression> = identity.mapNotNull {
-                    it as? Selection.Expression
-                }
+                val expressions: List<Selection.Expression> = identity.filterIsInstance(
+                    klass = Selection.Expression::class.java,
+                )
 
                 val selectionArgsIdentity: Array<out String> = expressions.map {
                     it.expressionIdentity.toString()
@@ -41,6 +41,11 @@ class Query(
                 putString(ContentResolver.QUERY_ARG_SQL_SELECTION, selectionIdentity)
                 putStringArray(ContentResolver.QUERY_ARG_SQL_SELECTION_ARGS, selectionArgsIdentity)
             }
+
+        companion object {
+            val NONE: Selections
+                get() = Selections()
+        }
     }
 
     sealed class Selection {
@@ -48,20 +53,20 @@ class Query(
         abstract val identity: String
 
         sealed class Expression(
-            open val argIdentity: String,
+            open val argumentIdentity: String,
             open val expressionIdentity: Any?,
         ) : Selection() {
 
             abstract val operator: String
 
             override val identity: String
-                get() = "$argIdentity $operator ?"
+                get() = "$argumentIdentity $operator ?"
 
             class Equals(
-                override val argIdentity: String,
+                override val argumentIdentity: String,
                 override val expressionIdentity: Any?,
             ) : Expression(
-                argIdentity = argIdentity,
+                argumentIdentity = argumentIdentity,
                 expressionIdentity = expressionIdentity,
             ) {
 
@@ -70,10 +75,10 @@ class Query(
             }
 
             class Unequals(
-                override val argIdentity: String,
+                override val argumentIdentity: String,
                 override val expressionIdentity: Any?,
             ) : Expression(
-                argIdentity = argIdentity,
+                argumentIdentity = argumentIdentity,
                 expressionIdentity = expressionIdentity,
             ) {
 
@@ -82,10 +87,10 @@ class Query(
             }
 
             class Like(
-                override val argIdentity: String,
+                override val argumentIdentity: String,
                 override val expressionIdentity: Any?,
             ) : Expression(
-                argIdentity = argIdentity,
+                argumentIdentity = argumentIdentity,
                 expressionIdentity = expressionIdentity,
             ) {
 
@@ -112,7 +117,7 @@ class Query(
 
     class Sort(
         private val columns: Map<String, Type>,
-        private val direction: Direction,
+        private val direction: Direction?,
     ) {
 
         sealed class Type {
@@ -134,15 +139,17 @@ class Query(
 
         val bundle: Bundle
             get() = Bundle().apply {
-                putStringArray(ContentResolver.QUERY_ARG_SORT_COLUMNS, columnsIdentity)
-                putInt(ContentResolver.QUERY_ARG_SORT_DIRECTION, directionIdentity)
+                columnsIdentity?.let { putStringArray(ContentResolver.QUERY_ARG_SORT_COLUMNS, it) }
+                directionIdentity?.let { putInt(ContentResolver.QUERY_ARG_SORT_DIRECTION, it) }
             }
 
-        private val columnsIdentity: Array<out String>
-            get() = columns.map { with(it) { "CAST($key AS ${value.identity})" } }.toTypedArray()
+        private val columnsIdentity: Array<out String>?
+            get() = columns.takeUnless { it.isEmpty() }?.map {
+                with(it) { "CAST($key AS ${value.identity})" }
+            }?.toTypedArray()
 
-        private val directionIdentity: Int
-            get() = direction.identity
+        private val directionIdentity: Int?
+            get() = direction?.identity
 
         sealed class Direction {
 
@@ -160,6 +167,14 @@ class Query(
                     get() = ContentResolver.QUERY_SORT_DIRECTION_DESCENDING
             }
         }
+
+        companion object {
+            val NONE: Sort
+                get() = Sort(
+                    columns = emptyMap(),
+                    direction = null,
+                )
+        }
     }
 
     class Limit(
@@ -176,5 +191,13 @@ class Query(
 
         val bundle: Bundle
             get() = Bundle().apply { putInt(ContentResolver.QUERY_ARG_OFFSET, identity) }
+    }
+
+    companion object {
+        val NONE: Query
+            get() = Query(
+                selections = Selections.NONE,
+                sort = Sort.NONE,
+            )
     }
 }

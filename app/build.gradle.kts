@@ -41,10 +41,13 @@ dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:model"))
     implementation(project(":core:ext"))
+    implementation(project(":core:navigation"))
+    implementation(project(":core:controller"))
 
     implementation(project(":feature:orientation"))
     implementation(project(":feature:preferences"))
     implementation(project(":feature:controller"))
+    implementation(project(":feature:browse"))
 
     implementation(project(":feature:albums"))
     implementation(project(":feature:album"))
@@ -52,23 +55,23 @@ dependencies {
     implementation(project(":feature:tracks"))
 
     implementation(project(":feature:playlists"))
+    implementation(project(":feature:playlist"))
 
     implementation(project(":domain:album"))
     implementation(project(":domain:track"))
     implementation(project(":domain:theme"))
+    implementation(project(":domain:playlist"))
+    implementation(project(":domain:navigation"))
+    implementation(project(":domain:controller"))
 
     implementation(libs.kotlin)
+    implementation(libs.kotlinx.datetime)
+
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
 
-    implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.lifecycle.runtime.compose)
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core.splashscreen)
-
-    implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.hilt.navigation.compose)
 
     implementation(libs.androidx.paging)
     implementation(libs.androidx.paging.compose)

@@ -3,8 +3,8 @@ package com.buggily.enemy.albums
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
@@ -16,58 +16,59 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.buggily.enemy.core.model.album.Album
 import com.buggily.enemy.core.ui.composable.ArtImage
 import com.buggily.enemy.core.ui.ext.artistText
+import com.buggily.enemy.core.ui.ext.floatResource
 import com.buggily.enemy.core.ui.ext.items
 import com.buggily.enemy.core.ui.ext.nameText
-import com.buggily.enemy.core.ui.theme.ContentAlpha
 import com.buggily.enemy.core.ui.R.dimen as dimens
 
 @Composable
 fun AlbumsScreen(
     viewModel: AlbumsViewModel,
-    albumState: AlbumsState.AlbumState,
     modifier: Modifier = Modifier,
 ) {
+    val uiState: AlbumsUiState by viewModel.uiState.collectAsStateWithLifecycle()
     val albums: LazyPagingItems<Album> = viewModel.albums.collectAsLazyPagingItems()
 
-    AlbumsScreen(
-        albums = albums,
-        albumState = albumState,
-        modifier = modifier,
-    )
+    Box(modifier) {
+        AlbumsScreen(
+            uiState = uiState,
+            albums = albums,
+            modifier = Modifier.fillMaxSize(),
+        )
+    }
 }
+
 
 @Composable
 private fun AlbumsScreen(
+    uiState: AlbumsUiState,
     albums: LazyPagingItems<Album>,
-    albumState: AlbumsState.AlbumState,
     modifier: Modifier = Modifier,
 ) {
-    AlbumsAlbumGrid(
+    AlbumsGrid(
+        albumState = uiState.albumState,
         albums = albums,
-        albumState = albumState,
         modifier = modifier,
     )
 }
 
-@OptIn(
-    ExperimentalFoundationApi::class,
-    ExperimentalLayoutApi::class,
-)
-
 @Composable
-private fun AlbumsAlbumGrid(
+@OptIn(ExperimentalFoundationApi::class)
+private fun AlbumsGrid(
+    albumState: AlbumsUiState.AlbumState,
     albums: LazyPagingItems<Album>,
-    albumState: AlbumsState.AlbumState,
     modifier: Modifier = Modifier,
 ) {
     LazyVerticalGrid(
@@ -170,7 +171,7 @@ private fun AlbumItemImageError(
         Text(
             text = album.artistText,
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.alpha(ContentAlpha.medium),
+            modifier = Modifier.alpha(floatResource(dimens.alpha_medium)),
         )
     }
 }

@@ -9,4 +9,5 @@ android {
 
 dependencies {
     implementation(project(":data:album"))
+    implementation(libs.androidx.paging.core)
 }

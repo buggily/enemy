@@ -2,18 +2,36 @@ package com.buggily.enemy.feature.orientation
 
 import android.content.pm.PackageManager
 import androidx.lifecycle.ViewModel
+import com.buggily.enemy.domain.navigation.NavigateFromOrientationToBrowse
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import javax.inject.Inject
 
-class OrientationViewModel : ViewModel() {
+@HiltViewModel
+class OrientationViewModel @Inject constructor(
+    private val navigateFromOrientationToBrowse: NavigateFromOrientationToBrowse,
+) : ViewModel() {
 
-    private val _state: MutableStateFlow<OrientationState> =
-        MutableStateFlow(OrientationState.default)
+    private val _uiState: MutableStateFlow<OrientationUiState>
+    val uiState: StateFlow<OrientationUiState> get() = _uiState
 
-    val state: StateFlow<OrientationState> get() = _state
+    private val _eventState: MutableStateFlow<OrientationEventState> =
+        MutableStateFlow(OrientationEventState.Default)
 
-    fun onResultCheck(permissionResult: Int) = onResultCheck(
+    val eventState: StateFlow<OrientationEventState>
+        get() = _eventState
+
+    init {
+        OrientationUiState.default.copy(
+            permissionState = OrientationUiState.PermissionState.default.copy(
+                onClick = ::onResultCheck,
+            ),
+        ).let { _uiState = MutableStateFlow(it) }
+    }
+
+    private fun onResultCheck(permissionResult: Int) = onResultCheck(
         isGranted = permissionResult == PackageManager.PERMISSION_GRANTED,
     )
 
@@ -25,27 +43,17 @@ class OrientationViewModel : ViewModel() {
         if (isGranted) onGrant() else onDeny()
     }
 
-    private fun onGrant() = _state.update {
-        val permissionEventState = OrientationState.PermissionEventState.Event.Grant(
-            onGrant = ::resetPermissionState,
-        )
+    private fun onGrant() = navigateFromOrientationToBrowse()
 
-        it.copy(permissionEventState = permissionEventState)
+    private fun onPend() = _eventState.update {
+        OrientationEventState.Event(::resetPermissionState)
     }
 
-    private fun onPend() = _state.update {
-        val permissionEventState = OrientationState.PermissionEventState.Event.Pend(
-            onPend = ::resetPermissionState,
-        )
-
-        it.copy(permissionEventState = permissionEventState)
+    private fun onDeny() = _uiState.update {
+        it.copy(permissionState = OrientationUiState.PermissionState.Deny(::onResultCheck))
     }
 
-    private fun onDeny() = _state.update {
-        it.copy(permissionState = OrientationState.PermissionState.Deny)
-    }
-
-    private fun resetPermissionState() = _state.update {
-        it.copy(permissionEventState = OrientationState.PermissionEventState.Default)
+    private fun resetPermissionState() = _eventState.update {
+        OrientationEventState.Default
     }
 }
