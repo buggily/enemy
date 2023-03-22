@@ -3,7 +3,9 @@ package com.buggily.enemy.tracks
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,43 +13,73 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import com.buggily.enemy.core.model.track.Track
 import com.buggily.enemy.core.ui.ext.artistText
+import com.buggily.enemy.core.ui.ext.durationText
+import com.buggily.enemy.core.ui.ext.floatResource
 import com.buggily.enemy.core.ui.ext.nameText
-import com.buggily.enemy.core.ui.ext.runtimeText
-import com.buggily.enemy.core.ui.theme.ContentAlpha
 import com.buggily.enemy.feature.tracks.R
 import com.buggily.enemy.core.ui.R.dimen as dimens
 
 @Composable
 fun TracksScreen(
     viewModel: TracksViewModel,
-    trackState: TracksState.TrackState,
     modifier: Modifier = Modifier,
 ) {
+    val uiState: TracksUiState by viewModel.uiState.collectAsStateWithLifecycle()
     val tracks: LazyPagingItems<Track> = viewModel.tracks.collectAsLazyPagingItems()
 
+    Box(modifier) {
+        TracksScreen(
+            uiState = uiState,
+            tracks = tracks,
+            modifier = Modifier.fillMaxSize(),
+        )
+    }
+}
+
+@Composable
+private fun TracksScreen(
+    uiState: TracksUiState,
+    tracks: LazyPagingItems<Track>,
+    modifier: Modifier,
+) {
     TracksScreen(
+        trackState = uiState.trackState,
         tracks = tracks,
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun TracksScreen(
+    trackState: TracksUiState.TrackState,
+    tracks: LazyPagingItems<Track>,
+    modifier: Modifier = Modifier,
+) {
+    TracksColumn(
         trackState = trackState,
+        tracks = tracks,
         modifier = modifier,
     )
 }
 
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
-private fun TracksScreen(
+private fun TracksColumn(
+    trackState: TracksUiState.TrackState,
     tracks: LazyPagingItems<Track>,
-    trackState: TracksState.TrackState,
     modifier: Modifier = Modifier,
 ) {
     val itemModifier: Modifier = Modifier.fillMaxWidth()
@@ -68,6 +100,7 @@ private fun TracksScreen(
                     track = it,
                     modifier = itemModifier
                         .clickable { trackState.onClick(it) }
+                        .animateItemPlacement()
                         .padding(
                             horizontal = dimensionResource(dimens.padding_large),
                             vertical = dimensionResource(dimens.padding_large_extra),
@@ -90,7 +123,7 @@ private fun TracksHeader(
         TrackItem(
             nameText = stringResource(R.string.name),
             artistText = stringResource(R.string.artist),
-            runtimeText = stringResource(R.string.runtime),
+            durationText = stringResource(R.string.duration),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(dimensionResource(dimens.padding_large)),
@@ -106,7 +139,7 @@ private fun TrackItem(
     TrackItem(
         nameText = track.nameText,
         artistText = track.artistText,
-        runtimeText = track.runtimeText,
+        durationText = track.durationText,
         modifier = modifier,
     )
 }
@@ -115,7 +148,7 @@ private fun TrackItem(
 private fun TrackItem(
     nameText: String,
     artistText: String,
-    runtimeText: String,
+    durationText: String,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -139,16 +172,16 @@ private fun TrackItem(
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier
                 .weight(2f)
-                .alpha(ContentAlpha.medium),
+                .alpha(floatResource(dimens.alpha_medium)),
         )
 
         Text(
-            text = runtimeText,
+            text = durationText,
             textAlign = TextAlign.End,
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier
                 .weight(1f)
-                .alpha(ContentAlpha.medium),
+                .alpha(floatResource(dimens.alpha_medium)),
         )
     }
 }

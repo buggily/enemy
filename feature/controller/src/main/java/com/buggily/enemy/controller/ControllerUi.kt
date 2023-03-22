@@ -1,12 +1,12 @@
 package com.buggily.enemy.controller
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkHorizontally
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -22,8 +22,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -31,32 +32,99 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
+import com.buggily.enemy.core.ui.LocalWindowSizeClass
 import com.buggily.enemy.core.ui.composable.ArtImage
 import com.buggily.enemy.core.ui.composable.IconButton
 import com.buggily.enemy.core.ui.composable.SingleLineText
 import com.buggily.enemy.core.ui.ext.artistText
+import com.buggily.enemy.core.ui.ext.floatResource
 import com.buggily.enemy.core.ui.ext.nameText
-import com.buggily.enemy.core.ui.theme.ContentAlpha
 import com.buggily.enemy.core.ui.R.dimen as dimens
 import com.buggily.enemy.core.ui.R.drawable as drawables
 import com.buggily.enemy.core.ui.R.string as strings
 
 @Composable
 fun ControllerScreen(
-    state: ControllerState,
+    viewModel: ControllerViewModel,
+    modifier: Modifier = Modifier,
+) {
+    val uiState: ControllerUiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    Box(modifier) {
+        ControllerScreen(
+            uiState = uiState,
+            modifier = Modifier.fillMaxSize(),
+        )
+    }
+}
+
+@Composable
+private fun ControllerScreen(
+    uiState: ControllerUiState,
+    modifier: Modifier = Modifier,
+) {
+    when (LocalWindowSizeClass.current.heightSizeClass) {
+        WindowHeightSizeClass.Compact -> ControllerScreenCompact(
+            uiState = uiState,
+            modifier = modifier,
+        )
+        else -> ControllerScreenMedium(
+            uiState = uiState,
+            modifier = modifier,
+        )
+    }
+}
+
+@Composable
+private fun ControllerScreenCompact(
+    uiState: ControllerUiState,
     modifier: Modifier = Modifier,
 ) {
     Surface(
         color = MaterialTheme.colorScheme.primaryContainer,
         modifier = modifier,
     ) {
-        when (val mediaItem: MediaItem? = state.mediaItem) {
-            is MediaItem -> ControllerBackground(mediaItem)
+        when (val mediaItem: MediaItem? = uiState.mediaItem) {
+            is MediaItem -> ControllerBackground(
+                mediaItem = mediaItem,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .alpha(floatResource(dimens.alpha_low)),
+            )
         }
 
-        ControllerForeground(
-            state = state,
+        ControllerForegroundCompact(
+            uiState = uiState,
+            modifier = Modifier
+                .fillMaxSize()
+                .safeContentPadding()
+                .padding(dimensionResource(dimens.padding_large)),
+        )
+    }
+}
+
+@Composable
+private fun ControllerScreenMedium(
+    uiState: ControllerUiState,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        color = MaterialTheme.colorScheme.primaryContainer,
+        modifier = modifier,
+    ) {
+        when (val mediaItem: MediaItem? = uiState.mediaItem) {
+            is MediaItem -> ControllerBackground(
+                mediaItem = mediaItem,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .alpha(floatResource(dimens.alpha_low)),
+            )
+        }
+
+        ControllerForegroundMedium(
+            uiState = uiState,
             modifier = Modifier
                 .fillMaxSize()
                 .safeContentPadding()
@@ -67,43 +135,82 @@ fun ControllerScreen(
 
 @Composable
 fun ControllerBottomSheet(
-    state: ControllerState,
+    viewModel: ControllerViewModel,
     modifier: Modifier = Modifier,
 ) {
-    Surface(
-        color = MaterialTheme.colorScheme.primaryContainer,
+    val uiState: ControllerUiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    ControllerBottomSheet(
+        uiState = uiState,
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun ControllerBottomSheet(
+    uiState: ControllerUiState,
+    modifier: Modifier = Modifier,
+) {
+    AnimatedVisibility(
+        visible = uiState.isVisible,
+        enter = fadeIn() + expandVertically(),
+        exit = fadeOut() + shrinkVertically(),
         modifier = modifier,
     ) {
-        when (val mediaItem: MediaItem? = state.mediaItem) {
-            is MediaItem -> ControllerBackground(mediaItem)
-        }
+        Surface(
+            color = MaterialTheme.colorScheme.primaryContainer,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            when (val mediaItem: MediaItem? = uiState.mediaItem) {
+                is MediaItem -> ControllerBackground(
+                    mediaItem = mediaItem,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .alpha(floatResource(dimens.alpha_low)),
+                )
+            }
 
-        ControllerBottomSheetForeground(
-            state = state,
-            modifier = Modifier
-                .fillMaxWidth()
-                .systemBarsPadding()
-                .padding(dimensionResource(dimens.padding_large)),
+            ControllerBottomSheetForeground(
+                uiState = uiState,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .systemBarsPadding()
+                    .padding(dimensionResource(dimens.padding_large)),
+            )
+        }
+    }
+}
+
+@Composable
+private fun ControllerForegroundCompact(
+    uiState: ControllerUiState,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(
+            space = dimensionResource(dimens.padding_large),
+            alignment = Alignment.End,
+        ),
+        verticalAlignment = Alignment.Bottom,
+        modifier = modifier,
+    ) {
+        ControllerText(
+            mediaItem = uiState.mediaItem,
+            modifier = Modifier.weight(1f),
+        )
+
+        ControllerControls(
+            uiState = uiState,
+            modifier = Modifier.weight(1f),
         )
     }
 }
 
 @Composable
-private fun ControllerForeground(
-    state: ControllerState,
+private fun ControllerForegroundMedium(
+    uiState: ControllerUiState,
     modifier: Modifier = Modifier,
 ) {
-    val isRepeating: Boolean = remember(state.repeatState) {
-        when (state.repeatState.mode) {
-            is ControllerState.RepeatState.Mode.On -> true
-            is ControllerState.RepeatState.Mode.Off -> false
-        }
-    }
-
-    val isNotRepeating: Boolean = remember(isRepeating) {
-        !isRepeating
-    }
-
     Column(
         verticalArrangement = Arrangement.spacedBy(
             space = dimensionResource(dimens.padding_large),
@@ -112,71 +219,49 @@ private fun ControllerForeground(
         horizontalAlignment = Alignment.Start,
         modifier = modifier,
     ) {
+        val contentModifier: Modifier = Modifier.fillMaxWidth()
+
         ControllerText(
-            mediaItem = state.mediaItem,
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
+            mediaItem = uiState.mediaItem,
+            modifier = contentModifier.weight(1f),
         )
 
-        Column(
-            verticalArrangement = Arrangement.spacedBy(
-                space = dimensionResource(dimens.padding_large),
-                alignment = Alignment.CenterVertically,
-            ),
-            horizontalAlignment = Alignment.CenterHorizontally,
+        ControllerControls(
+            uiState = uiState,
+            modifier = contentModifier,
+        )
+    }
+}
+
+@Composable
+private fun ControllerControls(
+    uiState: ControllerUiState,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(
+            space = dimensionResource(dimens.padding_large),
+            alignment = Alignment.CenterVertically,
+        ),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier,
+    ) {
+        ControllerSeekBar(
+            seekState = uiState.seekState,
             modifier = Modifier.fillMaxWidth(),
-        ) {
-            ControllerSeekBar(
-                seekState = state.seekState,
-                modifier = Modifier.fillMaxWidth(),
-            )
+        )
 
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                AnimatedVisibility(
-                    visible = isNotRepeating,
-                    enter = fadeIn() + expandHorizontally(),
-                    exit = fadeOut() + shrinkHorizontally(),
-                    modifier = Modifier.weight(1f),
-                ) {
-                    ControllerPreviousButton(
-                        isEnabled = state.previousStates.isEnabled,
-                        previousState = state.previousStates.first,
-                    )
-                }
+        ControllerPlaybackControls(
+            playState = uiState.playState,
+            nextState = uiState.nextState,
+            previousState = uiState.previousState,
+        )
 
-                ControllerPlaybackControls(
-                    playState = state.playState,
-                    nextStates = state.nextStates,
-                    previousStates = state.previousStates,
-                    modifier = Modifier
-                        .weight(3f)
-                        .animateContentSize(),
-                )
-
-                AnimatedVisibility(
-                    visible = isNotRepeating,
-                    enter = fadeIn() + expandHorizontally(),
-                    exit = fadeOut() + shrinkHorizontally(),
-                    modifier = Modifier.weight(1f),
-                ) {
-                    ControllerNextButton(
-                        isEnabled = state.nextStates.isEnabled,
-                        nextState = state.nextStates.last,
-                    )
-                }
-            }
-
-            ControllerPlaylistControls(
-                repeatState = state.repeatState,
-                shuffleState = state.shuffleState,
-                modifier = Modifier.fillMaxWidth(),
-            )
-        }
+        ControllerPlaylistControls(
+            repeatState = uiState.repeatState,
+            shuffleState = uiState.shuffleState,
+            modifier = Modifier.fillMaxWidth(),
+        )
     }
 }
 
@@ -201,28 +286,29 @@ private fun ControllerText(
         Text(
             text = mediaItem?.artistText ?: String(),
             style = MaterialTheme.typography.displaySmall,
-            modifier = Modifier.alpha(ContentAlpha.medium),
+            modifier = Modifier.alpha(floatResource(dimens.alpha_medium)),
         )
     }
 }
 
 
 @Composable
-private fun ControllerBackground(mediaItem: MediaItem) {
+private fun ControllerBackground(
+    mediaItem: MediaItem,
+    modifier: Modifier = Modifier,
+) {
     ArtImage(
         mediaItem = mediaItem,
         contentScale = ContentScale.Crop,
-        modifier = Modifier
-            .fillMaxSize()
-            .alpha(ContentAlpha.low),
+        modifier = modifier,
     )
 }
 
 @Composable
 private fun ControllerPlaybackControls(
-    playState: ControllerState.PlayState,
-    nextStates: ControllerState.NextStates,
-    previousStates: ControllerState.PreviousStates,
+    playState: ControllerUiState.PlayState,
+    nextState: ControllerUiState.NextState,
+    previousState: ControllerUiState.PreviousState,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -230,30 +316,29 @@ private fun ControllerPlaybackControls(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier,
     ) {
+        val contentModifier: Modifier = Modifier.weight(1f)
 
         ControllerPreviousButton(
-            isEnabled = previousStates.isEnabled,
-            previousState = previousStates.last,
-            modifier = Modifier.weight(1f),
+            previousState = previousState,
+            modifier = contentModifier,
         )
 
         ControllerPlayButton(
             playState = playState,
-            modifier = Modifier.weight(1f),
+            modifier = contentModifier,
         )
 
         ControllerNextButton(
-            isEnabled = nextStates.isEnabled,
-            nextState = nextStates.first,
-            modifier = Modifier.weight(1f),
+            nextState = nextState,
+            modifier = contentModifier,
         )
     }
 }
 
 @Composable
 private fun ControllerPlaylistControls(
-    repeatState: ControllerState.RepeatState,
-    shuffleState: ControllerState.ShuffleState,
+    repeatState: ControllerUiState.RepeatState,
+    shuffleState: ControllerUiState.ShuffleState,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -275,12 +360,11 @@ private fun ControllerPlaylistControls(
 
 @Composable
 private fun ControllerPlayButton(
-    playState: ControllerState.PlayState,
+    playState: ControllerUiState.PlayState,
     modifier: Modifier = Modifier,
 ) {
-    val isPlaying: Boolean = playState.isPlaying
-    val painterResId: Int = if (isPlaying) drawables.pause else drawables.play
-    val stringResId: Int = if (isPlaying) strings.pause else strings.play
+    val painterResId: Int = if (playState.isPlaying) drawables.pause else drawables.play
+    val stringResId: Int = if (playState.isPlaying) strings.pause else strings.play
 
     IconButton(
         onClick = playState.onClick,
@@ -294,25 +378,14 @@ private fun ControllerPlayButton(
 
 @Composable
 private fun ControllerNextButton(
-    isEnabled: Boolean,
-    nextState: ControllerState.NextState,
+    nextState: ControllerUiState.NextState,
     modifier: Modifier = Modifier,
 ) {
-    val stringResId: Int = when (nextState) {
-        is ControllerState.NextState.First -> strings.next_first
-        is ControllerState.NextState.Last -> strings.next_last
-    }
-
-    val painterResId: Int = when (nextState) {
-        is ControllerState.NextState.First -> drawables.next_first
-        is ControllerState.NextState.Last -> drawables.next_last
-    }
-
     IconButton(
-        enabled = isEnabled,
+        enabled = nextState.hasNext,
         onClick = nextState.onClick,
-        painter = painterResource(painterResId),
-        contentDescription = stringResource(stringResId),
+        painter = painterResource(drawables.next),
+        contentDescription = stringResource(strings.next),
         modifier = modifier,
         contentModifier = Modifier.size(dimensionResource(dimens.icon_medium)),
     )
@@ -320,25 +393,14 @@ private fun ControllerNextButton(
 
 @Composable
 private fun ControllerPreviousButton(
-    isEnabled: Boolean,
-    previousState: ControllerState.PreviousState,
+    previousState: ControllerUiState.PreviousState,
     modifier: Modifier = Modifier,
 ) {
-    val stringResId: Int = when (previousState) {
-        is ControllerState.PreviousState.First -> strings.previous_first
-        is ControllerState.PreviousState.Last -> strings.previous_last
-    }
-
-    val painterResId: Int = when (previousState) {
-        is ControllerState.PreviousState.First -> drawables.previous_first
-        is ControllerState.PreviousState.Last -> drawables.previous_last
-    }
-
     IconButton(
-        enabled = isEnabled,
+        enabled = previousState.hasPrevious,
         onClick = previousState.onClick,
-        painter = painterResource(painterResId),
-        contentDescription = stringResource(stringResId),
+        painter = painterResource(drawables.previous),
+        contentDescription = stringResource(strings.previous),
         modifier = modifier,
         contentModifier = Modifier.size(dimensionResource(dimens.icon_medium)),
     )
@@ -346,67 +408,67 @@ private fun ControllerPreviousButton(
 
 @Composable
 private fun ControllerRepeatButton(
-    repeatState: ControllerState.RepeatState,
+    repeatState: ControllerUiState.RepeatState,
     modifier: Modifier = Modifier,
 ) {
     val painterResId: Int = when (repeatState.mode) {
-        is ControllerState.RepeatState.Mode.Off -> drawables.repeat_off
-        is ControllerState.RepeatState.Mode.On.One -> drawables.repeat_on_one
-        is ControllerState.RepeatState.Mode.On.All -> drawables.repeat_on_all
+        is ControllerUiState.RepeatState.Mode.Off -> drawables.repeat_off
+        is ControllerUiState.RepeatState.Mode.On.One -> drawables.repeat_on_one
+        is ControllerUiState.RepeatState.Mode.On.All -> drawables.repeat_on_all
     }
 
     val stringResId: Int = when (repeatState.mode) {
-        is ControllerState.RepeatState.Mode.Off -> strings.repeat_off
-        is ControllerState.RepeatState.Mode.On.One -> strings.repeat_on_one
-        is ControllerState.RepeatState.Mode.On.All -> strings.repeat_on_all
+        is ControllerUiState.RepeatState.Mode.Off -> strings.repeat_off
+        is ControllerUiState.RepeatState.Mode.On.One -> strings.repeat_on_one
+        is ControllerUiState.RepeatState.Mode.On.All -> strings.repeat_on_all
     }
 
-    val alpha: Float = when (repeatState.mode) {
-        is ControllerState.RepeatState.Mode.Off -> ContentAlpha.low
-        is ControllerState.RepeatState.Mode.On -> ContentAlpha.max
+    val floatResId: Int = when (repeatState.mode) {
+        is ControllerUiState.RepeatState.Mode.Off -> dimens.alpha_low
+        is ControllerUiState.RepeatState.Mode.On -> dimens.alpha_high
     }
 
     IconButton(
         onClick = repeatState.onClick,
         painter = painterResource(painterResId),
         contentDescription = stringResource(stringResId),
-        modifier = modifier.alpha(alpha),
+        modifier = modifier.alpha(floatResource(floatResId)),
         contentModifier = Modifier.size(dimensionResource(dimens.icon_medium)),
     )
 }
 
 @Composable
 private fun ControllerShuffleButton(
-    shuffleState: ControllerState.ShuffleState,
+    shuffleState: ControllerUiState.ShuffleState,
     modifier: Modifier = Modifier,
 ) {
     val painterResId: Int = when (shuffleState.mode) {
-        is ControllerState.ShuffleState.Mode.Off -> drawables.shuffle_off
-        is ControllerState.ShuffleState.Mode.On -> drawables.shuffle_on
+        is ControllerUiState.ShuffleState.Mode.Off -> drawables.shuffle_off
+        is ControllerUiState.ShuffleState.Mode.On -> drawables.shuffle_on
     }
 
     val stringResId: Int = when (shuffleState.mode) {
-        is ControllerState.ShuffleState.Mode.Off -> strings.shuffle_off
-        is ControllerState.ShuffleState.Mode.On -> strings.shuffle_on
+        is ControllerUiState.ShuffleState.Mode.Off -> strings.shuffle_off
+        is ControllerUiState.ShuffleState.Mode.On -> strings.shuffle_on
     }
 
-    val alpha: Float = when (shuffleState.mode) {
-        is ControllerState.ShuffleState.Mode.Off -> ContentAlpha.low
-        is ControllerState.ShuffleState.Mode.On -> ContentAlpha.max
+    val floatResId: Int = when (shuffleState.mode) {
+        is ControllerUiState.ShuffleState.Mode.Off -> dimens.alpha_low
+        is ControllerUiState.ShuffleState.Mode.On -> dimens.alpha_high
     }
 
     IconButton(
         onClick = shuffleState.onClick,
         painter = painterResource(painterResId),
         contentDescription = stringResource(stringResId),
-        modifier = modifier.alpha(alpha),
+        modifier = modifier.alpha(floatResource(floatResId)),
         contentModifier = Modifier.size(dimensionResource(dimens.icon_medium)),
     )
 }
 
 @Composable
 private fun ControllerSeekBar(
-    seekState: ControllerState.SeekState,
+    seekState: ControllerUiState.SeekState,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -417,32 +479,39 @@ private fun ControllerSeekBar(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier,
     ) {
+        val contentModifier: Modifier = Modifier.fillMaxWidth()
+
         Slider(
             value = seekState.value,
             valueRange = seekState.range,
             onValueChange = seekState.onChange,
             onValueChangeFinished = seekState.onChangeFinish,
+            modifier = contentModifier,
         )
 
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(
-                space = dimensionResource(dimens.padding_large),
-                alignment = Alignment.CenterHorizontally,
-            ),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            ControllerSeekBarText(
-                text = seekState.current.text,
-                modifier = Modifier,
-            )
+        ControllerSeekBarText(
+            seekState = seekState,
+            modifier = contentModifier,
+        )
+    }
+}
 
-            Spacer(Modifier.weight(1f))
-
-            ControllerSeekBarText(
-                text = seekState.runtime.text,
-                modifier = Modifier,
-            )
-        }
+@Composable
+private fun ControllerSeekBarText(
+    seekState: ControllerUiState.SeekState,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(
+            space = dimensionResource(dimens.padding_large),
+            alignment = Alignment.CenterHorizontally,
+        ),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier,
+    ) {
+        ControllerSeekBarText(seekState.current.text)
+        Spacer(Modifier.weight(1f))
+        ControllerSeekBarText(seekState.duration.text)
     }
 }
 
@@ -460,26 +529,28 @@ private fun ControllerSeekBarText(
 
 @Composable
 private fun ControllerBottomSheetForeground(
-    state: ControllerState,
+    uiState: ControllerUiState,
     modifier: Modifier = Modifier,
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(
             space = dimensionResource(dimens.padding_large),
-            alignment = Alignment.Start,
+            alignment = Alignment.End,
         ),
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier,
     ) {
-        ControllerBottomSheetText(
-            mediaItem = state.mediaItem,
-            modifier = Modifier.weight(1f),
-        )
+        when (val mediaItem: MediaItem? = uiState.mediaItem) {
+            is MediaItem -> ControllerBottomSheetText(
+                mediaItem = mediaItem,
+                modifier = Modifier.weight(1f),
+            )
+        }
 
         ControllerPlaybackControls(
-            playState = state.playState,
-            nextStates = state.nextStates,
-            previousStates = state.previousStates,
+            playState = uiState.playState,
+            nextState = uiState.nextState,
+            previousState = uiState.previousState,
             modifier = Modifier.width(IntrinsicSize.Min),
         )
     }
@@ -488,7 +559,7 @@ private fun ControllerBottomSheetForeground(
 
 @Composable
 private fun ControllerBottomSheetText(
-    mediaItem: MediaItem?,
+    mediaItem: MediaItem,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -500,14 +571,14 @@ private fun ControllerBottomSheetText(
         modifier = modifier,
     ) {
         SingleLineText(
-            text = mediaItem?.nameText ?: String(),
+            text = mediaItem.nameText ?: String(),
             style = MaterialTheme.typography.titleMedium,
         )
 
         SingleLineText(
-            text = mediaItem?.artistText ?: String(),
+            text = mediaItem.artistText ?: String(),
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.alpha(ContentAlpha.medium),
+            modifier = Modifier.alpha(floatResource(dimens.alpha_medium)),
         )
     }
 }

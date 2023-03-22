@@ -1,7 +1,6 @@
 plugins {
     id("enemy.android.library")
     id("enemy.android.library.local")
-    id("enemy.android.hilt")
 }
 
 android {
@@ -9,5 +8,8 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:query"))
+    implementation(project(":core:paging"))
+
     implementation(libs.androidx.paging.core)
 }

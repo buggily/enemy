@@ -8,6 +8,7 @@ import androidx.core.database.getIntOrNull
 import androidx.core.database.getLongOrNull
 import androidx.core.database.getStringOrNull
 import com.buggily.enemy.core.query.QuerySource
+import com.buggily.enemy.local.track.paging.Track
 
 class TrackQuerySource(
     contentResolver: ContentResolver,

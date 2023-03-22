@@ -7,3 +7,7 @@ plugins {
 android {
     namespace = "com.buggily.enemy.feature.orientation"
 }
+
+dependencies {
+    implementation(project(":domain:navigation"))
+}

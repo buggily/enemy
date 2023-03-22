@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.consumedWindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContent
@@ -27,30 +28,41 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.buggily.enemy.core.model.theme.Theme
 import com.buggily.enemy.core.ui.composable.SingleLineText
 import com.buggily.enemy.core.ui.R.dimen as dimens
 
 @Composable
-@OptIn(ExperimentalLifecycleComposeApi::class)
 fun PreferencesScreen(
     viewModel: PreferencesViewModel,
     modifier: Modifier,
 ) {
-    val state: PreferencesState by viewModel.state.collectAsStateWithLifecycle()
+    val uiState: PreferencesUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    Box(modifier) {
+        PreferencesScreen(
+            uiState = uiState,
+            modifier = Modifier.fillMaxSize(),
+        )
+    }
+}
+
+@Composable
+private fun PreferencesScreen(
+    uiState: PreferencesUiState,
+    modifier: Modifier = Modifier,
+) {
     PreferencesScreen(
-        state = state,
+        themeState = uiState.themeState,
         modifier = modifier,
     )
 }
 
 @Composable
 @OptIn(ExperimentalLayoutApi::class)
-fun PreferencesScreen(
-    state: PreferencesState,
+private fun PreferencesScreen(
+    themeState: PreferencesUiState.ThemeState,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -77,7 +89,7 @@ fun PreferencesScreen(
 
         item {
             PreferencesContent(
-                state = state,
+                themeState = themeState,
                 modifier = Modifier.fillMaxWidth(),
             )
         }
@@ -97,7 +109,7 @@ private fun PreferencesHeader(
 
 @Composable
 private fun PreferencesContent(
-    state: PreferencesState,
+    themeState: PreferencesUiState.ThemeState,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -109,7 +121,7 @@ private fun PreferencesContent(
         modifier = modifier,
     ) {
         PreferencesThemeContent(
-            themeState = state.themeState,
+            themeState = themeState,
             modifier = Modifier.fillMaxWidth(),
         )
     }
@@ -117,7 +129,7 @@ private fun PreferencesContent(
 
 @Composable
 private fun PreferencesThemeContent(
-    themeState: PreferencesState.ThemeState,
+    themeState: PreferencesUiState.ThemeState,
     modifier: Modifier = Modifier,
 ) {
     PreferencesPreference(
@@ -132,18 +144,19 @@ private fun PreferencesThemeContent(
             horizontalAlignment = Alignment.Start,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            PreferencesThemeScheme(
-                schemeState = themeState.schemeState,
-                modifier = Modifier.fillMaxWidth(),
-            )
-
             PreferencesThemeDynamic(
                 dynamicState = themeState.dynamicState,
                 modifier = Modifier.fillMaxWidth(),
             )
 
+            PreferencesThemeScheme(
+                schemeState = themeState.schemeState,
+                modifier = Modifier.fillMaxWidth(),
+            )
+
             PreferencesThemeReset(
                 resetState = themeState.resetState,
+                modifier = Modifier.align(Alignment.End),
             )
         }
     }
@@ -151,7 +164,7 @@ private fun PreferencesThemeContent(
 
 @Composable
 private fun PreferencesThemeScheme(
-    schemeState: PreferencesState.ThemeState.SchemeState,
+    schemeState: PreferencesUiState.ThemeState.SchemeState,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -209,7 +222,7 @@ private fun PreferencesThemeSchemeRadioButton(
 
 @Composable
 private fun PreferencesThemeDynamic(
-    dynamicState: PreferencesState.ThemeState.DynamicState,
+    dynamicState: PreferencesUiState.ThemeState.DynamicState,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -235,7 +248,7 @@ private fun PreferencesThemeDynamic(
 
 @Composable
 private fun PreferencesThemeReset(
-    resetState: PreferencesState.ThemeState.ResetState,
+    resetState: PreferencesUiState.ThemeState.ResetState,
     modifier: Modifier = Modifier,
 ) {
     TextButton(

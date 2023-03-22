@@ -7,5 +7,9 @@ class SetTheme(
     private val repository: ThemeRepositable,
 ) {
 
-    suspend operator fun invoke(theme: Theme) = repository.set(theme)
+    suspend operator fun invoke(
+        theme: Theme,
+    ) = repository.set(
+        theme = theme,
+    )
 }

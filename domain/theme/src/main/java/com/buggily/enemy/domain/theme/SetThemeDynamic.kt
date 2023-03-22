@@ -7,5 +7,9 @@ class SetThemeDynamic(
     private val repository: ThemeRepositable,
 ) {
 
-    suspend operator fun invoke(dynamic: Theme.Dynamic) = repository.set(dynamic)
+    suspend operator fun invoke(
+        dynamic: Theme.Dynamic,
+    ) = repository.set(
+        dynamic = dynamic,
+    )
 }

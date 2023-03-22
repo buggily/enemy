@@ -25,28 +25,24 @@ class PreferencesViewModel @Inject constructor(
     private val setThemeDynamic: SetThemeDynamic,
 ) : ViewModel() {
 
-    private val _state: MutableStateFlow<PreferencesState>
-    val state: StateFlow<PreferencesState> get() = _state
+    private val _uiState: MutableStateFlow<PreferencesUiState>
+    val uiState: StateFlow<PreferencesUiState> get() = _uiState
 
     init {
-        PreferencesState.default.copy(
-            themeState = PreferencesState.ThemeState.default.copy(
-                schemeState = PreferencesState.ThemeState.SchemeState.default.copy(
+        PreferencesUiState.default.copy(
+            themeState = PreferencesUiState.ThemeState.default.copy(
+                schemeState = PreferencesUiState.ThemeState.SchemeState.default.copy(
+                    schemes = schemes,
                     onClick = ::onThemeSchemeClick,
-                    schemes = listOf(
-                        Theme.Scheme.Default,
-                        Theme.Scheme.Light,
-                        Theme.Scheme.Dark,
-                    ),
                 ),
-                dynamicState = PreferencesState.ThemeState.DynamicState.default.copy(
+                dynamicState = PreferencesUiState.ThemeState.DynamicState.default.copy(
                     onCheck = ::onThemeDynamicCheck,
                 ),
-                resetState = PreferencesState.ThemeState.ResetState.default.copy(
+                resetState = PreferencesUiState.ThemeState.ResetState.default.copy(
                     onClick = ::onThemeResetClick,
                 ),
             ),
-        ).let { _state = MutableStateFlow(it) }
+        ).let { _uiState = MutableStateFlow(it) }
 
         viewModelScope.launch {
             getTheme().stateIn(
@@ -62,7 +58,13 @@ class PreferencesViewModel @Inject constructor(
     }
 
     private fun onThemeDynamicCheck(isChecked: Boolean) = viewModelScope.launch {
-        setThemeDynamic(if (isChecked) { Theme.Dynamic.On } else { Theme.Dynamic.Off })
+        setThemeDynamic(
+            if (isChecked) {
+                Theme.Dynamic.On
+            } else {
+                Theme.Dynamic.Off
+            }
+        )
     }
 
     private fun onThemeResetClick() = viewModelScope.launch {
@@ -74,21 +76,24 @@ class PreferencesViewModel @Inject constructor(
         setDynamicState(dynamic)
     }
 
-    private fun setSchemeState(scheme: Theme.Scheme) = _state.update {
-        val themeState: PreferencesState.ThemeState = it.themeState
-        val schemeState: PreferencesState.ThemeState.SchemeState = themeState.schemeState.copy(
-            scheme = scheme,
-        )
+    private fun setSchemeState(scheme: Theme.Scheme) = _uiState.update {
+        val schemeState: PreferencesUiState.ThemeState.SchemeState =
+            it.themeState.schemeState.copy(scheme = scheme)
 
         it.copy(themeState = it.themeState.copy(schemeState = schemeState))
     }
 
-    private fun setDynamicState(dynamic: Theme.Dynamic) = _state.update {
-        val themeState: PreferencesState.ThemeState = it.themeState
-        val dynamicState: PreferencesState.ThemeState.DynamicState = themeState.dynamicState.copy(
-            dynamic = dynamic,
-        )
+    private fun setDynamicState(dynamic: Theme.Dynamic) = _uiState.update {
+        val dynamicState: PreferencesUiState.ThemeState.DynamicState =
+            it.themeState.dynamicState.copy(dynamic = dynamic)
 
         it.copy(themeState = it.themeState.copy(dynamicState = dynamicState))
     }
+
+    private val schemes: List<Theme.Scheme>
+        get() = listOf(
+            Theme.Scheme.Default,
+            Theme.Scheme.Light,
+            Theme.Scheme.Dark,
+        )
 }

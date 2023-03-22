@@ -9,4 +9,5 @@ android {
 
 dependencies {
     implementation(project(":data:track"))
+    implementation(libs.androidx.paging.core)
 }

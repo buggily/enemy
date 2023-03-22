@@ -2,5 +2,5 @@
 <resources>
     <string name="name">name</string>
     <string name="artist">artist</string>
-    <string name="runtime">runtime</string>
+    <string name="duration">duration</string>
 </resources>

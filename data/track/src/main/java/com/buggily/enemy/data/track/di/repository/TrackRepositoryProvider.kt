@@ -1,6 +1,6 @@
 package com.buggily.enemy.data.track.di.repository
 
-import com.buggily.core.domain.GetRuntime
+import com.buggily.core.domain.GetUiDuration
 import com.buggily.enemy.data.track.repository.TrackRepository
 import com.buggily.enemy.data.track.source.TrackSourceable
 import dagger.Module
@@ -15,9 +15,9 @@ object TrackRepositoryProvider {
     @Provides
     fun provides(
         source: TrackSourceable,
-        getRuntime: GetRuntime,
+        getUiDuration: GetUiDuration,
     ): TrackRepository = TrackRepository(
         source = source,
-        getRuntime = getRuntime,
+        getUiDuration = getUiDuration,
     )
 }

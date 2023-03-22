@@ -10,6 +10,9 @@ android {
 
 dependencies {
     implementation(project(":domain:track"))
+    implementation(project(":domain:controller"))
+
+    implementation(libs.androidx.media.core)
 
     implementation(libs.androidx.paging)
     implementation(libs.androidx.paging.compose)

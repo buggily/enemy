@@ -1,10 +1,10 @@
 package com.buggily.enemy.ui
 
+import android.content.Context
 import android.content.pm.PackageManager
 import androidx.activity.ComponentActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -37,8 +37,8 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -51,250 +51,180 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.dialog
 import com.buggily.enemy.R
-import com.buggily.enemy.albums.AlbumsState
 import com.buggily.enemy.controller.ControllerBottomSheet
 import com.buggily.enemy.controller.ControllerScreen
-import com.buggily.enemy.controller.ControllerState
 import com.buggily.enemy.core.ext.readPermission
 import com.buggily.enemy.core.model.TimeOfDay
-import com.buggily.enemy.core.ui.UiState
-import com.buggily.enemy.core.ui.UiViewModel
+import com.buggily.enemy.core.navigation.NavigationDestination
+import com.buggily.enemy.core.ui.GlobalUiState
+import com.buggily.enemy.core.ui.GlobalUiViewModel
+import com.buggily.enemy.core.ui.LocalWindowSizeClass
 import com.buggily.enemy.core.ui.composable.IconButton
 import com.buggily.enemy.core.ui.composable.IconFloatingActionButton
 import com.buggily.enemy.core.ui.composable.SingleLineText
 import com.buggily.enemy.core.ui.composable.SingleLineTextField
 import com.buggily.enemy.core.ui.ext.ZERO
 import com.buggily.enemy.feature.album.AlbumScreen
-import com.buggily.enemy.feature.album.AlbumState
+import com.buggily.enemy.feature.browse.BrowseScreen
 import com.buggily.enemy.feature.orientation.OrientationScreen
-import com.buggily.enemy.feature.orientation.OrientationState
+import com.buggily.enemy.feature.playlist.PlaylistScreen
+import com.buggily.enemy.feature.playlist.create.CreatePlaylistDialog
 import com.buggily.enemy.feature.preferences.PreferencesScreen
-import com.buggily.enemy.navigation.EnemyDestination
-import com.buggily.enemy.tracks.TracksState
-import com.buggily.enemy.ui.browse.BrowseScreen
-import com.buggily.enemy.ui.browse.BrowseState
-import com.buggily.enemy.ui.browse.BrowseViewModel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import com.buggily.enemy.core.ui.R.dimen as dimens
 import com.buggily.enemy.core.ui.R.drawable as drawables
 import com.buggily.enemy.core.ui.R.string as strings
 
 @Composable
-fun rememberEnemyAppState(
-    navController: NavHostController,
-    windowSizeClass: WindowSizeClass,
-): EnemyAppState = remember(
-    navController,
-    windowSizeClass,
+fun EnemyApp(
+    appState: EnemyAppState,
+    viewModel: EnemyViewModel,
+    globalUiViewModel: GlobalUiViewModel,
+    modifier: Modifier = Modifier,
 ) {
-    EnemyAppState(
-        navController = navController,
-        windowSizeClass = windowSizeClass,
-    )
+    val hostState: SnackbarHostState = remember { SnackbarHostState() }
+    val uiState: EnemyUiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val globalUiState: GlobalUiState by globalUiViewModel.uiState.collectAsStateWithLifecycle()
+
+    CompositionLocalProvider(LocalWindowSizeClass provides appState.windowSizeClass) {
+        EnemyApp(
+            appState = appState,
+            hostState = hostState,
+            uiState = uiState,
+            globalUiState = globalUiState,
+            modifier = modifier,
+        )
+    }
 }
 
 @Composable
-@OptIn(ExperimentalLifecycleComposeApi::class)
-fun EnemyApp(
-    viewModel: EnemyViewModel,
-    uiViewModel: UiViewModel,
-    windowSizeClass: WindowSizeClass,
+private fun EnemyApp(
+    appState: EnemyAppState,
+    hostState: SnackbarHostState,
+    uiState: EnemyUiState,
+    globalUiState: GlobalUiState,
     modifier: Modifier = Modifier,
 ) {
-    val appState: EnemyAppState = rememberEnemyAppState(
-        navController = rememberNavController(),
-        windowSizeClass = windowSizeClass,
-    )
-
-    val hostState: SnackbarHostState = remember { SnackbarHostState() }
-    val state: EnemyState by viewModel.state.collectAsStateWithLifecycle()
-    val uiState: UiState by uiViewModel.state.collectAsStateWithLifecycle()
-
     EnemyApp(
         appState = appState,
         hostState = hostState,
-        greetingState = uiState.greetingState,
-        searchState = uiState.searchState,
-        fabState = uiState.fabState,
-        controllerState = state.controllerState,
-        albumTrackState = state.albumTrackState,
-        tracksTrackState = state.tracksTrackState,
+        searchState = globalUiState.searchState,
+        greetingState = globalUiState.greetingState,
+        orientationState = uiState.orientationState,
+        destinationState = uiState.destinationState,
+        preferencesState = globalUiState.preferencesState,
+        createPlaylistState = globalUiState.createPlaylistState,
+        controllerState = globalUiState.controllerState,
         modifier = modifier,
     )
 }
 
+
 @OptIn(
+    ExperimentalLayoutApi::class,
     ExperimentalMaterial3Api::class,
-    ExperimentalLayoutApi::class
 )
 
 @Composable
 private fun EnemyApp(
     appState: EnemyAppState,
     hostState: SnackbarHostState,
-    greetingState: UiState.GreetingState,
-    searchState: UiState.SearchState,
-    fabState: UiState.FabState,
-    controllerState: ControllerState,
-    albumTrackState: AlbumState.TrackState,
-    tracksTrackState: TracksState.TrackState,
+    searchState: GlobalUiState.SearchState,
+    greetingState: GlobalUiState.GreetingState,
+    orientationState: EnemyUiState.OrientationState,
+    destinationState: EnemyUiState.DestinationState,
+    preferencesState: GlobalUiState.PreferencesState,
+    createPlaylistState: GlobalUiState.CreatePlaylistState,
+    controllerState: GlobalUiState.ControllerState,
     modifier: Modifier = Modifier,
 ) {
-    val onNotGranted: () -> Unit = {
-        appState.navigate(EnemyDestination.Orientation.route) {
-            launchSingleTop = true
-            restoreState = false
+    val permissionResult: Int = ContextCompat.checkSelfPermission(
+        LocalContext.current,
+        readPermission
+    )
 
-            popUpTo(EnemyDestination.startDestination.route) {
-                saveState = false
-                inclusive = true
-            }
-        }
+    LaunchedEffect(Unit) {
+        val isGranted: Boolean = permissionResult == PackageManager.PERMISSION_GRANTED
+        if (!isGranted) orientationState.to()
     }
 
-    val orientationAlbumsState = OrientationState.AlbumsState {
-        val route: String = EnemyDestination.Browse.getRoute(
-            tab = BrowseState.TabState.Tab.Albums,
-        )
-
-        appState.navigate(route) {
-            launchSingleTop = true
-            restoreState = false
-
-            popUpTo(EnemyDestination.Orientation.route) {
-                saveState = false
-                inclusive = true
-            }
+    val snackbarText: String = remember(greetingState) {
+        when (greetingState.timeOfDay) {
+            is TimeOfDay.Morning -> R.string.morning
+            is TimeOfDay.Afternoon -> R.string.afternoon
+            is TimeOfDay.Evening -> R.string.evening
+            else -> R.string.day
         }
-    }
+    }.let { stringResource(R.string.greeting, stringResource(it)) }
 
-    val albumsAlbumState = AlbumsState.AlbumState {
-        appState.navigate(EnemyDestination.Album.getRoute(it.id)) {
-            launchSingleTop = true
-            restoreState = false
-        }
+    LaunchedEffect(greetingState) {
+        if (!greetingState.isVisible) return@LaunchedEffect
+        hostState.showSnackbar(snackbarText)
+        greetingState.onVisible()
     }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(hostState) },
+        contentWindowInsets = WindowInsets.ZERO,
+        modifier = modifier.imePadding(),
         bottomBar = {
-            EnemyBottomBar(
-                appState = appState,
+            EnemyBottomAppBar(
                 searchState = searchState,
-                fabState = fabState,
+                destinationState = destinationState,
+                preferencesState = preferencesState,
+                createPlaylistState = createPlaylistState,
                 controllerState = controllerState,
                 modifier = Modifier.fillMaxWidth(),
             )
         },
-        snackbarHost = { SnackbarHost(hostState) },
-        contentWindowInsets = WindowInsets.ZERO,
-        modifier = modifier.imePadding(),
     ) { padding: PaddingValues ->
-        val permissionResult: Int = ContextCompat.checkSelfPermission(
-            LocalContext.current,
-            readPermission
-        )
-
-        LaunchedEffect(Unit) {
-            val isGranted: Boolean = permissionResult == PackageManager.PERMISSION_GRANTED
-            if (!isGranted) onNotGranted()
-        }
-
-        val snackbarText: String = remember(greetingState) {
-            when (greetingState.timeOfDay) {
-                is TimeOfDay.Morning -> R.string.morning
-                is TimeOfDay.Afternoon -> R.string.afternoon
-                is TimeOfDay.Evening -> R.string.evening
-                else -> R.string.day
-            }
-        }.let { stringResource(R.string.greeting, stringResource(it)) }
-
-        LaunchedEffect(greetingState) {
-            if (!greetingState.isVisible) return@LaunchedEffect
-            hostState.showSnackbar(snackbarText)
-            greetingState.onVisible()
-        }
-
         NavHost(
             navController = appState.navController,
-            startDestination = EnemyDestination.startDestination.route,
+            startDestination = NavigationDestination.startDestination.route,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .consumedWindowInsets(padding)
-                .animateContentSize(),
+                .consumedWindowInsets(padding),
         ) {
             val contentModifier: Modifier = Modifier.fillMaxSize()
 
             composable(
-                route = EnemyDestination.Orientation.route,
-                arguments = EnemyDestination.Orientation.arguments,
+                route = NavigationDestination.Orientation.route,
+                arguments = NavigationDestination.Orientation.arguments,
             ) {
                 OrientationScreen(
-                    albumsState = orientationAlbumsState,
                     viewModel = hiltViewModel(),
                     modifier = contentModifier,
                 )
             }
 
             composable(
-                route = EnemyDestination.Browse.route,
-                arguments = EnemyDestination.Browse.arguments,
+                route = NavigationDestination.Browse.route,
+                arguments = NavigationDestination.Browse.arguments,
             ) {
-                val activity: ComponentActivity = LocalContext.current as ComponentActivity
-                val uiViewModel: UiViewModel = hiltViewModel { activity.viewModelStore }
-                val viewModel: BrowseViewModel = hiltViewModel()
-
-                LaunchedEffect(Unit) {
-                    val fabEventState: Flow<UiState.FabEventState> = uiViewModel.state.map {
-                        it.fabEventState
-                    }
-
-                    fabEventState.collect {
-                        when (it) {
-                            is UiState.FabEventState.Event -> {
-                                when (it) {
-                                    is UiState.FabEventState.Event.Click -> {
-                                        viewModel.onFloatingActionButtonClick()
-                                    }
-                                }
-
-                                it.onEvent()
-                            }
-                            else -> Unit
-                        }
-                    }
-                }
-
                 BrowseScreen(
-                    viewModel = viewModel,
-                    albumState = albumsAlbumState,
-                    trackState = tracksTrackState,
+                    viewModel = hiltViewModel(),
                     modifier = contentModifier,
                 )
             }
 
             composable(
-                route = EnemyDestination.Album.route,
-                arguments = EnemyDestination.Album.arguments,
+                route = NavigationDestination.Album.route,
+                arguments = NavigationDestination.Album.arguments,
             ) {
                 AlbumScreen(
                     viewModel = hiltViewModel(),
-                    trackState = albumTrackState,
                     modifier = contentModifier,
                 )
             }
 
             composable(
-                route = EnemyDestination.Preferences.route,
-                arguments = EnemyDestination.Preferences.arguments,
+                route = NavigationDestination.Preferences.route,
+                arguments = NavigationDestination.Preferences.arguments,
             ) {
                 PreferencesScreen(
                     viewModel = hiltViewModel(),
@@ -303,12 +233,35 @@ private fun EnemyApp(
             }
 
             composable(
-                route = EnemyDestination.Controller.route,
-                arguments = EnemyDestination.Controller.arguments,
+                route = NavigationDestination.Controller.route,
+                arguments = NavigationDestination.Controller.arguments,
             ) {
+                val context: Context = LocalContext.current
+                val activity: ComponentActivity = checkNotNull(context as? ComponentActivity)
+
                 ControllerScreen(
-                    state = controllerState,
+                    viewModel = hiltViewModel(activity),
                     modifier = contentModifier,
+                )
+            }
+
+            composable(
+                route = NavigationDestination.Playlist.route,
+                arguments = NavigationDestination.Playlist.arguments,
+            ) {
+                PlaylistScreen(
+                    viewModel = hiltViewModel(),
+                    modifier = contentModifier,
+                )
+            }
+
+            dialog(
+                route = NavigationDestination.Playlist.Create.route,
+                arguments = NavigationDestination.Playlist.Create.arguments,
+            ) {
+                CreatePlaylistDialog(
+                    viewModel = hiltViewModel(),
+                    modifier = Modifier,
                 )
             }
         }
@@ -317,11 +270,12 @@ private fun EnemyApp(
 
 @Composable
 @OptIn(ExperimentalLayoutApi::class)
-private fun EnemyBottomBar(
-    appState: EnemyAppState,
-    searchState: UiState.SearchState,
-    fabState: UiState.FabState,
-    controllerState: ControllerState,
+private fun EnemyBottomAppBar(
+    searchState: GlobalUiState.SearchState,
+    destinationState: EnemyUiState.DestinationState,
+    preferencesState: GlobalUiState.PreferencesState,
+    createPlaylistState: GlobalUiState.CreatePlaylistState,
+    controllerState: GlobalUiState.ControllerState,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -330,24 +284,18 @@ private fun EnemyBottomBar(
         modifier = Modifier.fillMaxWidth(),
     ) {
         AnimatedVisibility(
-            visible = controllerState.isVisible && appState.isControllerVisible,
+            visible = destinationState.isControllerVisible,
             enter = fadeIn() + expandVertically(),
             exit = fadeOut() + shrinkVertically(),
             modifier = Modifier.fillMaxWidth(),
         ) {
             EnemyController(
-                controllerState = controllerState,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(IntrinsicSize.Min)
-                    .clickable {
-                        appState.navigate(EnemyDestination.Controller.route) {
-                            launchSingleTop = true
-                            restoreState = false
-                        }
-                    }
+                    .clickable { controllerState.to() }
                     .let {
-                        if (appState.isBottomBarVisible) {
+                        if (destinationState.isBottomBarVisible) {
                             it.consumedWindowInsets(WindowInsets.systemBars)
                         } else {
                             it.consumedWindowInsets(WindowInsets.statusBars)
@@ -357,15 +305,16 @@ private fun EnemyBottomBar(
         }
 
         AnimatedVisibility(
-            visible = appState.isBottomBarVisible,
+            visible = destinationState.isBottomBarVisible,
             enter = fadeIn() + expandVertically(),
             exit = fadeOut() + shrinkVertically(),
             modifier = modifier,
         ) {
             EnemyBottomBar(
-                appState = appState,
                 searchState = searchState,
-                fabState = fabState,
+                destinationState = destinationState,
+                preferencesState = preferencesState,
+                createPlaylistState = createPlaylistState,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(dimensionResource(R.dimen.bottom_bar)),
@@ -376,20 +325,23 @@ private fun EnemyBottomBar(
 
 @Composable
 private fun EnemyController(
-    controllerState: ControllerState,
     modifier: Modifier = Modifier,
 ) {
+    val context: Context = LocalContext.current
+    val activity: ComponentActivity = checkNotNull(context as? ComponentActivity)
+
     ControllerBottomSheet(
-        state = controllerState,
+        viewModel = hiltViewModel(activity),
         modifier = modifier,
     )
 }
 
 @Composable
 private fun EnemyBottomBar(
-    appState: EnemyAppState,
-    searchState: UiState.SearchState,
-    fabState: UiState.FabState,
+    searchState: GlobalUiState.SearchState,
+    destinationState: EnemyUiState.DestinationState,
+    preferencesState: GlobalUiState.PreferencesState,
+    createPlaylistState: GlobalUiState.CreatePlaylistState,
     modifier: Modifier = Modifier,
 ) {
     val iconButtonModifier: Modifier = Modifier.size(dimensionResource(dimens.icon_medium))
@@ -425,7 +377,8 @@ private fun EnemyBottomBar(
                 )
 
                 EnemyBottomBarPreferencesIconButton(
-                    appState = appState,
+                    preferencesState = preferencesState,
+                    destinationState = destinationState,
                     modifier = iconButtonModifier,
                 )
 
@@ -433,7 +386,7 @@ private fun EnemyBottomBar(
             }
 
             EnemyBottomBarFloatingActionButton(
-                fabState = fabState,
+                createPlaylistState = createPlaylistState,
                 modifier = Modifier,
             )
         }
@@ -442,7 +395,7 @@ private fun EnemyBottomBar(
 
 @Composable
 private fun EnemyBottomBarSearchIconButton(
-    searchState: UiState.SearchState,
+    searchState: GlobalUiState.SearchState,
     modifier: Modifier = Modifier,
 ) {
     val painterResId: Int = if (searchState.isEnabled) {
@@ -467,30 +420,27 @@ private fun EnemyBottomBarSearchIconButton(
 
 @Composable
 private fun RowScope.EnemyBottomBarPreferencesIconButton(
-    appState: EnemyAppState,
+    preferencesState: GlobalUiState.PreferencesState,
+    destinationState: EnemyUiState.DestinationState,
     modifier: Modifier = Modifier,
 ) {
     AnimatedVisibility(
-        visible = appState.isPreferencesButtonVisible,
+        visible = destinationState.isPreferencesButtonVisible,
         enter = fadeIn() + expandHorizontally(),
         exit = fadeOut() + shrinkHorizontally(),
     ) {
         IconButton(
             painter = painterResource(drawables.preferences),
             contentDescription = stringResource(R.string.preferences),
+            onClick = preferencesState.to,
             contentModifier = modifier,
-        ) {
-            appState.navigate(EnemyDestination.Preferences.route) {
-                launchSingleTop = true
-                restoreState = false
-            }
-        }
+        )
     }
 }
 
 @Composable
 private fun EnemyBottomBarSearch(
-    searchState: UiState.SearchState,
+    searchState: GlobalUiState.SearchState,
     modifier: Modifier = Modifier,
 ) {
     AnimatedVisibility(
@@ -509,7 +459,7 @@ private fun EnemyBottomBarSearch(
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 private fun EnemySearchTextField(
-    searchState: UiState.SearchState,
+    searchState: GlobalUiState.SearchState,
     modifier: Modifier = Modifier,
 ) {
     SingleLineTextField(
@@ -536,7 +486,7 @@ private fun BrowseSearchLabel(
 
 @Composable
 private fun BrowseSearchTrailingIcon(
-    searchState: UiState.SearchState,
+    searchState: GlobalUiState.SearchState,
     modifier: Modifier = Modifier,
 ) {
     IconButton(
@@ -550,13 +500,13 @@ private fun BrowseSearchTrailingIcon(
 
 @Composable
 private fun EnemyBottomBarFloatingActionButton(
-    fabState: UiState.FabState,
+    createPlaylistState: GlobalUiState.CreatePlaylistState,
     modifier: Modifier = Modifier,
 ) {
     IconFloatingActionButton(
         painter = painterResource(drawables.create),
         contentDescription = stringResource(strings.create),
-        onClick = fabState.onClick,
+        onClick = createPlaylistState.to,
         modifier = modifier,
     )
 }

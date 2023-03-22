@@ -7,6 +7,7 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -17,8 +18,8 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.media3.common.MediaItem
@@ -26,45 +27,58 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.buggily.enemy.controller.ControllerViewModel
+import com.buggily.enemy.core.controller.ControllerEventState
+import com.buggily.enemy.core.controller.ControllerOrchestratable
 import com.buggily.enemy.core.model.theme.Theme
+import com.buggily.enemy.core.navigation.NavigationArgs
+import com.buggily.enemy.core.navigation.NavigationEventState
+import com.buggily.enemy.core.navigation.NavigationOrchestratable
 import com.buggily.enemy.di.DirectExecutorQualifier
 import com.buggily.enemy.ui.EnemyApp
-import com.buggily.enemy.ui.EnemyState
+import com.buggily.enemy.ui.EnemyAppState
 import com.buggily.enemy.ui.EnemyViewModel
+import com.buggily.enemy.ui.rememberEnemyAppState
 import com.buggily.enemy.ui.theme.EnemyPalette
 import com.buggily.enemy.ui.theme.EnemyTheme
 import com.google.common.util.concurrent.ListenableFuture
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.util.concurrent.Executor
 import javax.inject.Inject
 import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 @AndroidEntryPoint
 class EnemyActivity : ComponentActivity() {
 
     private val viewModel: EnemyViewModel by viewModels()
+    private val controllerViewModel: ControllerViewModel by viewModels()
 
     private var setPosition: Job? = null
     private lateinit var controllerFuture: ListenableFuture<MediaController>
+
+    @Inject
+    lateinit var navigationOrchestrator: NavigationOrchestratable
+
+    @Inject
+    lateinit var controllerOrchestrator: ControllerOrchestratable
 
     @Inject
     lateinit var sessionToken: SessionToken
 
     @Inject
     @DirectExecutorQualifier
-    lateinit var directExecutor: Executor
+    lateinit var executor: Executor
 
-    @OptIn(
-        ExperimentalLifecycleComposeApi::class,
-        ExperimentalMaterial3WindowSizeClassApi::class,
-    )
-
+    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
 
         installSplashScreen()
@@ -82,29 +96,54 @@ class EnemyActivity : ComponentActivity() {
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.isPlaying.collect {
-                    if (it) startSetPosition() else stopSetPosition()
+                launch {
+                    controllerViewModel.isPlaying.collect {
+                        if (it) startSetPosition() else stopSetPosition()
+                    }
+                }
+
+                launch {
+                    controllerOrchestrator.eventState.collect {
+                        onControllerEvent(it)
+                    }
                 }
             }
         }
 
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.DESTROYED) {
-                releaseSetPosition()
-            }
-        }
-
-        val controllerEventState: Flow<EnemyState.ControllerEventState> = viewModel.state.map {
-            it.controllerEventState
-        }
-
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                controllerEventState.collect { onControllerEvent(it) }
-            }
-        }
-
         setContent {
+            val navController: NavHostController = rememberNavController()
+            val windowSizeClass: WindowSizeClass = calculateWindowSizeClass(this)
+
+            val appState: EnemyAppState = rememberEnemyAppState(
+                navController = navController,
+                windowSizeClass = windowSizeClass,
+            )
+
+            LaunchedEffect(Unit) {
+                navController.removeOnDestinationChangedListener(destinationChangedListener)
+                navController.addOnDestinationChangedListener(destinationChangedListener)
+            }
+
+            LaunchedEffect(Unit) {
+                navigationOrchestrator.eventState.flowWithLifecycle(lifecycle).collect {
+                    when (it) {
+                        is NavigationEventState.Event -> when (val args: NavigationArgs = it.args) {
+                            is NavigationArgs.Route.WithOptions -> navController.navigate(
+                                route = args.route,
+                                builder = args.builder,
+                            )
+                            is NavigationArgs.Route.WithoutOptions -> navController.navigate(
+                                route = args.route,
+                            )
+                            is NavigationArgs.Back -> navController.popBackStack()
+                        }
+                        is NavigationEventState.Default -> Unit
+                    }
+
+                    if (it is NavigationEventState.Event) it.onEvent()
+                }
+            }
+
             val isSystemInDarkTheme: Boolean = isSystemInDarkTheme()
             val theme: Theme by viewModel.theme.collectAsStateWithLifecycle()
 
@@ -137,9 +176,9 @@ class EnemyActivity : ComponentActivity() {
 
             EnemyTheme(palette) {
                 EnemyApp(
-                    viewModel = hiltViewModel(),
-                    uiViewModel = hiltViewModel(),
-                    windowSizeClass = calculateWindowSizeClass(this),
+                    appState = appState,
+                    viewModel = hiltViewModel(this),
+                    globalUiViewModel = hiltViewModel(this),
                     modifier = Modifier.fillMaxSize(),
                 )
             }
@@ -156,18 +195,20 @@ class EnemyActivity : ComponentActivity() {
 
         lifecycleScope.launch {
             with(requireController()) {
-                viewModel.setIsPlaying(isPlaying)
-                viewModel.setIsLoading(isLoading)
-                viewModel.setPosition(currentPosition)
-                viewModel.setMediaItem(currentMediaItem)
-                viewModel.setRepeatMode(repeatMode)
-                viewModel.setShuffleMode(shuffleModeEnabled)
-                viewModel.setDuration(duration)
+                controllerViewModel.setMediaItem(currentMediaItem)
 
-                viewModel.setHasNext(hasNextMediaItem())
-                viewModel.setHasPrevious(hasPreviousMediaItem())
+                controllerViewModel.setPlaybackState(playbackState)
+                controllerViewModel.setIsPlaying(isPlaying)
+                controllerViewModel.setRepeatMode(repeatMode)
+                controllerViewModel.setShuffleMode(shuffleModeEnabled)
 
-                addListener(listener)
+                controllerViewModel.setHasNext(hasNextMediaItem())
+                controllerViewModel.setHasPrevious(hasPreviousMediaItem())
+
+                controllerViewModel.setDuration(duration)
+                controllerViewModel.setPosition(currentPosition)
+
+                addListener(controllerListener)
             }
         }
     }
@@ -176,81 +217,82 @@ class EnemyActivity : ComponentActivity() {
         super.onStop()
 
         lifecycleScope.launch {
-            requireController().removeListener(listener)
+            requireController().removeListener(controllerListener)
             MediaController.releaseFuture(controllerFuture)
         }
     }
 
-    private suspend fun onControllerEvent(event: EnemyState.ControllerEventState) = when (event) {
-        is EnemyState.ControllerEventState.Event -> {
-            when (event) {
-                is EnemyState.ControllerEventState.Event.Play -> with(requireController()) {
-                    when (event) {
-                        is EnemyState.ControllerEventState.Event.Play.With -> {
-                            setMediaItems(event.items)
-                            seekToDefaultPosition(event.index)
-                        }
-                        else -> Unit
-                    }
+    override fun onDestroy() {
+        super.onDestroy()
+        releaseSetPosition()
+    }
 
-                    prepare()
-                    play()
+    private suspend fun onControllerEvent(event: ControllerEventState) {
+        when (event) {
+            is ControllerEventState.Event.Play -> with(requireController()) {
+                if (event is ControllerEventState.Event.Play.With) {
+                    setMediaItems(event.items)
+                    seekToDefaultPosition(event.index)
                 }
-                is EnemyState.ControllerEventState.Event.Pause -> {
-                    requireController().pause()
-                }
-                is EnemyState.ControllerEventState.Event.Next.First -> {
-                    requireController().seekToNextMediaItem()
-                }
-                is EnemyState.ControllerEventState.Event.Previous.Last -> {
-                    requireController().seekToPreviousMediaItem()
-                }
-                is EnemyState.ControllerEventState.Event.Repeat -> {
-                    requireController().repeatMode = event.repeatMode
-                }
-                is EnemyState.ControllerEventState.Event.Shuffle -> {
-                    requireController().shuffleModeEnabled = event.shuffleMode
-                }
-                is EnemyState.ControllerEventState.Event.Seek -> {
-                    requireController().seekTo(event.milliseconds)
-                }
-                is EnemyState.ControllerEventState.Event.Next.Last -> with(requireController()) {
-                    while (hasNextMediaItem()) {
-                        val isNotRepeating: Boolean = repeatMode == MediaController.REPEAT_MODE_OFF
-                        if (isNotRepeating) seekToNextMediaItem() else break
-                    }
-                }
-                is EnemyState.ControllerEventState.Event.Previous.First -> with(requireController()) {
-                    while (hasPreviousMediaItem()) {
-                        val isNotRepeating: Boolean = repeatMode == MediaController.REPEAT_MODE_OFF
-                        if (isNotRepeating) seekToPreviousMediaItem() else break
-                    }
-                }
+
+                prepare()
+                play()
             }
-
-            event.onEvent()
+            is ControllerEventState.Event.Pause -> {
+                requireController().pause()
+            }
+            is ControllerEventState.Event.Next -> {
+                requireController().seekToNextMediaItem()
+            }
+            is ControllerEventState.Event.Previous -> {
+                requireController().seekToPreviousMediaItem()
+            }
+            is ControllerEventState.Event.Repeat -> {
+                requireController().repeatMode = event.repeatMode
+            }
+            is ControllerEventState.Event.Shuffle -> {
+                requireController().shuffleModeEnabled = event.shuffleMode
+            }
+            is ControllerEventState.Event.Seek -> {
+                requireController().seekTo(event.milliseconds)
+            }
+            is ControllerEventState.Default -> Unit
         }
-        is EnemyState.ControllerEventState.Default -> Unit
+
+        if (event is ControllerEventState.Event) event.onEvent()
     }
 
     @Suppress("BlockingMethodInNonBlockingContext")
     private suspend fun requireController(): MediaController = suspendCoroutine {
+        val listener: () -> Unit = {
+            try {
+                it.resume(controllerFuture.get())
+            } catch (e: Exception) {
+                it.resumeWithException(e)
+            }
+        }
+
         controllerFuture.addListener(
-            { it.resume(controllerFuture.get()) },
-            directExecutor
+            listener,
+            executor,
         )
     }
 
-    private val listener: Player.Listener = object : Player.Listener {
+    private val destinationChangedListener: NavController.OnDestinationChangedListener =
+        NavController.OnDestinationChangedListener { _, it: NavDestination, _ ->
+            viewModel.onDestinationChange(it)
+        }
+
+    private val controllerListener: Player.Listener = object : Player.Listener {
 
         override fun onIsPlayingChanged(isPlaying: Boolean) {
             super.onIsPlayingChanged(isPlaying)
-            viewModel.setIsPlaying(isPlaying)
+            controllerViewModel.setIsPlaying(isPlaying)
         }
 
-        override fun onIsLoadingChanged(isLoading: Boolean) {
-            super.onIsLoadingChanged(isLoading)
-            viewModel.setIsLoading(isLoading)
+        override fun onPlaybackStateChanged(playbackState: Int) {
+            super.onPlaybackStateChanged(playbackState)
+            controllerViewModel.setPlaybackState(playbackState)
         }
 
         override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
@@ -260,45 +302,51 @@ class EnemyActivity : ComponentActivity() {
                 .setMediaMetadata(mediaMetadata)
                 .build()
 
-            viewModel.setMediaItem(mediaItem)
+            controllerViewModel.setMediaItem(mediaItem)
         }
 
         override fun onRepeatModeChanged(repeatMode: Int) {
             super.onRepeatModeChanged(repeatMode)
-            viewModel.setRepeatMode(repeatMode)
+            controllerViewModel.setRepeatMode(repeatMode)
         }
 
         override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
             super.onShuffleModeEnabledChanged(shuffleModeEnabled)
-            viewModel.setShuffleMode(shuffleModeEnabled)
+            controllerViewModel.setShuffleMode(shuffleModeEnabled)
         }
 
         override fun onEvents(player: Player, events: Player.Events) {
             super.onEvents(player, events)
 
-            if (events.contains(Player.EVENT_TIMELINE_CHANGED)) {
-                viewModel.setDuration(player.duration)
+            if (
+                events.containsAny(
+                    Player.EVENT_MEDIA_ITEM_TRANSITION,
+                    Player.EVENT_PLAYBACK_STATE_CHANGED,
+                )
+            ) {
+                controllerViewModel.setDuration(player.duration)
             }
 
-            events.containsAny(
-                Player.EVENT_REPEAT_MODE_CHANGED,
-                Player.EVENT_SHUFFLE_MODE_ENABLED_CHANGED,
-                Player.EVENT_MEDIA_ITEM_TRANSITION,
-            ).let { if (!it) return }
-
-            viewModel.setHasNext(player.hasNextMediaItem())
-            viewModel.setHasPrevious(player.hasPreviousMediaItem())
+            if (
+                events.containsAny(
+                    Player.EVENT_MEDIA_ITEM_TRANSITION,
+                    Player.EVENT_REPEAT_MODE_CHANGED,
+                    Player.EVENT_SHUFFLE_MODE_ENABLED_CHANGED,
+                )
+            ) {
+                controllerViewModel.setPlaybackState(player.playbackState)
+                controllerViewModel.setHasNext(player.hasNextMediaItem())
+                controllerViewModel.setHasPrevious(player.hasPreviousMediaItem())
+            }
         }
     }
 
     private fun startSetPosition() {
         setPosition = lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                val controller: MediaController = requireController()
-
                 while (true) {
-                    viewModel.setPosition(controller.currentPosition)
-                    delay(timeMillis = 500)
+                    controllerViewModel.setPosition(requireController().currentPosition)
+                    delay(timeMillis = 1000)
                 }
             }
         }
@@ -309,6 +357,7 @@ class EnemyActivity : ComponentActivity() {
     }
 
     private fun releaseSetPosition() {
+        stopSetPosition()
         setPosition = null
     }
 }

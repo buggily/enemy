@@ -1,7 +1,11 @@
+
 import com.android.build.gradle.LibraryExtension
 import com.buggily.enemy.configureKotlinAndroid
+import com.buggily.enemy.ext.getLib
+import com.buggily.enemy.ext.getLibs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getByType
 
 class AndroidLibraryConventionPlugin : Plugin<Project> {
@@ -18,6 +22,12 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
 
         extension.defaultConfig {
             targetSdk = 33
+        }
+
+        dependencies {
+            with(getLibs()) {
+                add("implementation", getLib("kotlinx.coroutines.android"))
+            }
         }
     }
 }

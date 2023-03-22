@@ -1,12 +1,12 @@
 package com.buggily.enemy.core.model.track
 
-import com.buggily.enemy.core.model.Runtime
+import com.buggily.enemy.core.model.UiDuration
 import com.buggily.enemy.core.model.album.Albumable
 
 data class Track(
     override val id: Long,
     override val name: String,
-    val runtime: Runtime,
+    val duration: UiDuration,
     val position: Position,
     val artist: Artist,
     val album: Album,

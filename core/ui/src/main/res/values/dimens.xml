@@ -11,4 +11,8 @@
     <dimen name="icon_large">32dp</dimen>
 
     <dimen name="item">128dp</dimen>
+
+    <item name="alpha_low" format="float" type="dimen">0.25</item>
+    <item name="alpha_medium" format="float" type="dimen">0.50</item>
+    <item name="alpha_high" format="float" type="dimen">1.00</item>
 </resources>
