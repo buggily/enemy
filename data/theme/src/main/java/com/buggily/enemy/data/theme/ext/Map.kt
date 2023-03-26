@@ -1,39 +1,39 @@
 package com.buggily.enemy.data.theme.ext
 
-import com.buggily.enemy.core.model.theme.Theme as Output
-import com.buggily.enemy.local.preferences.Theme as Input
+import com.buggily.enemy.core.model.theme.Theme
+import com.buggily.enemy.local.preferences.Theme as LocalTheme
 
-fun Input.map(): Output = Output(
+fun LocalTheme.map(): Theme = Theme(
     scheme = scheme.map(),
     dynamic = dynamic.map(),
 )
 
-fun Input.Scheme.map(): Output.Scheme = when (this) {
-    is Input.Scheme.Default -> Output.Scheme.Default
-    is Input.Scheme.Light -> Output.Scheme.Light
-    is Input.Scheme.Dark -> Output.Scheme.Dark
+fun LocalTheme.Scheme.map(): Theme.Scheme = when (this) {
+    is LocalTheme.Scheme.Default -> Theme.Scheme.Default
+    is LocalTheme.Scheme.Light -> Theme.Scheme.Light
+    is LocalTheme.Scheme.Dark -> Theme.Scheme.Dark
 }
 
-fun Input.Dynamic.map(): Output.Dynamic = when (this) {
-    is Input.Dynamic.Default -> Output.Dynamic.Default
-    is Input.Dynamic.On -> Output.Dynamic.On
-    is Input.Dynamic.Off -> Output.Dynamic.Off
+fun LocalTheme.Dynamic.map(): Theme.Dynamic = when (this) {
+    is LocalTheme.Dynamic.Default -> Theme.Dynamic.Default
+    is LocalTheme.Dynamic.On -> Theme.Dynamic.On
+    is LocalTheme.Dynamic.Off -> Theme.Dynamic.Off
 }
 
 
-fun Output.map(): Input = Input(
+fun Theme.map(): LocalTheme = LocalTheme(
     scheme = scheme.map(),
     dynamic = dynamic.map(),
 )
 
-fun Output.Scheme.map(): Input.Scheme = when (this) {
-    is Output.Scheme.Default -> Input.Scheme.Default
-    is Output.Scheme.Light -> Input.Scheme.Light
-    is Output.Scheme.Dark -> Input.Scheme.Dark
+fun Theme.Scheme.map(): LocalTheme.Scheme = when (this) {
+    is Theme.Scheme.Default -> LocalTheme.Scheme.Default
+    is Theme.Scheme.Light -> LocalTheme.Scheme.Light
+    is Theme.Scheme.Dark -> LocalTheme.Scheme.Dark
 }
 
-fun Output.Dynamic.map(): Input.Dynamic = when (this) {
-    is Output.Dynamic.Default -> Input.Dynamic.Default
-    is Output.Dynamic.On -> Input.Dynamic.On
-    is Output.Dynamic.Off -> Input.Dynamic.Off
+fun Theme.Dynamic.map(): LocalTheme.Dynamic = when (this) {
+    is Theme.Dynamic.Default -> LocalTheme.Dynamic.Default
+    is Theme.Dynamic.On -> LocalTheme.Dynamic.On
+    is Theme.Dynamic.Off -> LocalTheme.Dynamic.Off
 }

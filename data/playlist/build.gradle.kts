@@ -1,5 +1,4 @@
 plugins {
-    id("enemy.android.library")
     id("enemy.android.library.data")
 }
 
