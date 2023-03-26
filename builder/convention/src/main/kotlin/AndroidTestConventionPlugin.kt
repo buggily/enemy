@@ -3,7 +3,7 @@ import com.android.build.gradle.TestExtension
 import com.buggily.enemy.configureKotlinAndroid
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.configure
 
 class AndroidTestConventionPlugin : Plugin<Project> {
 
@@ -13,7 +13,8 @@ class AndroidTestConventionPlugin : Plugin<Project> {
             apply("org.jetbrains.kotlin.android")
         }
 
-        val extension: TestExtension = extensions.getByType()
-        configureKotlinAndroid(extension)
+        extensions.configure<TestExtension> {
+            configureKotlinAndroid(this)
+        }
     }
 }

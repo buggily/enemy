@@ -5,8 +5,8 @@ import com.buggily.enemy.ext.getLib
 import com.buggily.enemy.ext.getLibs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.getByType
 
 class AndroidLibraryComposeConventionPlugin : Plugin<Project> {
 
@@ -15,8 +15,9 @@ class AndroidLibraryComposeConventionPlugin : Plugin<Project> {
             apply("com.android.library")
         }
 
-        val extension: LibraryExtension = extensions.getByType()
-        configureAndroidCompose(extension)
+        extensions.configure<LibraryExtension> {
+            configureAndroidCompose(this)
+        }
 
         dependencies {
             with(getLibs()) {
