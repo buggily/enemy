@@ -2,7 +2,7 @@ package com.buggily.enemy.data.playlist.di.repository
 
 import com.buggily.core.domain.GetUiInstantFromInstant
 import com.buggily.enemy.data.playlist.repository.PlaylistRepository
-import com.buggily.enemy.data.playlist.source.PlaylistSourceable
+import com.buggily.enemy.data.playlist.source.PlaylistLocalSourceable
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,7 +14,7 @@ object PlaylistRepositoryProvider {
 
     @Provides
     fun provides(
-        source: PlaylistSourceable,
+        source: PlaylistLocalSourceable,
         getUiInstantFromInstant: GetUiInstantFromInstant,
     ): PlaylistRepository = PlaylistRepository(
         source = source,

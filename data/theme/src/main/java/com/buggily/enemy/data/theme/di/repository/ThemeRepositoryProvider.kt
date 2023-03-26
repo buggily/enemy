@@ -1,8 +1,8 @@
 package com.buggily.enemy.data.theme.di.repository
 
 import com.buggily.enemy.data.theme.repository.ThemeRepository
-import com.buggily.enemy.data.theme.source.dynamic.DynamicSourceable
-import com.buggily.enemy.data.theme.source.scheme.SchemeSourceable
+import com.buggily.enemy.data.theme.source.dynamic.DynamicLocalSourceable
+import com.buggily.enemy.data.theme.source.scheme.SchemeLocalSourceable
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,8 +14,8 @@ object ThemeRepositoryProvider {
 
     @Provides
     fun provides(
-        schemeSource: SchemeSourceable,
-        dynamicSource: DynamicSourceable,
+        schemeSource: SchemeLocalSourceable,
+        dynamicSource: DynamicLocalSourceable,
     ): ThemeRepository = ThemeRepository(
         schemeSource = schemeSource,
         dynamicSource = dynamicSource,
