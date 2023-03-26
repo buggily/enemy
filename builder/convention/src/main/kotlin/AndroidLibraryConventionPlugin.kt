@@ -5,8 +5,8 @@ import com.buggily.enemy.ext.getLib
 import com.buggily.enemy.ext.getLibs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.getByType
 
 class AndroidLibraryConventionPlugin : Plugin<Project> {
 
@@ -17,11 +17,9 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
             apply("org.jetbrains.kotlin.kapt")
         }
 
-        val extension: LibraryExtension = extensions.getByType()
-        configureKotlinAndroid(extension)
-
-        extension.defaultConfig {
-            targetSdk = 33
+        extensions.configure<LibraryExtension> {
+            configureKotlinAndroid(this)
+            defaultConfig.targetSdk = 33
         }
 
         dependencies {

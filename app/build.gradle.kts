@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 plugins {
     id("enemy.android.application")
     id("enemy.android.application.compose")
@@ -64,22 +66,24 @@ dependencies {
     implementation(project(":domain:navigation"))
     implementation(project(":domain:controller"))
 
-    implementation(libs.kotlin)
-    implementation(libs.kotlinx.datetime)
+    with(libs) {
+        implementation(kotlin)
+        implementation(kotlinx.datetime)
 
-    implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.kotlinx.coroutines.android)
+        implementation(kotlinx.coroutines.core)
+        implementation(kotlinx.coroutines.android)
 
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.core.splashscreen)
+        implementation(androidx.core.ktx)
+        implementation(androidx.core.splashscreen)
 
-    implementation(libs.androidx.paging)
-    implementation(libs.androidx.paging.compose)
+        implementation(androidx.paging)
+        implementation(androidx.paging.compose)
 
-    implementation(libs.androidx.media.ui)
-    implementation(libs.androidx.media.player)
-    implementation(libs.androidx.media.session)
+        implementation(androidx.media.ui)
+        implementation(androidx.media.player)
+        implementation(androidx.media.session)
 
-    implementation(libs.coil)
-    implementation(libs.coil.compose)
+        implementation(coil)
+        implementation(coil.compose)
+    }
 }
