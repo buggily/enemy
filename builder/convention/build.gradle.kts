@@ -44,6 +44,10 @@ gradlePlugin {
             id = "enemy.android.library.domain"
             implementationClass = "AndroidLibraryDomainConventionPlugin"
         }
+        register("androidLibraryExternal") {
+            id = "enemy.android.library.external"
+            implementationClass = "AndroidLibraryExternalConventionPlugin"
+        }
         register("androidLibraryFeature") {
             id = "enemy.android.library.feature"
             implementationClass = "AndroidLibraryFeatureConventionPlugin"

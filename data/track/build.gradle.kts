@@ -1,5 +1,4 @@
 plugins {
-    id("enemy.android.library")
     id("enemy.android.library.data")
 }
 
@@ -9,6 +8,8 @@ android {
 
 dependencies {
     implementation(project(":local:track"))
+    implementation(project(":external:track"))
+
     implementation(project(":core:domain"))
     implementation(project(":core:query"))
     implementation(project(":core:paging"))

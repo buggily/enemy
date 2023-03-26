@@ -1,5 +1,4 @@
 plugins {
-    id("enemy.android.library")
     id("enemy.android.library.data")
 }
 
@@ -8,7 +7,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":local:album"))
+    implementation(project(":external:album"))
     implementation(project(":core:query"))
     implementation(project(":core:paging"))
 

@@ -1,12 +1,12 @@
 package com.buggily.enemy.data.album.ext
 
-import com.buggily.enemy.core.model.album.Album as Output
-import com.buggily.enemy.local.album.Album as Input
+import com.buggily.enemy.core.model.album.Album
+import com.buggily.enemy.external.album.Album as ExternalAlbum
 
-fun Input.map(): Output = Output(
+fun ExternalAlbum.map(): Album = Album(
     id = id,
     name = name,
-    artist = Output.Artist(
+    artist = Album.Artist(
         id = artist.id,
         name = artist.name,
     ),

@@ -19,7 +19,7 @@ interface TrackDao {
         """
     )
 
-    suspend fun getTracksByPlaylistId(playlistId: Long): List<Track>
+    fun getPagingByPlaylistId(playlistId: Long): PagingSource<Int, Track>
 
     @Query(
         """
@@ -29,7 +29,7 @@ interface TrackDao {
         """
     )
 
-    fun getTrackPagingByPlaylistId(playlistId: Long): PagingSource<Int, Track>
+    suspend fun getByPlaylistId(playlistId: Long): List<Track>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(track: List<Track>)

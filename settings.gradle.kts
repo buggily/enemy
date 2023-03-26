@@ -1,3 +1,8 @@
+@file:Suppress("UnstableApiUsage")
+
+include(":external:track")
+
+
 pluginManagement {
     includeBuild("builder")
 
@@ -57,7 +62,9 @@ include(":data:track")
 include(":data:playlist")
 include(":data:theme")
 
-include(":local:album")
 include(":local:track")
 include(":local:preferences")
 include(":local:playlist")
+
+include(":external:album")
+include(":external:track")

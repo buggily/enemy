@@ -1,7 +1,7 @@
 package com.buggily.enemy.data.album.di.repository
 
 import com.buggily.enemy.data.album.repository.AlbumRepository
-import com.buggily.enemy.data.album.source.AlbumSourceable
+import com.buggily.enemy.data.album.source.AlbumExternalSourceable
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,7 +13,7 @@ object AlbumRepositoryProvider {
 
     @Provides
     fun provides(
-        source: AlbumSourceable,
+        source: AlbumExternalSourceable,
     ): AlbumRepository = AlbumRepository(
         source = source,
     )
