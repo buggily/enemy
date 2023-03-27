@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyGridItemScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -96,19 +97,31 @@ private fun AlbumsGrid(
             when (it) {
                 is Album -> AlbumItem(
                     album = it,
-                    modifier = Modifier
-                        .defaultMinSize(
-                            minWidth = dimensionResource(dimens.item),
-                            minHeight = dimensionResource(dimens.item),
-                        )
-                        .fillMaxSize()
-                        .aspectRatio(1f)
-                        .animateItemPlacement()
-                        .clickable { albumState.onClick(it) },
+                    onClick = { albumState.onClick(it) },
                 )
             }
         }
     }
+}
+
+@Composable
+@OptIn(ExperimentalFoundationApi::class)
+private fun LazyGridItemScope.AlbumItem(
+    album: Album,
+    onClick: () -> Unit,
+) {
+    AlbumItem(
+        album = album,
+        modifier = Modifier
+            .defaultMinSize(
+                minWidth = dimensionResource(dimens.item),
+                minHeight = dimensionResource(dimens.item),
+            )
+            .fillMaxSize()
+            .aspectRatio(1f)
+            .animateItemPlacement()
+            .clickable { onClick() },
+    )
 }
 
 @Composable
@@ -132,11 +145,6 @@ private fun AlbumItemImage(
     album: Album,
     modifier: Modifier = Modifier,
 ) {
-    val contentModifier: Modifier = Modifier.defaultMinSize(
-        minWidth = dimensionResource(dimens.item),
-        minHeight = dimensionResource(dimens.item),
-    )
-
     ArtImage(
         artable = album,
         contentScale = ContentScale.Crop,
@@ -144,7 +152,10 @@ private fun AlbumItemImage(
         error = {
             AlbumItemImageError(
                 album = album,
-                modifier = contentModifier,
+                modifier = Modifier.defaultMinSize(
+                    minWidth = dimensionResource(dimens.item),
+                    minHeight = dimensionResource(dimens.item),
+                ),
             )
         },
     )

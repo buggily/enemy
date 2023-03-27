@@ -20,6 +20,7 @@ enemy demonstrates the following:
 - Positional paging via [Paging3][paging]
 - Audio playback via [Media3][media]
 - Declarative layouts via [Jetpack Compose][compose]
+- Adaptive layouts via [WindowSizeClass][windowSizeClass]
 - Image loading via [Coil][coil]
 - Unidirectional data flow via [MVVM][mvvm]
 - Modularization via [versions catalogs][versions] and [convention plugins][plugins]
@@ -40,6 +41,7 @@ Because enemy is a strictly local client, setup simply involves cloning the repo
 [paging]: https://developer.android.com/topic/libraries/architecture/paging/v3-overview
 [media]: https://developer.android.com/guide/topics/media/media3
 [compose]: https://developer.android.com/jetpack/compose/
+[windowSizeClass]: https://developer.android.com/guide/topics/large-screens/support-different-screen-sizes#window_size_classes
 [coil]: https://coil-kt.github.io/coil/
 [mvvm]: https://developer.android.com/topic/architecture/
 [versions]: https://docs.gradle.org/current/userguide/platforms.html

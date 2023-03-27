@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -80,7 +81,6 @@ private fun PlaylistScreen(
     tracks: LazyPagingItems<Track>,
     modifier: Modifier = Modifier,
 ) {
-    val itemModifier: Modifier = Modifier.fillMaxWidth()
     val track: Track? = remember(tracks) { tracks.peekFirst() }
 
     Box(modifier) {
@@ -95,7 +95,9 @@ private fun PlaylistScreen(
                     PlaylistHeader(
                         track = track,
                         playlist = playlist,
-                        modifier = itemModifier.height(IntrinsicSize.Min),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(IntrinsicSize.Min),
                     )
                 }
             }
@@ -105,15 +107,7 @@ private fun PlaylistScreen(
                 key = { it.id },
             ) {
                 when (it) {
-                    is Track -> TrackItem(
-                        track = it,
-                        modifier = itemModifier
-                            .clickable { trackState.onClick(it) }
-                            .padding(
-                                horizontal = dimensionResource(dimens.padding_large),
-                                vertical = dimensionResource(dimens.padding_large_extra),
-                            ),
-                    )
+                    is Track -> PlaylistTrackItem(it) { trackState.onClick(it) }
                     else -> Unit
                 }
             }
@@ -178,11 +172,29 @@ private fun PlaylistHeaderForeground(
 }
 
 @Composable
-private fun TrackItem(
+private fun PlaylistTrackItem(
+    track: Track,
+    onClick: () -> Unit,
+) {
+    PlaylistTrackItem(
+        track = track,
+        modifier = Modifier
+            .fillMaxWidth()
+            .defaultMinSize(minHeight = dimensionResource(dimens.padding_large_extra_extra))
+            .clickable { onClick() }
+            .padding(
+                horizontal = dimensionResource(dimens.padding_large),
+                vertical = dimensionResource(dimens.padding_large_extra),
+            ),
+    )
+}
+
+@Composable
+private fun PlaylistTrackItem(
     track: Track,
     modifier: Modifier = Modifier,
 ) {
-    TrackItem(
+    PlaylistTrackItem(
         nameText = track.nameText,
         artistText = track.artistText,
         durationText = track.durationText,
@@ -191,7 +203,7 @@ private fun TrackItem(
 }
 
 @Composable
-private fun TrackItem(
+private fun PlaylistTrackItem(
     nameText: String,
     artistText: String,
     durationText: String,

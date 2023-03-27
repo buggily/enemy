@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -146,16 +147,9 @@ private fun AlbumScreenCompact(
                 },
             ) {
                 when (it) {
-                    is TrackUi.Item -> AlbumTrackItem(
-                        trackItem = it,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { trackState.onClick(it.track) }
-                            .padding(
-                                horizontal = dimensionResource(dimens.padding_large),
-                                vertical = dimensionResource(dimens.padding_large_extra),
-                            ),
-                    )
+                    is TrackUi.Item -> AlbumTrackItem(it) {
+                        trackState.onClick(it.track)
+                    }
                     is TrackUi.Separator.Disc -> AlbumDiscItem(
                         trackSeparator = it,
                         modifier = Modifier.fillMaxWidth(),
@@ -202,15 +196,9 @@ private fun AlbumScreenMedium(
             },
         ) {
             when (it) {
-                is TrackUi.Item -> AlbumTrackItem(
-                    trackItem = it,
-                    modifier = itemModifier
-                        .clickable { trackState.onClick(it.track) }
-                        .padding(
-                            horizontal = dimensionResource(dimens.padding_large),
-                            vertical = dimensionResource(dimens.padding_large_extra),
-                        ),
-                )
+                is TrackUi.Item -> AlbumTrackItem(it) {
+                    trackState.onClick(it.track)
+                }
                 is TrackUi.Separator.Disc -> AlbumDiscItem(
                     trackSeparator = it,
                     modifier = Modifier.fillMaxWidth(),
@@ -369,7 +357,25 @@ private fun AlbumHeaderText(
 @Composable
 private fun AlbumTrackItem(
     trackItem: TrackUi.Item,
-    modifier: Modifier,
+    onClick: () -> Unit,
+) {
+    AlbumTrackItem(
+        trackItem = trackItem,
+        modifier = Modifier
+            .fillMaxWidth()
+            .defaultMinSize(minHeight = dimensionResource(dimens.padding_large_extra_extra))
+            .clickable { onClick() }
+            .padding(
+                horizontal = dimensionResource(dimens.padding_large),
+                vertical = dimensionResource(dimens.padding_large_extra),
+            ),
+    )
+}
+
+@Composable
+private fun AlbumTrackItem(
+    trackItem: TrackUi.Item,
+    modifier: Modifier = Modifier,
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(
