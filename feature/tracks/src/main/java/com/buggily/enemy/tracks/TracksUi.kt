@@ -5,10 +5,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -82,14 +84,12 @@ private fun TracksColumn(
     tracks: LazyPagingItems<Track>,
     modifier: Modifier = Modifier,
 ) {
-    val itemModifier: Modifier = Modifier.fillMaxWidth()
-
     LazyColumn(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start,
         modifier = modifier,
     ) {
-        stickyHeader { TracksHeader(itemModifier) }
+        stickyHeader { TracksHeader(Modifier.fillMaxWidth()) }
 
         items(
             items = tracks,
@@ -98,13 +98,7 @@ private fun TracksColumn(
             when (it) {
                 is Track -> TrackItem(
                     track = it,
-                    modifier = itemModifier
-                        .clickable { trackState.onClick(it) }
-                        .animateItemPlacement()
-                        .padding(
-                            horizontal = dimensionResource(dimens.padding_large),
-                            vertical = dimensionResource(dimens.padding_large_extra),
-                        ),
+                   onClick = { trackState.onClick(it) },
                 )
                 else -> Unit
             }
@@ -129,6 +123,26 @@ private fun TracksHeader(
                 .padding(dimensionResource(dimens.padding_large)),
         )
     }
+}
+
+@Composable
+@OptIn(ExperimentalFoundationApi::class)
+private fun LazyItemScope.TrackItem(
+    track: Track,
+    onClick: () -> Unit,
+) {
+    TrackItem(
+        track = track,
+        modifier = Modifier
+            .fillMaxWidth()
+            .defaultMinSize(minHeight = dimensionResource(dimens.padding_large_extra_extra))
+            .clickable { onClick() }
+            .animateItemPlacement()
+            .padding(
+                horizontal = dimensionResource(dimens.padding_large),
+                vertical = dimensionResource(dimens.padding_large_extra),
+            )
+    )
 }
 
 @Composable
