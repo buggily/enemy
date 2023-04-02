@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flatMapMerge
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
@@ -45,7 +45,7 @@ class TracksViewModel @Inject constructor(
             it.value
         }.distinctUntilChanged()
 
-        tracks = search.flatMapMerge { getTrackPaging(it) }.cachedIn(viewModelScope)
+        tracks = search.flatMapLatest { getTrackPaging(it) }.cachedIn(viewModelScope)
     }
 
     override fun onSearchChange(value: String) = _uiState.update {
