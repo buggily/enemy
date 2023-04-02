@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flatMapMerge
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
@@ -44,7 +44,7 @@ class AlbumsViewModel @Inject constructor(
             it.value
         }.distinctUntilChanged()
 
-        albums = search.flatMapMerge { getAlbumPaging(it) }.cachedIn(viewModelScope)
+        albums = search.flatMapLatest { getAlbumPaging(it) }.cachedIn(viewModelScope)
     }
 
     override fun onSearchChange(value: String) = _uiState.update {
