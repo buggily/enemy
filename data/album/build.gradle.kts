@@ -8,8 +8,5 @@ android {
 
 dependencies {
     implementation(project(":external:album"))
-    implementation(project(":core:query"))
-    implementation(project(":core:paging"))
-
     implementation(libs.androidx.paging.core)
 }

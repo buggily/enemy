@@ -26,10 +26,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
-import com.buggily.enemy.core.model.playlist.Playlist
 import com.buggily.enemy.core.ui.ext.floatResource
 import com.buggily.enemy.core.ui.ext.modificationText
 import com.buggily.enemy.core.ui.ext.nameText
+import com.buggily.enemy.data.playlist.Playlist
 import com.buggily.enemy.core.ui.R.dimen as dimens
 
 @Composable

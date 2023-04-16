@@ -1,6 +1,6 @@
 package com.buggily.enemy.tracks
 
-import com.buggily.enemy.core.model.track.Track
+import com.buggily.enemy.data.track.Track
 
 data class TracksUiState(
     val trackState: TrackState,

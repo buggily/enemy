@@ -9,7 +9,7 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-object NavigateToControllerProvider {
+internal object NavigateToControllerProvider {
 
     @Provides
     fun provides(

@@ -13,7 +13,6 @@ class AndroidLibraryExternalConventionPlugin : Plugin<Project> {
         }
 
         dependencies {
-            add("implementation", project(":core:model"))
             add("implementation", project(":core:query"))
             add("implementation", project(":core:paging"))
 

@@ -43,7 +43,9 @@ class OrientationViewModel @Inject constructor(
         if (isGranted) onGrant() else onDeny()
     }
 
-    private fun onGrant() = navigateFromOrientationToBrowse()
+    private fun onGrant() {
+        navigateFromOrientationToBrowse()
+    }
 
     private fun onPend() = _eventState.update {
         OrientationEventState.Event(::resetPermissionState)

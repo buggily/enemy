@@ -1,7 +1,7 @@
 package com.buggily.enemy.domain.theme
 
-import com.buggily.enemy.core.model.theme.Theme
-import com.buggily.enemy.data.theme.repository.ThemeRepositable
+import com.buggily.enemy.data.theme.Theme
+import com.buggily.enemy.data.theme.ThemeRepositable
 import kotlinx.coroutines.flow.Flow
 
 class GetTheme(

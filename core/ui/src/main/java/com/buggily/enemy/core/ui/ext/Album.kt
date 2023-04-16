@@ -1,6 +1,6 @@
 package com.buggily.enemy.core.ui.ext
 
-import com.buggily.enemy.core.model.album.Album
+import com.buggily.enemy.data.album.Album
 
 val Album.nameText: String
     get() = name

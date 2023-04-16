@@ -26,12 +26,12 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.buggily.enemy.core.model.album.Album
 import com.buggily.enemy.core.ui.composable.ArtImage
 import com.buggily.enemy.core.ui.ext.artistText
 import com.buggily.enemy.core.ui.ext.floatResource
 import com.buggily.enemy.core.ui.ext.items
 import com.buggily.enemy.core.ui.ext.nameText
+import com.buggily.enemy.data.album.Album
 import com.buggily.enemy.core.ui.R.dimen as dimens
 
 @Composable
@@ -66,7 +66,6 @@ private fun AlbumsScreen(
 }
 
 @Composable
-@OptIn(ExperimentalFoundationApi::class)
 private fun AlbumsGrid(
     albumState: AlbumsUiState.AlbumState,
     albums: LazyPagingItems<Album>,

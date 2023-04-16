@@ -1,7 +1,7 @@
 package com.buggily.core.domain.di
 
 import com.buggily.core.domain.GetInstantText
-import com.buggily.core.domain.GetUiInstantFromInstant
+import com.buggily.core.domain.GetInstantWithMetadataFromInstant
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,7 +14,7 @@ object GetUiInstantFromInstantProvider {
     @Provides
     fun provides(
         getInstantText: GetInstantText,
-    ): GetUiInstantFromInstant = GetUiInstantFromInstant(
+    ): GetInstantWithMetadataFromInstant = GetInstantWithMetadataFromInstant(
         getInstantText = getInstantText,
     )
 }

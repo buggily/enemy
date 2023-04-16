@@ -39,8 +39,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
-import com.buggily.enemy.core.model.album.Album
-import com.buggily.enemy.core.model.track.TrackUi
 import com.buggily.enemy.core.ui.LocalWindowSizeClass
 import com.buggily.enemy.core.ui.R
 import com.buggily.enemy.core.ui.composable.ArtImage
@@ -51,6 +49,8 @@ import com.buggily.enemy.core.ui.ext.durationText
 import com.buggily.enemy.core.ui.ext.floatResource
 import com.buggily.enemy.core.ui.ext.nameText
 import com.buggily.enemy.core.ui.ext.trackText
+import com.buggily.enemy.core.ui.model.TrackUi
+import com.buggily.enemy.data.album.Album
 import com.buggily.enemy.core.ui.R.dimen as dimens
 import com.buggily.enemy.core.ui.R.string as strings
 

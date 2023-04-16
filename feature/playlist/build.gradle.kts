@@ -9,7 +9,11 @@ android {
 
 dependencies {
     implementation(project(":domain:playlist"))
+    implementation(project(":data:playlist"))
+
     implementation(project(":domain:track"))
+    implementation(project(":data:track"))
+
     implementation(project(":domain:controller"))
     implementation(project(":domain:navigation"))
 

@@ -34,10 +34,10 @@ import androidx.navigation.compose.rememberNavController
 import com.buggily.enemy.controller.ControllerViewModel
 import com.buggily.enemy.core.controller.ControllerEventState
 import com.buggily.enemy.core.controller.ControllerOrchestratable
-import com.buggily.enemy.core.model.theme.Theme
 import com.buggily.enemy.core.navigation.NavigationArgs
 import com.buggily.enemy.core.navigation.NavigationEventState
 import com.buggily.enemy.core.navigation.NavigationOrchestratable
+import com.buggily.enemy.data.theme.Theme
 import com.buggily.enemy.di.DirectExecutorQualifier
 import com.buggily.enemy.ui.EnemyApp
 import com.buggily.enemy.ui.EnemyAppState
@@ -148,7 +148,7 @@ class EnemyActivity : ComponentActivity() {
             val theme: Theme by viewModel.theme.collectAsStateWithLifecycle()
 
             val paletteTheme: EnemyPalette.Theme = remember(theme) {
-                val isDynamic: Boolean = theme.dynamic.isOn
+                val isDynamic: Boolean = theme.dynamic is Theme.Dynamic.On
 
                 when (theme.scheme) {
                     is Theme.Scheme.Default -> EnemyPalette.Theme.Default(
@@ -262,7 +262,6 @@ class EnemyActivity : ComponentActivity() {
         if (event is ControllerEventState.Event) event.onEvent()
     }
 
-    @Suppress("BlockingMethodInNonBlockingContext")
     private suspend fun requireController(): MediaController = suspendCoroutine {
         val listener: () -> Unit = {
             try {

@@ -58,8 +58,8 @@ import androidx.navigation.compose.dialog
 import com.buggily.enemy.R
 import com.buggily.enemy.controller.ControllerBottomSheet
 import com.buggily.enemy.controller.ControllerScreen
+import com.buggily.enemy.core.data.TimeOfDay
 import com.buggily.enemy.core.ext.readPermission
-import com.buggily.enemy.core.model.TimeOfDay
 import com.buggily.enemy.core.navigation.NavigationDestination
 import com.buggily.enemy.core.ui.GlobalUiState
 import com.buggily.enemy.core.ui.GlobalUiViewModel

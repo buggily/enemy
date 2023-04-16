@@ -9,7 +9,7 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-object RepeatProvider {
+internal object RepeatProvider {
 
     @Provides
     fun provides(

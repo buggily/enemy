@@ -1,8 +1,5 @@
 @file:Suppress("UnstableApiUsage")
 
-include(":external:track")
-
-
 pluginManagement {
     includeBuild("builder")
 
@@ -26,12 +23,12 @@ rootProject.name = "enemy"
 include(":app")
 
 include(":core:ui")
-include(":core:model")
+include(":core:ext")
+include(":core:data")
 include(":core:domain")
 include(":core:query")
 include(":core:paging")
 include(":core:local")
-include(":core:ext")
 include(":core:navigation")
 include(":core:controller")
 

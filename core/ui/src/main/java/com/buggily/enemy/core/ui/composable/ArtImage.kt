@@ -10,7 +10,7 @@ import androidx.media3.common.MediaItem
 import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
-import com.buggily.enemy.core.model.Artable
+import com.buggily.enemy.core.data.Artable
 
 @Composable
 fun ArtImage(

@@ -7,5 +7,7 @@ class GetLocalDateTime(
     private val getLocalDateTimeFromInstant: GetLocalDateTimeFromInstant,
 ) {
 
-    operator fun invoke(): LocalDateTime = getLocalDateTimeFromInstant(getInstant())
+    operator fun invoke(): LocalDateTime = getLocalDateTimeFromInstant(
+        instant = getInstant(),
+    )
 }

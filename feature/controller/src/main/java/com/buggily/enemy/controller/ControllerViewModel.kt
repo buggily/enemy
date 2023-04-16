@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.session.MediaController
-import com.buggily.core.domain.GetUiDuration
+import com.buggily.core.domain.GetDurationWithMetadata
 import com.buggily.enemy.domain.controller.Next
 import com.buggily.enemy.domain.controller.Pause
 import com.buggily.enemy.domain.controller.Play
@@ -34,7 +34,7 @@ class ControllerViewModel @Inject constructor(
     private val repeat: Repeat,
     private val shuffle: Shuffle,
     private val seek: Seek,
-    private val getUiDuration: GetUiDuration,
+    private val getDurationWithMetadata: GetDurationWithMetadata,
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<ControllerUiState>
@@ -133,7 +133,7 @@ class ControllerViewModel @Inject constructor(
         val range: LongRange = start until endExclusive
         if (milliseconds !in range) return@update it
 
-        it.copy(seekState = it.seekState.copy(duration = getUiDuration(milliseconds)))
+        it.copy(seekState = it.seekState.copy(duration = getDurationWithMetadata(milliseconds)))
     }
 
     private fun onSeekChange(seconds: Float) = onSeekChange(
@@ -141,7 +141,7 @@ class ControllerViewModel @Inject constructor(
     )
 
     private fun onSeekChange(duration: Duration) = _uiState.update {
-        it.copy(seekState = it.seekState.copy(current = getUiDuration(duration)))
+        it.copy(seekState = it.seekState.copy(current = getDurationWithMetadata(duration)))
     }
 
     private fun onPlayClick() {

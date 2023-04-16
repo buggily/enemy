@@ -7,9 +7,6 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:query"))
-    implementation(project(":core:paging"))
-
     implementation(libs.androidx.paging.core)
 
     implementation(libs.androidx.room)

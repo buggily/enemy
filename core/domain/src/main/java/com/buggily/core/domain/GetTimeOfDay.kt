@@ -1,6 +1,6 @@
 package com.buggily.core.domain
 
-import com.buggily.enemy.core.model.TimeOfDay
+import com.buggily.enemy.core.data.TimeOfDay
 
 class GetTimeOfDay(
     private val getLocalTime: GetLocalTime,

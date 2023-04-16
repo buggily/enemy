@@ -9,7 +9,7 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-object PlayItemsProvider {
+internal object PlayItemsProvider {
 
     @Provides
     fun provides(

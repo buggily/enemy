@@ -1,6 +1,6 @@
 package com.buggily.enemy.core.ui
 
-import com.buggily.enemy.core.model.TimeOfDay
+import com.buggily.enemy.core.data.TimeOfDay
 
 data class GlobalUiState(
     val greetingState: GreetingState,

@@ -9,7 +9,7 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-object NavigateToCreatePlaylistProvider {
+internal object NavigateToCreatePlaylistProvider {
 
     @Provides
     fun provides(

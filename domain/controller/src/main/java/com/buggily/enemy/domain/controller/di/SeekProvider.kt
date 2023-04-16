@@ -9,7 +9,7 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-object SeekProvider {
+internal object SeekProvider {
 
     @Provides
     fun provides(

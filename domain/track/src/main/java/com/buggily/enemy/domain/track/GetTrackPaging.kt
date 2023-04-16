@@ -1,8 +1,8 @@
 package com.buggily.enemy.domain.track
 
 import androidx.paging.PagingData
-import com.buggily.enemy.core.model.track.Track
-import com.buggily.enemy.data.track.repository.TrackRepositable
+import com.buggily.enemy.data.track.Track
+import com.buggily.enemy.data.track.TrackRepositable
 import kotlinx.coroutines.flow.Flow
 
 class GetTrackPaging(

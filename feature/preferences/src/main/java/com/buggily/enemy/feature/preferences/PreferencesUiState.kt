@@ -1,6 +1,6 @@
 package com.buggily.enemy.feature.preferences
 
-import com.buggily.enemy.core.model.theme.Theme
+import com.buggily.enemy.data.theme.Theme
 
 data class PreferencesUiState(
     val themeState: ThemeState,
