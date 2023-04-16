@@ -21,7 +21,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.consumedWindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -188,7 +188,7 @@ private fun EnemyApp(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .consumedWindowInsets(padding),
+                .consumeWindowInsets(padding),
         ) {
             val contentModifier: Modifier = Modifier.fillMaxSize()
 
@@ -269,7 +269,6 @@ private fun EnemyApp(
 }
 
 @Composable
-@OptIn(ExperimentalLayoutApi::class)
 private fun EnemyBottomAppBar(
     searchState: GlobalUiState.SearchState,
     destinationState: EnemyUiState.DestinationState,
@@ -296,9 +295,9 @@ private fun EnemyBottomAppBar(
                     .clickable { controllerState.to() }
                     .let {
                         if (destinationState.isBottomBarVisible) {
-                            it.consumedWindowInsets(WindowInsets.systemBars)
+                            it.consumeWindowInsets(WindowInsets.systemBars)
                         } else {
-                            it.consumedWindowInsets(WindowInsets.statusBars)
+                            it.consumeWindowInsets(WindowInsets.statusBars)
                         }
                     },
             )
