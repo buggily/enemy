@@ -26,11 +26,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
-import com.buggily.enemy.core.model.track.Track
 import com.buggily.enemy.core.ui.ext.artistText
 import com.buggily.enemy.core.ui.ext.durationText
 import com.buggily.enemy.core.ui.ext.floatResource
 import com.buggily.enemy.core.ui.ext.nameText
+import com.buggily.enemy.data.track.Track
 import com.buggily.enemy.feature.tracks.R
 import com.buggily.enemy.core.ui.R.dimen as dimens
 

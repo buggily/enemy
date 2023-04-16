@@ -3,7 +3,7 @@ package com.buggily.enemy.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavDestination
-import com.buggily.enemy.core.model.theme.Theme
+import com.buggily.enemy.data.theme.Theme
 import com.buggily.enemy.domain.navigation.NavigateToOrientation
 import com.buggily.enemy.domain.theme.GetTheme
 import dagger.hilt.android.lifecycle.HiltViewModel

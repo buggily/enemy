@@ -2,8 +2,8 @@ package com.buggily.enemy.feature.playlists
 
 import androidx.lifecycle.ViewModel
 import androidx.paging.PagingData
-import com.buggily.enemy.core.model.playlist.Playlist
 import com.buggily.enemy.core.ui.SearchableViewModel
+import com.buggily.enemy.data.playlist.Playlist
 import com.buggily.enemy.domain.navigation.NavigateFromPlaylistsToPlaylist
 import com.buggily.enemy.domain.playlist.GetPlaylistPaging
 import dagger.hilt.android.lifecycle.HiltViewModel

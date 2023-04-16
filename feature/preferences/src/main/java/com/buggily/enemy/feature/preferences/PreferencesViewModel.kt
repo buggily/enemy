@@ -2,7 +2,7 @@ package com.buggily.enemy.feature.preferences
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.buggily.enemy.core.model.theme.Theme
+import com.buggily.enemy.data.theme.Theme
 import com.buggily.enemy.domain.theme.GetTheme
 import com.buggily.enemy.domain.theme.SetTheme
 import com.buggily.enemy.domain.theme.SetThemeDynamic

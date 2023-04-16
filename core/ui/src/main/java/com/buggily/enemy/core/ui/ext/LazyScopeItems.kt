@@ -4,7 +4,7 @@ import androidx.compose.foundation.lazy.grid.LazyGridItemScope
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.runtime.Composable
 import androidx.paging.compose.LazyPagingItems
-import com.buggily.enemy.core.model.PagingPlaceholderKey
+import com.buggily.enemy.core.ui.model.PagingPlaceholderKey
 
 fun <Item : Any> LazyGridScope.items(
     items: LazyPagingItems<Item>,

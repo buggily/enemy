@@ -12,7 +12,7 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-object PreferencesDataStoreProvider {
+internal object PreferencesDataStoreProvider {
 
     @Provides
     fun provides(

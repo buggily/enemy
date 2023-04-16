@@ -9,7 +9,7 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-object PauseProvider {
+internal object PauseProvider {
 
     @Provides
     fun provides(

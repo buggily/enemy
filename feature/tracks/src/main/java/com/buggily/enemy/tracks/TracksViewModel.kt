@@ -4,9 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.buggily.enemy.core.model.track.Track
 import com.buggily.enemy.core.ui.SearchableViewModel
-import com.buggily.enemy.core.ui.ext.map
+import com.buggily.enemy.core.ui.ext.toMediaItem
+import com.buggily.enemy.data.track.Track
 import com.buggily.enemy.domain.controller.PlayItem
 import com.buggily.enemy.domain.track.GetTrackPaging
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -52,5 +52,5 @@ class TracksViewModel @Inject constructor(
         it.copy(searchState = it.searchState.copy(value = value))
     }
 
-    private fun onTrackClick(track: Track) = playItem(track.map())
+    private fun onTrackClick(track: Track) = playItem(track.toMediaItem())
 }

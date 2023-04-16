@@ -2,7 +2,7 @@ package com.buggily.enemy.core.ui.ext
 
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
-import com.buggily.enemy.core.model.track.Track
+import com.buggily.enemy.data.track.Track
 
 val Track.nameText: String
     get() = name
@@ -16,7 +16,7 @@ val Track.artistText: String
 val Track.durationText: String
     get() = duration.text
 
-fun Track.map(): MediaItem {
+fun Track.toMediaItem(): MediaItem {
     val requestMetadata: MediaItem.RequestMetadata = MediaItem.RequestMetadata.Builder()
         .setMediaUri(mediaUri)
         .build()

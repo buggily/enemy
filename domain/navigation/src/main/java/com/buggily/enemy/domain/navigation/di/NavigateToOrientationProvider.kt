@@ -9,7 +9,7 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-object NavigateToOrientationProvider {
+internal object NavigateToOrientationProvider {
 
     @Provides
     fun provides(

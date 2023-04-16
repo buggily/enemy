@@ -1,7 +1,7 @@
 package com.buggily.enemy.domain.playlist
 
-import com.buggily.enemy.core.model.playlist.Playlist
-import com.buggily.enemy.data.playlist.repository.PlaylistRepositable
+import com.buggily.enemy.data.playlist.Playlist
+import com.buggily.enemy.data.playlist.PlaylistRepositable
 
 class DeletePlaylist(
     private val repository: PlaylistRepositable,

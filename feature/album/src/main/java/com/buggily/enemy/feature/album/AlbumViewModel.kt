@@ -9,9 +9,9 @@ import androidx.paging.cachedIn
 import androidx.paging.insertSeparators
 import androidx.paging.map
 import com.buggily.enemy.core.ext.indexOfOrNull
-import com.buggily.enemy.core.model.track.Track
-import com.buggily.enemy.core.model.track.TrackUi
-import com.buggily.enemy.core.ui.ext.map
+import com.buggily.enemy.core.ui.ext.toMediaItem
+import com.buggily.enemy.core.ui.model.TrackUi
+import com.buggily.enemy.data.track.Track
 import com.buggily.enemy.domain.album.GetAlbumById
 import com.buggily.enemy.domain.controller.PlayItems
 import com.buggily.enemy.domain.track.GetTrackPagingByAlbumId
@@ -70,7 +70,7 @@ class AlbumViewModel @Inject constructor(
     private fun onTrackClick(track: Track) = viewModelScope.launch {
         val tracks: List<Track> = getTracksByAlbumId(albumId)
         val index: Int = checkNotNull(tracks.indexOfOrNull(track))
-        val items: List<MediaItem> = tracks.map { it.map() }
+        val items: List<MediaItem> = tracks.map { it.toMediaItem() }
 
         playItems(
             index = index,

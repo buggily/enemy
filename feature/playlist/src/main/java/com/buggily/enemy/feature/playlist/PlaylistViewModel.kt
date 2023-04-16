@@ -6,8 +6,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.paging.PagingData
 import com.buggily.enemy.core.ext.indexOfOrNull
-import com.buggily.enemy.core.model.track.Track
-import com.buggily.enemy.core.ui.ext.map
+import com.buggily.enemy.core.ui.ext.toMediaItem
+import com.buggily.enemy.data.track.Track
 import com.buggily.enemy.domain.controller.PlayItems
 import com.buggily.enemy.domain.playlist.GetPlaylistById
 import com.buggily.enemy.domain.track.GetTrackPagingByPlaylistId
@@ -56,7 +56,7 @@ class PlaylistViewModel @Inject constructor(
     private fun onTrackClick(track: Track) = viewModelScope.launch {
         val tracks: List<Track> = getTracksByPlaylistId(playlistId)
         val index: Int = checkNotNull(tracks.indexOfOrNull(track))
-        val items: List<MediaItem> = tracks.map { it.map() }
+        val items: List<MediaItem> = tracks.map { it.toMediaItem() }
 
         playItems(
             index = index,

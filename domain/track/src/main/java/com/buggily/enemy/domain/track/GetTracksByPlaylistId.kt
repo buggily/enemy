@@ -1,7 +1,7 @@
 package com.buggily.enemy.domain.track
 
-import com.buggily.enemy.core.model.track.Track
-import com.buggily.enemy.data.track.repository.TrackRepositable
+import com.buggily.enemy.data.track.Track
+import com.buggily.enemy.data.track.TrackRepositable
 
 class GetTracksByPlaylistId(
     private val repository: TrackRepositable,

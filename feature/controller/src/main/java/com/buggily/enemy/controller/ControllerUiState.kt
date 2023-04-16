@@ -1,7 +1,7 @@
 package com.buggily.enemy.controller
 
 import androidx.media3.common.MediaItem
-import com.buggily.enemy.core.model.UiDuration
+import com.buggily.enemy.core.data.DurationWithMetadata
 
 data class ControllerUiState(
     val mediaItem: MediaItem?,
@@ -119,8 +119,8 @@ data class ControllerUiState(
     }
 
     data class SeekState(
-        val current: UiDuration,
-        val duration: UiDuration,
+        val current: DurationWithMetadata,
+        val duration: DurationWithMetadata,
         val onChange: (Float) -> Unit,
         val onChangeFinish: () -> Unit,
     ) {
@@ -132,7 +132,7 @@ data class ControllerUiState(
             get() = current.inWholeSeconds.toFloat()
 
         private val first: Float
-            get() = UiDuration.default.inWholeSeconds.toFloat()
+            get() = DurationWithMetadata.default.inWholeSeconds.toFloat()
 
         private val last: Float
             get() = duration.inWholeSeconds.toFloat()
@@ -143,8 +143,8 @@ data class ControllerUiState(
         companion object {
             val default: SeekState
                 get() = SeekState(
-                    current = UiDuration.default,
-                    duration = UiDuration.default,
+                    current = DurationWithMetadata.default,
+                    duration = DurationWithMetadata.default,
                     onChange = {},
                     onChangeFinish = {},
                 )

@@ -1,7 +1,7 @@
 package com.buggily.enemy.feature.playlist
 
-import com.buggily.enemy.core.model.playlist.Playlist
-import com.buggily.enemy.core.model.track.Track
+import com.buggily.enemy.data.playlist.Playlist
+import com.buggily.enemy.data.track.Track
 
 data class PlaylistUiState(
     val playlist: Playlist?,

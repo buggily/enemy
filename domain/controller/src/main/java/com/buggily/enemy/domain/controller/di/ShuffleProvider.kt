@@ -9,7 +9,7 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-object ShuffleProvider {
+internal object ShuffleProvider {
 
     @Provides
     fun provides(

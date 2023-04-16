@@ -9,6 +9,8 @@ android {
 
 dependencies {
     implementation(project(":domain:track"))
+    implementation(project(":data:track"))
+
     implementation(project(":domain:controller"))
 
     implementation(libs.androidx.media.core)

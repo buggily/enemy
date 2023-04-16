@@ -1,7 +1,7 @@
 package com.buggily.enemy.feature.album
 
-import com.buggily.enemy.core.model.album.Album
-import com.buggily.enemy.core.model.track.Track
+import com.buggily.enemy.data.album.Album
+import com.buggily.enemy.data.track.Track
 
 data class AlbumUiState(
     val album: Album?,

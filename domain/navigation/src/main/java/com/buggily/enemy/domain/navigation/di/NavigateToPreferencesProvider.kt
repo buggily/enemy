@@ -9,7 +9,7 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-object NavigateToPreferencesProvider {
+internal object NavigateToPreferencesProvider {
 
     @Provides
     fun provides(

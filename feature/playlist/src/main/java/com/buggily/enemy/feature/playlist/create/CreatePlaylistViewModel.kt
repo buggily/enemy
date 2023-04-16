@@ -3,9 +3,9 @@ package com.buggily.enemy.feature.playlist.create
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.buggily.core.domain.GetUiInstant
-import com.buggily.enemy.core.model.UiInstant
-import com.buggily.enemy.core.model.playlist.Playlist
+import com.buggily.core.domain.GetInstantWithMetadata
+import com.buggily.enemy.core.data.InstantWithMetadata
+import com.buggily.enemy.data.playlist.Playlist
 import com.buggily.enemy.domain.navigation.NavigateBack
 import com.buggily.enemy.domain.playlist.InsertPlaylist
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,7 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CreatePlaylistViewModel @Inject constructor(
     private val insertPlaylist: InsertPlaylist,
-    private val getUiInstant: GetUiInstant,
+    private val getInstantWithMetadata: GetInstantWithMetadata,
     private val navigateBack: NavigateBack,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -67,7 +67,7 @@ class CreatePlaylistViewModel @Inject constructor(
 
     private fun onConfirmClick() = uiState.value.let {
         val name: String = it.nameState.value
-        val instant: UiInstant = getUiInstant()
+        val instant: InstantWithMetadata = getInstantWithMetadata()
 
         val playlist = Playlist(
             name = name,

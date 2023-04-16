@@ -1,10 +1,9 @@
 package com.buggily.enemy.core.local
 
-import com.buggily.enemy.local.playlist.PlaylistDao
-import com.buggily.enemy.local.track.TrackDao
+import com.buggily.enemy.local.playlist.LocalPlaylistDao
+import com.buggily.enemy.local.track.LocalTrackDao
 
-interface EnemyDatabaseable {
-
-    fun getPlaylistDao(): PlaylistDao
-    fun getTrackDao(): TrackDao
+internal interface EnemyDatabaseable {
+    fun getLocalPlaylistDao(): LocalPlaylistDao
+    fun getLocalTrackDao(): LocalTrackDao
 }

@@ -40,9 +40,9 @@ android {
 
 dependencies {
     implementation(project(":core:ui"))
-    implementation(project(":core:domain"))
-    implementation(project(":core:model"))
     implementation(project(":core:ext"))
+    implementation(project(":core:data"))
+    implementation(project(":core:domain"))
     implementation(project(":core:navigation"))
     implementation(project(":core:controller"))
 
@@ -61,10 +61,15 @@ dependencies {
 
     implementation(project(":domain:album"))
     implementation(project(":domain:track"))
-    implementation(project(":domain:theme"))
     implementation(project(":domain:playlist"))
     implementation(project(":domain:navigation"))
     implementation(project(":domain:controller"))
+    implementation(project(":domain:theme"))
+
+    implementation(project(":data:album"))
+    implementation(project(":data:track"))
+    implementation(project(":data:playlist"))
+    implementation(project(":data:theme"))
 
     with(libs) {
         implementation(kotlin)

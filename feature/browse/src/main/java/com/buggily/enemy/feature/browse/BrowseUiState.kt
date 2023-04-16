@@ -16,31 +16,19 @@ data class BrowseUiState(
         sealed class Tab {
 
             object Albums : Tab() {
-
                 override fun toString(): String = "albums"
             }
             object Tracks : Tab() {
-
                 override fun toString(): String = "tracks"
             }
 
             object Playlists : Tab() {
-
                 override fun toString(): String = "playlists"
             }
 
             companion object {
-
-                val values: List<Tab>
-                    get() = listOf(
-                        Albums,
-                        Tracks,
-                        Playlists,
-                    )
-
-                fun get(value: String?): Tab? = values.find {
-                    it.toString() == value
-                }
+                val values: List<Tab> get() = listOf(Albums, Tracks, Playlists)
+                fun get(value: String?): Tab? = values.find { it.toString() == value }
             }
         }
 

@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.buggily.enemy.core.model.album.Album
 import com.buggily.enemy.core.ui.SearchableViewModel
+import com.buggily.enemy.data.album.Album
 import com.buggily.enemy.domain.album.GetAlbumPaging
 import com.buggily.enemy.domain.navigation.NavigateFromAlbumsToAlbum
 import dagger.hilt.android.lifecycle.HiltViewModel
