@@ -2,7 +2,6 @@ package com.buggily.enemy.core.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.buggily.core.domain.GetTimeOfDay
 import com.buggily.enemy.domain.navigation.NavigateToController
 import com.buggily.enemy.domain.navigation.NavigateToCreatePlaylist
 import com.buggily.enemy.domain.navigation.NavigateToPreferences
@@ -22,7 +21,6 @@ class GlobalUiViewModel @Inject constructor(
     private val navigateToCreatePlaylist: NavigateToCreatePlaylist,
     private val navigateToPreferences: NavigateToPreferences,
     private val navigateToController: NavigateToController,
-    getTimeOfDay: GetTimeOfDay,
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<GlobalUiState>
@@ -32,10 +30,6 @@ class GlobalUiViewModel @Inject constructor(
 
     init {
         GlobalUiState.default.copy(
-            greetingState = GlobalUiState.GreetingState.default.copy(
-                timeOfDay = getTimeOfDay(),
-                onVisible = ::onGreetingVisible,
-            ),
             searchState = GlobalUiState.SearchState.default.copy(
                 onClick = ::onSearchClick,
                 onChange = ::onSearchChange,
@@ -61,14 +55,6 @@ class GlobalUiViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(),
             initialValue = GlobalUiState.SearchState.default.value,
         )
-    }
-
-    private fun onGreetingVisible() = _uiState.update {
-        val greetingState: GlobalUiState.GreetingState = it.greetingState.copy(
-            isVisible = !it.greetingState.isVisible,
-        )
-
-        it.copy(greetingState = greetingState)
     }
 
     private fun onSearchClick() = _uiState.update {

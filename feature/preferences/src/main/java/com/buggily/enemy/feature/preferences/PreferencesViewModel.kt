@@ -58,13 +58,7 @@ class PreferencesViewModel @Inject constructor(
     }
 
     private fun onThemeDynamicCheck(isChecked: Boolean) = viewModelScope.launch {
-        setThemeDynamic(
-            if (isChecked) {
-                Theme.Dynamic.On
-            } else {
-                Theme.Dynamic.Off
-            }
-        )
+        setThemeDynamic(if (isChecked) Theme.Dynamic.On else Theme.Dynamic.Off)
     }
 
     private fun onThemeResetClick() = viewModelScope.launch {

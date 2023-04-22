@@ -7,8 +7,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
@@ -58,7 +56,6 @@ import androidx.navigation.compose.dialog
 import com.buggily.enemy.R
 import com.buggily.enemy.controller.ControllerBottomSheet
 import com.buggily.enemy.controller.ControllerScreen
-import com.buggily.enemy.core.data.TimeOfDay
 import com.buggily.enemy.core.ext.readPermission
 import com.buggily.enemy.core.navigation.NavigationDestination
 import com.buggily.enemy.core.ui.GlobalUiState
@@ -113,7 +110,6 @@ private fun EnemyApp(
         appState = appState,
         hostState = hostState,
         searchState = globalUiState.searchState,
-        greetingState = globalUiState.greetingState,
         orientationState = uiState.orientationState,
         destinationState = uiState.destinationState,
         preferencesState = globalUiState.preferencesState,
@@ -134,7 +130,6 @@ private fun EnemyApp(
     appState: EnemyAppState,
     hostState: SnackbarHostState,
     searchState: GlobalUiState.SearchState,
-    greetingState: GlobalUiState.GreetingState,
     orientationState: EnemyUiState.OrientationState,
     destinationState: EnemyUiState.DestinationState,
     preferencesState: GlobalUiState.PreferencesState,
@@ -150,21 +145,6 @@ private fun EnemyApp(
     LaunchedEffect(Unit) {
         val isGranted: Boolean = permissionResult == PackageManager.PERMISSION_GRANTED
         if (!isGranted) orientationState.to()
-    }
-
-    val snackbarText: String = remember(greetingState) {
-        when (greetingState.timeOfDay) {
-            is TimeOfDay.Morning -> R.string.morning
-            is TimeOfDay.Afternoon -> R.string.afternoon
-            is TimeOfDay.Evening -> R.string.evening
-            else -> R.string.day
-        }
-    }.let { stringResource(R.string.greeting, stringResource(it)) }
-
-    LaunchedEffect(greetingState) {
-        if (!greetingState.isVisible) return@LaunchedEffect
-        hostState.showSnackbar(snackbarText)
-        greetingState.onVisible()
     }
 
     Scaffold(
@@ -280,13 +260,12 @@ private fun EnemyBottomAppBar(
     Column(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier,
     ) {
         AnimatedVisibility(
             visible = destinationState.isControllerVisible,
-            enter = fadeIn() + expandVertically(),
-            exit = fadeOut() + shrinkVertically(),
-            modifier = Modifier.fillMaxWidth(),
+            enter = expandVertically(),
+            exit = shrinkVertically(),
         ) {
             EnemyController(
                 modifier = Modifier
@@ -305,9 +284,8 @@ private fun EnemyBottomAppBar(
 
         AnimatedVisibility(
             visible = destinationState.isBottomBarVisible,
-            enter = fadeIn() + expandVertically(),
-            exit = fadeOut() + shrinkVertically(),
-            modifier = modifier,
+            enter = expandVertically(),
+            exit = shrinkVertically(),
         ) {
             EnemyBottomBar(
                 searchState = searchState,
@@ -359,7 +337,7 @@ private fun EnemyBottomBar(
         ) {
             AnimatedVisibility(
                 visible = searchState.isVisible,
-                enter = fadeIn() + expandHorizontally(),
+                enter = expandHorizontally(),
                 exit = ExitTransition.None,
                 modifier = Modifier.weight(1f),
             ) {
@@ -425,8 +403,8 @@ private fun RowScope.EnemyBottomBarPreferencesIconButton(
 ) {
     AnimatedVisibility(
         visible = destinationState.isPreferencesButtonVisible,
-        enter = fadeIn() + expandHorizontally(),
-        exit = fadeOut() + shrinkHorizontally(),
+        enter = expandHorizontally(),
+        exit = shrinkHorizontally(),
     ) {
         IconButton(
             painter = painterResource(drawables.preferences),
@@ -442,17 +420,10 @@ private fun EnemyBottomBarSearch(
     searchState: GlobalUiState.SearchState,
     modifier: Modifier = Modifier,
 ) {
-    AnimatedVisibility(
-        visible = searchState.isVisible,
-        enter = fadeIn() + expandHorizontally(),
-        exit = fadeOut() + shrinkHorizontally(),
-        modifier = modifier,
-    ) {
-        EnemySearchTextField(
-            searchState = searchState,
-            modifier = Modifier,
-        )
-    }
+    EnemySearchTextField(
+        searchState = searchState,
+        modifier = modifier
+    )
 }
 
 @Composable

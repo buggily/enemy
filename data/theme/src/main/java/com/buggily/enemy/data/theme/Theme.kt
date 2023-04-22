@@ -12,7 +12,6 @@ data class Theme(
     }
 
     sealed class Dynamic {
-        object Default : Dynamic()
         object On : Dynamic()
         object Off : Dynamic()
     }
@@ -21,7 +20,7 @@ data class Theme(
         val default: Theme
             get() = Theme(
                 scheme = Scheme.Default,
-                dynamic = Dynamic.Default,
+                dynamic = Dynamic.On,
             )
     }
 }

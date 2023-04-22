@@ -36,7 +36,7 @@ data class PreferencesUiState(
             companion object {
                 val default: DynamicState
                     get() = DynamicState(
-                        dynamic = Theme.Dynamic.Default,
+                        dynamic = Theme.Dynamic.Off,
                         onCheck = {},
                     )
             }
