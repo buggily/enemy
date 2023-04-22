@@ -1,6 +1,7 @@
 package com.buggily.enemy.ui.theme
 
 import android.content.Context
+import android.os.Build
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -52,13 +53,17 @@ data class EnemyPalette(
         getDarkColorScheme(context)
     }
 
-    private fun getLightColorScheme(context: Context): ColorScheme = if (isDynamic) {
+    private fun getLightColorScheme(
+        context: Context,
+    ): ColorScheme = if (isDynamic && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         dynamicLightColorScheme(context)
     } else {
         lightColorScheme()
     }
 
-    private fun getDarkColorScheme(context: Context): ColorScheme = if (isDynamic) {
+    private fun getDarkColorScheme(
+        context: Context,
+    ): ColorScheme = if (isDynamic && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         dynamicDarkColorScheme(context)
     } else {
         darkColorScheme()
