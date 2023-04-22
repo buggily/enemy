@@ -14,15 +14,10 @@ fun LocalTheme.Scheme.to(): Theme.Scheme = when (this) {
 }
 
 fun LocalTheme.Dynamic.to(): Theme.Dynamic = when (this) {
-    is LocalTheme.Dynamic.Default -> Theme.Dynamic.Default
+    is LocalTheme.Dynamic.Default -> Theme.Dynamic.On
     is LocalTheme.Dynamic.On -> Theme.Dynamic.On
     is LocalTheme.Dynamic.Off -> Theme.Dynamic.Off
 }
-
-fun Theme.toLocal(): LocalTheme = LocalTheme(
-    scheme = scheme.toLocal(),
-    dynamic = dynamic.toLocal(),
-)
 
 fun Theme.Scheme.toLocal(): LocalTheme.Scheme = when (this) {
     is Theme.Scheme.Default -> LocalTheme.Scheme.Default
@@ -31,7 +26,6 @@ fun Theme.Scheme.toLocal(): LocalTheme.Scheme = when (this) {
 }
 
 fun Theme.Dynamic.toLocal(): LocalTheme.Dynamic = when (this) {
-    is Theme.Dynamic.Default -> LocalTheme.Dynamic.Default
     is Theme.Dynamic.On -> LocalTheme.Dynamic.On
     is Theme.Dynamic.Off -> LocalTheme.Dynamic.Off
 }

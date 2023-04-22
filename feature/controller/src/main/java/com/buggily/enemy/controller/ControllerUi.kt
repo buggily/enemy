@@ -2,8 +2,6 @@ package com.buggily.enemy.controller
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -153,13 +151,12 @@ private fun ControllerBottomSheet(
 ) {
     AnimatedVisibility(
         visible = uiState.isVisible,
-        enter = fadeIn() + expandVertically(),
-        exit = fadeOut() + shrinkVertically(),
-        modifier = modifier,
+        enter = expandVertically(),
+        exit = shrinkVertically(),
     ) {
         Surface(
             color = MaterialTheme.colorScheme.primaryContainer,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = modifier,
         ) {
             when (val mediaItem: MediaItem? = uiState.mediaItem) {
                 is MediaItem -> ControllerBackground(
