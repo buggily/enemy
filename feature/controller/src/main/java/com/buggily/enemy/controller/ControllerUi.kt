@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
@@ -68,6 +69,7 @@ private fun ControllerScreen(
             uiState = uiState,
             modifier = modifier,
         )
+
         else -> ControllerScreenMedium(
             uiState = uiState,
             modifier = modifier,
@@ -171,8 +173,7 @@ private fun ControllerBottomSheet(
                 uiState = uiState,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .systemBarsPadding()
-                    .padding(dimensionResource(dimens.padding_large)),
+                    .systemBarsPadding(),
             )
         }
     }
@@ -494,6 +495,17 @@ private fun ControllerSeekBar(
 }
 
 @Composable
+private fun ControllerProgressBar(
+    seekState: ControllerUiState.SeekState,
+    modifier: Modifier = Modifier,
+) {
+    LinearProgressIndicator(
+        progress = seekState.progress,
+        modifier = modifier,
+    )
+}
+
+@Composable
 private fun ControllerSeekBarText(
     seekState: ControllerUiState.SeekState,
     modifier: Modifier = Modifier,
@@ -529,27 +541,40 @@ private fun ControllerBottomSheetForeground(
     uiState: ControllerUiState,
     modifier: Modifier = Modifier,
 ) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(
-            space = dimensionResource(dimens.padding_large),
-            alignment = Alignment.End,
-        ),
-        verticalAlignment = Alignment.CenterVertically,
+    Column(
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.Start,
         modifier = modifier,
     ) {
-        when (val mediaItem: MediaItem? = uiState.mediaItem) {
-            is MediaItem -> ControllerBottomSheetText(
-                mediaItem = mediaItem,
-                modifier = Modifier.weight(1f),
+        ControllerProgressBar(
+            seekState = uiState.seekState,
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(
+                space = dimensionResource(dimens.padding_large),
+                alignment = Alignment.End,
+            ),
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(dimensionResource(dimens.padding_large)),
+        ) {
+            when (val mediaItem: MediaItem? = uiState.mediaItem) {
+                is MediaItem -> ControllerBottomSheetText(
+                    mediaItem = mediaItem,
+                    modifier = Modifier.weight(1f),
+                )
+            }
+
+            ControllerPlaybackControls(
+                playState = uiState.playState,
+                nextState = uiState.nextState,
+                previousState = uiState.previousState,
+                modifier = Modifier.width(IntrinsicSize.Min),
             )
         }
-
-        ControllerPlaybackControls(
-            playState = uiState.playState,
-            nextState = uiState.nextState,
-            previousState = uiState.previousState,
-            modifier = Modifier.width(IntrinsicSize.Min),
-        )
     }
 }
 

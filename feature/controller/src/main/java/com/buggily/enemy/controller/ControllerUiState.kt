@@ -2,6 +2,7 @@ package com.buggily.enemy.controller
 
 import androidx.media3.common.MediaItem
 import com.buggily.enemy.core.data.DurationWithMetadata
+import com.buggily.enemy.core.ext.isPositive
 
 data class ControllerUiState(
     val mediaItem: MediaItem?,
@@ -130,6 +131,9 @@ data class ControllerUiState(
 
         val value: Float
             get() = current.inWholeSeconds.toFloat()
+
+        val progress: Float
+            get() = last.takeIf { it.isPositive }?.let { value / it } ?: first
 
         private val first: Float
             get() = DurationWithMetadata.default.inWholeSeconds.toFloat()
