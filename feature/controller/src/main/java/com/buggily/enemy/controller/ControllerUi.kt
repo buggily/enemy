@@ -34,12 +34,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import com.buggily.enemy.core.ui.LocalWindowSizeClass
-import com.buggily.enemy.core.ui.composable.ArtImage
-import com.buggily.enemy.core.ui.composable.IconButton
-import com.buggily.enemy.core.ui.composable.SingleLineText
 import com.buggily.enemy.core.ui.ext.artistText
 import com.buggily.enemy.core.ui.ext.floatResource
 import com.buggily.enemy.core.ui.ext.nameText
+import com.buggily.enemy.core.ui.ui.ArtImage
+import com.buggily.enemy.core.ui.ui.IconButton
+import com.buggily.enemy.core.ui.ui.SingleLineText
 import com.buggily.enemy.core.ui.R.dimen as dimens
 import com.buggily.enemy.core.ui.R.drawable as drawables
 import com.buggily.enemy.core.ui.R.string as strings

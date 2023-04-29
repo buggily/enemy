@@ -9,12 +9,14 @@ data class PlaylistsUiState(
 
     data class PlaylistState(
         val onClick: (Playlist) -> Unit,
+        val onLongClick: (Playlist) -> Unit,
     ) {
 
         companion object {
             val default: PlaylistState
                 get() = PlaylistState(
                     onClick = {},
+                    onLongClick = {},
                 )
         }
     }

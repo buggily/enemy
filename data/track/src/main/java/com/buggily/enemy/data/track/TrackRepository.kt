@@ -34,17 +34,22 @@ internal class TrackRepository(
 
     override fun getPagingByPlaylistId(
         playlistId: Long,
-    ): Flow<PagingData<Track>> = localTrackSource.getPagingByPlaylistId(
+    ): Flow<PagingData<TrackWithIndex>> = localTrackSource.getPagingByPlaylistId(
         playlistId = playlistId,
     ).map { pagingData: PagingData<LocalTrack> ->
-        pagingData.map { externalTrackSource.getById(it.id).to(getDurationWithMetadata) }
+        pagingData.map {
+            checkNotNull(externalTrackSource.getById(it.id)).toWithIndex(
+                index = it.index,
+                getDurationWithMetadata = getDurationWithMetadata,
+            )
+        }
     }
 
     override suspend fun getById(
         id: Long,
-    ): Track = externalTrackSource.getById(
+    ): Track? = externalTrackSource.getById(
         id = id,
-    ).to(getDurationWithMetadata)
+    )?.to(getDurationWithMetadata)
 
     override suspend fun getByAlbumId(
         albumId: Long,
@@ -54,7 +59,44 @@ internal class TrackRepository(
 
     override suspend fun getByPlaylistId(
         playlistId: Long,
-    ): List<Track> = localTrackSource.getByPlaylistId(playlistId).map {
-        externalTrackSource.getById(it.id).to(getDurationWithMetadata)
+    ): List<TrackWithIndex> = localTrackSource.getByPlaylistId(playlistId).map {
+        checkNotNull(externalTrackSource.getById(it.id)).toWithIndex(
+            index = it.index,
+            getDurationWithMetadata = getDurationWithMetadata,
+        )
     }
+
+    override suspend fun getByPlaylistIdAndIndex(
+        playlistId: Long,
+        index: Int,
+    ): TrackWithIndex? = localTrackSource.getByPlaylistIdAndIndex(
+        playlistId = playlistId,
+        index = index,
+    )?.let {
+        externalTrackSource.getById(it.id)?.toWithIndex(
+            index = it.index,
+            getDurationWithMetadata = getDurationWithMetadata,
+        )
+    }
+
+    override suspend fun insertByPlaylistId(
+        playlistId: Long,
+        track: Track,
+    ) = track.toLocal(
+        playlistId = playlistId,
+        index = localTrackSource.getMaxIndexByPlaylistId(playlistId)?.inc() ?: 0,
+    ).let { localTrackSource.insert(it) }
+
+    override suspend fun deleteByPlaylistId(
+        playlistId: Long,
+        track: TrackWithIndex,
+    ) = track.toLocal(
+        playlistId = playlistId,
+    ).let { localTrackSource.delete(it) }
+
+    override suspend fun deleteByPlaylistId(
+        playlistId: Long,
+    ) = localTrackSource.deleteByPlaylistId(
+        playlistId = playlistId,
+    )
 }

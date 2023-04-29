@@ -7,7 +7,7 @@ import androidx.paging.cachedIn
 import com.buggily.enemy.core.ui.SearchableViewModel
 import com.buggily.enemy.data.album.Album
 import com.buggily.enemy.domain.album.GetAlbumPaging
-import com.buggily.enemy.domain.navigation.NavigateFromAlbumsToAlbum
+import com.buggily.enemy.domain.navigation.NavigateToAlbum
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AlbumsViewModel @Inject constructor(
-    private val navigateFromAlbumsToAlbum: NavigateFromAlbumsToAlbum,
+    private val navigateToAlbum: NavigateToAlbum,
     getAlbumPaging: GetAlbumPaging,
 ) : ViewModel(), SearchableViewModel {
 
@@ -53,7 +53,7 @@ class AlbumsViewModel @Inject constructor(
 
     private fun onAlbumClick(
         album: Album,
-    ) = navigateFromAlbumsToAlbum(
-        id = album.id,
+    ) = navigateToAlbum(
+        albumId = album.id,
     )
 }

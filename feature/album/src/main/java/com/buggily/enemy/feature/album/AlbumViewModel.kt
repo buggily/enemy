@@ -9,11 +9,13 @@ import androidx.paging.cachedIn
 import androidx.paging.insertSeparators
 import androidx.paging.map
 import com.buggily.enemy.core.ext.indexOfOrNull
+import com.buggily.enemy.core.navigation.NavigationDestination
 import com.buggily.enemy.core.ui.ext.toMediaItem
 import com.buggily.enemy.core.ui.model.TrackUi
 import com.buggily.enemy.data.track.Track
 import com.buggily.enemy.domain.album.GetAlbumById
 import com.buggily.enemy.domain.controller.PlayItems
+import com.buggily.enemy.domain.navigation.NavigateToTrackPicker
 import com.buggily.enemy.domain.track.GetTrackPagingByAlbumId
 import com.buggily.enemy.domain.track.GetTracksByAlbumId
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,6 +31,7 @@ import javax.inject.Inject
 class AlbumViewModel @Inject constructor(
     private val playItems: PlayItems,
     private val getTracksByAlbumId: GetTracksByAlbumId,
+    private val navigateToTrackPicker: NavigateToTrackPicker,
     getAlbumById: GetAlbumById,
     getTrackPagingByAlbumId: GetTrackPagingByAlbumId,
     savedStateHandle: SavedStateHandle,
@@ -42,11 +45,13 @@ class AlbumViewModel @Inject constructor(
     val tracks: Flow<PagingData<TrackUi>>
 
     init {
-        albumId = checkNotNull(savedStateHandle["id"])
+        val albumIdKey: String = NavigationDestination.Album.albumId
+        albumId = checkNotNull(savedStateHandle[albumIdKey])
 
         AlbumUiState.default.copy(
             trackState = AlbumUiState.TrackState.default.copy(
                 onClick = ::onTrackClick,
+                onLongClick = ::onTrackLongClick,
             ),
         ).let { _uiState = MutableStateFlow(it) }
 
@@ -77,4 +82,8 @@ class AlbumViewModel @Inject constructor(
             items = items,
         )
     }
+
+    private fun onTrackLongClick(track: Track) = navigateToTrackPicker(
+        trackId = track.id,
+    )
 }

@@ -2,7 +2,6 @@ package com.buggily.enemy.local.playlist
 
 import androidx.paging.PagingSource
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -28,14 +27,20 @@ interface LocalPlaylistDao {
         """
     )
 
-    suspend fun getById(id: Long): LocalPlaylist
+    suspend fun getById(id: Long): LocalPlaylist?
+
+    @Query(
+        """
+            DELETE FROM ${LocalPlaylist.TABLE_NAME}
+            WHERE ${LocalPlaylist.ID} = :id
+        """
+    )
+
+    suspend fun deleteById(id: Long)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(playlist: LocalPlaylist)
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun update(playlist: LocalPlaylist)
-
-    @Delete
-    suspend fun delete(playlist: LocalPlaylist)
 }

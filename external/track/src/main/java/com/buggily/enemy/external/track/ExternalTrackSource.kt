@@ -77,7 +77,7 @@ internal class ExternalTrackSource(
 
     override suspend fun getById(
         id: Long,
-    ): ExternalTrack = Query(
+    ): ExternalTrack? = Query(
         selections = Query.Selections(
             Query.Selection.Expression.Equals(
                 argumentIdentity = MediaStore.Audio.Media._ID,
@@ -90,7 +90,7 @@ internal class ExternalTrackSource(
             ),
         ),
         sort = Query.Sort.NONE,
-    ).let { checkNotNull(externalTrackQuerySource.loadFirstOrNull(it)) }
+    ).let { externalTrackQuerySource.loadFirstOrNull(it) }
 
     override suspend fun getByAlbumId(
         albumId: Long,

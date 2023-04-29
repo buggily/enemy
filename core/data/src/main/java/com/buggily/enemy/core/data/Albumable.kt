@@ -5,12 +5,8 @@ import android.net.Uri
 
 interface Albumable : Artable {
 
-    val id: Long
-    val name: String
+    val artUriId: Long
 
     override val artUri: Uri
-        get() = ContentUris.withAppendedId(artContentUri, id)
-
-    override val contentDescription: String
-        get() = name
+        get() = ContentUris.withAppendedId(artContentUri, artUriId)
 }

@@ -4,7 +4,7 @@ sealed class NavigationEventState {
 
     object Default: NavigationEventState()
 
-    data class Event(
+    class Event(
         val args: NavigationArgs,
         val onEvent: () -> Unit,
     ) : NavigationEventState()

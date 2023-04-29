@@ -16,6 +16,7 @@ class AndroidLibraryFeatureConventionPlugin : Plugin<Project> {
             add("implementation", project(":core:data"))
             add("implementation", project(":core:ext"))
             add("implementation", project(":core:ui"))
+            add("implementation", project(":core:navigation"))
         }
     }
 }

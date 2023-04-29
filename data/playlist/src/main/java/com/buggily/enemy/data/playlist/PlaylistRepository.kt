@@ -23,9 +23,9 @@ internal class PlaylistRepository(
 
     override suspend fun getById(
         id: Long,
-    ): Playlist = localPlaylistSource.getById(
+    ): Playlist? = localPlaylistSource.getById(
         id = id,
-    ).to(getInstantWithMetadataFromInstant)
+    )?.to(getInstantWithMetadataFromInstant)
 
     override suspend fun insert(
         playlist: Playlist,
@@ -39,9 +39,9 @@ internal class PlaylistRepository(
         localPlaylistSource.update(it)
     }
 
-    override suspend fun delete(
-        playlist: Playlist,
-    ) = playlist.toLocal().let {
-        localPlaylistSource.delete(it)
-    }
+    override suspend fun deleteById(
+        id: Long,
+    ) = localPlaylistSource.deleteById(
+        id = id,
+    )
 }

@@ -1,24 +1,25 @@
 package com.buggily.enemy.feature.playlist
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -32,14 +33,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
-import com.buggily.enemy.core.ui.composable.ArtImage
-import com.buggily.enemy.core.ui.ext.artistText
-import com.buggily.enemy.core.ui.ext.durationText
+import com.buggily.enemy.core.ui.LocalWindowSizeClass
 import com.buggily.enemy.core.ui.ext.floatResource
 import com.buggily.enemy.core.ui.ext.nameText
 import com.buggily.enemy.core.ui.ext.peekFirst
+import com.buggily.enemy.core.ui.ui.ArtImage
+import com.buggily.enemy.core.ui.ui.PlaylistTrackItem
 import com.buggily.enemy.data.playlist.Playlist
 import com.buggily.enemy.data.track.Track
+import com.buggily.enemy.data.track.TrackWithIndex
 import com.buggily.enemy.core.ui.R.dimen as dimens
 
 @Composable
@@ -48,7 +50,7 @@ fun PlaylistScreen(
     modifier: Modifier = Modifier,
 ) {
     val uiState: PlaylistUiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val tracks: LazyPagingItems<Track> = viewModel.tracks.collectAsLazyPagingItems()
+    val tracks: LazyPagingItems<TrackWithIndex> = viewModel.tracks.collectAsLazyPagingItems()
 
     Box(modifier) {
         PlaylistScreen(
@@ -62,7 +64,7 @@ fun PlaylistScreen(
 @Composable
 private fun PlaylistScreen(
     uiState: PlaylistUiState,
-    tracks: LazyPagingItems<Track>,
+    tracks: LazyPagingItems<TrackWithIndex>,
     modifier: Modifier = Modifier,
 ) {
     PlaylistScreen(
@@ -74,15 +76,86 @@ private fun PlaylistScreen(
 }
 
 @Composable
-@OptIn(ExperimentalFoundationApi::class)
 private fun PlaylistScreen(
     playlist: Playlist?,
     trackState: PlaylistUiState.TrackState,
-    tracks: LazyPagingItems<Track>,
+    tracks: LazyPagingItems<TrackWithIndex>,
     modifier: Modifier = Modifier,
 ) {
-    val track: Track? = remember(tracks) { tracks.peekFirst() }
+    val track: Track? = remember(tracks.itemSnapshotList) { tracks.peekFirst()?.track }
 
+    when (LocalWindowSizeClass.current.heightSizeClass) {
+        WindowHeightSizeClass.Compact -> PlaylistScreenCompact(
+            track = track,
+            playlist = playlist,
+            trackState = trackState,
+            tracks = tracks,
+            modifier = modifier,
+        )
+
+        else -> PlaylistScreenMedium(
+            track = track,
+            playlist = playlist,
+            trackState = trackState,
+            tracks = tracks,
+            modifier = modifier,
+        )
+    }
+}
+
+@Composable
+private fun PlaylistScreenCompact(
+    track: Track?,
+    playlist: Playlist?,
+    trackState: PlaylistUiState.TrackState,
+    tracks: LazyPagingItems<TrackWithIndex>,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        horizontalArrangement = Arrangement.Start,
+        verticalAlignment = Alignment.Top,
+        modifier = modifier,
+    ) {
+        val itemModifier: Modifier = Modifier.fillMaxHeight()
+
+        when (playlist) {
+            is Playlist -> PlaylistHeader(
+                track = track,
+                playlist = playlist,
+                modifier = itemModifier.weight(1f),
+            )
+        }
+
+        LazyColumn(
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.Start,
+            contentPadding = WindowInsets.systemBars.asPaddingValues(),
+            modifier = itemModifier.weight(2f),
+        ) {
+            items(tracks) {
+                when (it) {
+                    is TrackWithIndex -> PlaylistTrackItem(
+                        track = it.track,
+                        onClick = { trackState.onClick(it) },
+                        onLongClick = { trackState.onLongClick(it) },
+                    )
+
+                    else -> Unit
+                }
+            }
+        }
+    }
+}
+
+@Composable
+@OptIn(ExperimentalFoundationApi::class)
+private fun PlaylistScreenMedium(
+    track: Track?,
+    playlist: Playlist?,
+    trackState: PlaylistUiState.TrackState,
+    tracks: LazyPagingItems<TrackWithIndex>,
+    modifier: Modifier = Modifier,
+) {
     Box(modifier) {
         LazyColumn(
             verticalArrangement = Arrangement.Top,
@@ -102,12 +175,14 @@ private fun PlaylistScreen(
                 }
             }
 
-            items(
-                items = tracks,
-                key = { it.id },
-            ) {
+            items(tracks) {
                 when (it) {
-                    is Track -> PlaylistTrackItem(it) { trackState.onClick(it) }
+                    is TrackWithIndex -> PlaylistTrackItem(
+                        track = it.track,
+                        onClick = { trackState.onClick(it) },
+                        onLongClick = { trackState.onLongClick(it) },
+                    )
+
                     else -> Unit
                 }
             }
@@ -150,7 +225,7 @@ private fun PlaylistHeaderBackground(
     modifier: Modifier,
 ) {
     ArtImage(
-        artable = track,
+        artable = track.album,
         contentScale = ContentScale.Crop,
         modifier = modifier,
     )
@@ -167,79 +242,6 @@ private fun PlaylistHeaderForeground(
             textAlign = TextAlign.End,
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.align(Alignment.BottomEnd),
-        )
-    }
-}
-
-@Composable
-private fun PlaylistTrackItem(
-    track: Track,
-    onClick: () -> Unit,
-) {
-    PlaylistTrackItem(
-        track = track,
-        modifier = Modifier
-            .fillMaxWidth()
-            .defaultMinSize(minHeight = dimensionResource(dimens.padding_large_extra_extra))
-            .clickable { onClick() }
-            .padding(
-                horizontal = dimensionResource(dimens.padding_large),
-                vertical = dimensionResource(dimens.padding_large_extra),
-            ),
-    )
-}
-
-@Composable
-private fun PlaylistTrackItem(
-    track: Track,
-    modifier: Modifier = Modifier,
-) {
-    PlaylistTrackItem(
-        nameText = track.nameText,
-        artistText = track.artistText,
-        durationText = track.durationText,
-        modifier = modifier,
-    )
-}
-
-@Composable
-private fun PlaylistTrackItem(
-    nameText: String,
-    artistText: String,
-    durationText: String,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(
-            space = dimensionResource(dimens.padding_large),
-            alignment = Alignment.Start,
-        ),
-        verticalAlignment = Alignment.Top,
-        modifier = modifier,
-    ) {
-        Text(
-            text = nameText,
-            textAlign = TextAlign.Start,
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.weight(2f),
-        )
-
-        Text(
-            text = artistText,
-            textAlign = TextAlign.Start,
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier
-                .weight(2f)
-                .alpha(floatResource(dimens.alpha_medium)),
-        )
-
-        Text(
-            text = durationText,
-            textAlign = TextAlign.End,
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier
-                .weight(1f)
-                .alpha(floatResource(dimens.alpha_medium)),
         )
     }
 }

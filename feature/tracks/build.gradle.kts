@@ -12,6 +12,7 @@ dependencies {
     implementation(project(":data:track"))
 
     implementation(project(":domain:controller"))
+    implementation(project(":domain:navigation"))
 
     implementation(libs.androidx.media.core)
 

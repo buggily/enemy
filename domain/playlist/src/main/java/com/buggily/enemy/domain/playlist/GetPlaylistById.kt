@@ -9,7 +9,7 @@ class GetPlaylistById(
 
     suspend operator fun invoke(
         id: Long
-    ): Playlist = repository.getById(
+    ): Playlist? = repository.getById(
         id = id,
     )
 }

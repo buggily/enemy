@@ -19,7 +19,13 @@ internal class LocalPlaylistSource(
 
     override suspend fun getById(
         id: Long,
-    ): LocalPlaylist = localPlaylistDao.getById(
+    ): LocalPlaylist? = localPlaylistDao.getById(
+        id = id,
+    )
+
+    override suspend fun deleteById(
+        id: Long,
+    ) = localPlaylistDao.deleteById(
         id = id,
     )
 
@@ -32,12 +38,6 @@ internal class LocalPlaylistSource(
     override suspend fun update(
         playlist: LocalPlaylist,
     ) = localPlaylistDao.update(
-        playlist = playlist,
-    )
-
-    override suspend fun delete(
-        playlist: LocalPlaylist,
-    ) = localPlaylistDao.delete(
         playlist = playlist,
     )
 }

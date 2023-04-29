@@ -16,7 +16,6 @@ data class EnemyUiState(
         val isBottomBarVisible: Boolean
             get() = setOf(
                 NavigationDestination.Browse,
-                NavigationDestination.Playlist.Create,
             ).any {
                 isDestinationInHierarchy(it)
             }

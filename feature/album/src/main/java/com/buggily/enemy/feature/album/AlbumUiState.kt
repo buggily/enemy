@@ -10,12 +10,14 @@ data class AlbumUiState(
 
     data class TrackState(
         val onClick: (Track) -> Unit,
+        val onLongClick: (Track) -> Unit,
     ) {
 
         companion object {
             val default: TrackState
                 get() = TrackState(
                     onClick = {},
+                    onLongClick = {},
                 )
         }
     }

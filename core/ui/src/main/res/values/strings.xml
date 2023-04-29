@@ -20,4 +20,8 @@
 
     <string name="search_disable">disable search</string>
     <string name="search_enable">enable search</string>
+
+    <string name="add_playlist">add to playlist</string>
+    <string name="delete_playlist">delete playlist</string>
+    <string name="remove_playlist_track">remove track</string>
 </resources>

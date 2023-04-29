@@ -14,8 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.buggily.enemy.core.ui.composable.SingleLineTextField
-import com.buggily.enemy.core.ui.composable.TextButton
+import com.buggily.enemy.core.ui.ui.SingleLineTextField
+import com.buggily.enemy.core.ui.ui.TextButton
 import com.buggily.enemy.feature.playlist.R
 import com.buggily.enemy.core.ui.R.dimen as dimens
 
@@ -51,7 +51,7 @@ private fun CreatePlaylistDialog(
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        shape = MaterialTheme.shapes.medium,
+        shape = MaterialTheme.shapes.large,
         modifier = modifier,
     ) {
         Column(
