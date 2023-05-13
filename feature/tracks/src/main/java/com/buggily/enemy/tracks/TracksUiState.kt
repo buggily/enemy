@@ -21,12 +21,14 @@ data class TracksUiState(
 
     data class TrackState(
         val onClick: (Track) -> Unit,
+        val onLongClick: (Track) -> Unit,
     ) {
 
         companion object {
             val default: TrackState
                 get() = TrackState(
                     onClick = {},
+                    onLongClick = {},
                 )
         }
     }

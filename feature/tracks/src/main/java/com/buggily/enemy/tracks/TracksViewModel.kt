@@ -8,6 +8,7 @@ import com.buggily.enemy.core.ui.SearchableViewModel
 import com.buggily.enemy.core.ui.ext.toMediaItem
 import com.buggily.enemy.data.track.Track
 import com.buggily.enemy.domain.controller.PlayItem
+import com.buggily.enemy.domain.navigation.NavigateToTrackPicker
 import com.buggily.enemy.domain.track.GetTrackPaging
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -22,6 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class TracksViewModel @Inject constructor(
     private val playItem: PlayItem,
+    private val navigateToTrackPicker: NavigateToTrackPicker,
     getTrackPaging: GetTrackPaging,
 ) : ViewModel(), SearchableViewModel {
 
@@ -34,6 +36,7 @@ class TracksViewModel @Inject constructor(
         TracksUiState.default.copy(
             trackState = TracksUiState.TrackState.default.copy(
                 onClick = ::onTrackClick,
+                onLongClick = ::onTrackLongClick,
             ),
         ).let { _uiState = MutableStateFlow(it) }
 
@@ -52,5 +55,11 @@ class TracksViewModel @Inject constructor(
         it.copy(searchState = it.searchState.copy(value = value))
     }
 
-    private fun onTrackClick(track: Track) = playItem(track.toMediaItem())
+    private fun onTrackClick(track: Track) = playItem(
+        item = track.toMediaItem(),
+    )
+
+    private fun onTrackLongClick(track: Track) = navigateToTrackPicker(
+        trackId = track.id,
+    )
 }

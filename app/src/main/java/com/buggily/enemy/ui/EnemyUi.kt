@@ -11,6 +11,7 @@ import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -47,6 +48,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -61,17 +63,22 @@ import com.buggily.enemy.core.navigation.NavigationDestination
 import com.buggily.enemy.core.ui.GlobalUiState
 import com.buggily.enemy.core.ui.GlobalUiViewModel
 import com.buggily.enemy.core.ui.LocalWindowSizeClass
-import com.buggily.enemy.core.ui.composable.IconButton
-import com.buggily.enemy.core.ui.composable.IconFloatingActionButton
-import com.buggily.enemy.core.ui.composable.SingleLineText
-import com.buggily.enemy.core.ui.composable.SingleLineTextField
 import com.buggily.enemy.core.ui.ext.ZERO
+import com.buggily.enemy.core.ui.ui.IconButton
+import com.buggily.enemy.core.ui.ui.IconFloatingActionButton
+import com.buggily.enemy.core.ui.ui.SingleLineText
+import com.buggily.enemy.core.ui.ui.SingleLineTextField
+import com.buggily.enemy.core.ui.ui.picker.PickerDialog
+import com.buggily.enemy.core.ui.ui.picker.playlist.PlaylistPickerViewModel
+import com.buggily.enemy.core.ui.ui.picker.track.TrackPickerViewModel
 import com.buggily.enemy.feature.album.AlbumScreen
 import com.buggily.enemy.feature.browse.BrowseScreen
 import com.buggily.enemy.feature.orientation.OrientationScreen
 import com.buggily.enemy.feature.playlist.PlaylistScreen
 import com.buggily.enemy.feature.playlist.create.CreatePlaylistDialog
+import com.buggily.enemy.feature.playlist.track.PlaylistTrackPickerViewModel
 import com.buggily.enemy.feature.preferences.PreferencesScreen
+import com.buggily.enemy.feature.track.playlist.TrackPlaylistPickerDialog
 import com.buggily.enemy.core.ui.R.dimen as dimens
 import com.buggily.enemy.core.ui.R.drawable as drawables
 import com.buggily.enemy.core.ui.R.string as strings
@@ -119,7 +126,6 @@ private fun EnemyApp(
     )
 }
 
-
 @OptIn(
     ExperimentalLayoutApi::class,
     ExperimentalMaterial3Api::class,
@@ -142,7 +148,7 @@ private fun EnemyApp(
         readPermission
     )
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(permissionResult) {
         val isGranted: Boolean = permissionResult == PackageManager.PERMISSION_GRANTED
         if (!isGranted) orientationState.to()
     }
@@ -238,11 +244,57 @@ private fun EnemyApp(
             dialog(
                 route = NavigationDestination.Playlist.Create.route,
                 arguments = NavigationDestination.Playlist.Create.arguments,
+                dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
             ) {
-                CreatePlaylistDialog(
-                    viewModel = hiltViewModel(),
-                    modifier = Modifier,
-                )
+                Box(Modifier.fillMaxWidth(3/4f)) {
+                    CreatePlaylistDialog(hiltViewModel())
+                }
+            }
+
+            dialog(
+                route = NavigationDestination.Playlist.Picker.route,
+                arguments = NavigationDestination.Playlist.Picker.arguments,
+                dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
+            ) {
+                val viewModel: PlaylistPickerViewModel = hiltViewModel()
+
+                Box(Modifier.fillMaxWidth(3/4f)) {
+                    PickerDialog(viewModel)
+                }
+            }
+
+            dialog(
+                route = NavigationDestination.Playlist.TrackPicker.route,
+                arguments = NavigationDestination.Playlist.TrackPicker.arguments,
+                dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
+            ) {
+                val viewModel: PlaylistTrackPickerViewModel = hiltViewModel()
+
+                Box(Modifier.fillMaxWidth(3/4f)) {
+                    PickerDialog(viewModel)
+                }
+            }
+
+            dialog(
+                route = NavigationDestination.Track.Picker.route,
+                arguments = NavigationDestination.Track.Picker.arguments,
+                dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
+            ) {
+                val viewModel: TrackPickerViewModel = hiltViewModel()
+
+                Box(Modifier.fillMaxWidth(3/4f)) {
+                    PickerDialog(viewModel)
+                }
+            }
+
+            dialog(
+                route = NavigationDestination.Track.PlaylistPicker.route,
+                arguments = NavigationDestination.Track.PlaylistPicker.arguments,
+                dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
+            ) {
+                Box(Modifier.fillMaxWidth(3/4f)) {
+                    TrackPlaylistPickerDialog(hiltViewModel())
+                }
             }
         }
     }

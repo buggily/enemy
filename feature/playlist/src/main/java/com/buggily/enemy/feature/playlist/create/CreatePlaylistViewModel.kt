@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.buggily.core.domain.GetInstantWithMetadata
 import com.buggily.enemy.core.data.InstantWithMetadata
+import com.buggily.enemy.core.navigation.NavigationDestination
 import com.buggily.enemy.data.playlist.Playlist
 import com.buggily.enemy.domain.navigation.NavigateBack
 import com.buggily.enemy.domain.playlist.InsertPlaylist
@@ -32,11 +33,12 @@ class CreatePlaylistViewModel @Inject constructor(
     val uiState: StateFlow<CreatePlaylistUiState> get() = _uiState
 
     init {
-        val name: String = checkNotNull(savedStateHandle["name"])
+        val playlistNameKey: String = NavigationDestination.Playlist.Create.name
+        val playlistName: String = checkNotNull(savedStateHandle[playlistNameKey])
 
         CreatePlaylistUiState.default.copy(
             nameState = CreatePlaylistUiState.NameState.default.copy(
-                value = name,
+                value = playlistName,
                 onChange = ::onNameChange,
             ),
             confirmState = CreatePlaylistUiState.ConfirmState.default.copy(

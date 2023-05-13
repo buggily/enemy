@@ -1,7 +1,6 @@
 package com.buggily.enemy.feature.album
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -40,15 +38,13 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import com.buggily.enemy.core.ui.LocalWindowSizeClass
-import com.buggily.enemy.core.ui.R
-import com.buggily.enemy.core.ui.composable.ArtImage
-import com.buggily.enemy.core.ui.composable.SingleLineText
+import com.buggily.enemy.core.ui.ui.AlbumTrackItem
+import com.buggily.enemy.core.ui.ui.ArtImage
+import com.buggily.enemy.core.ui.ui.SingleLineText
 import com.buggily.enemy.core.ui.ext.artistText
 import com.buggily.enemy.core.ui.ext.discText
-import com.buggily.enemy.core.ui.ext.durationText
 import com.buggily.enemy.core.ui.ext.floatResource
 import com.buggily.enemy.core.ui.ext.nameText
-import com.buggily.enemy.core.ui.ext.trackText
 import com.buggily.enemy.core.ui.model.TrackUi
 import com.buggily.enemy.data.album.Album
 import com.buggily.enemy.core.ui.R.dimen as dimens
@@ -99,6 +95,7 @@ private fun AlbumScreen(
             tracks = tracks,
             modifier = modifier,
         )
+
         else -> AlbumScreenMedium(
             album = album,
             trackState = trackState,
@@ -147,13 +144,17 @@ private fun AlbumScreenCompact(
                 },
             ) {
                 when (it) {
-                    is TrackUi.Item -> AlbumTrackItem(it) {
-                        trackState.onClick(it.track)
-                    }
+                    is TrackUi.Item -> AlbumTrackItem(
+                        track = it.track,
+                        onClick = { trackState.onClick(it.track) },
+                        onLongClick = { trackState.onLongClick(it.track) },
+                    )
+
                     is TrackUi.Separator.Disc -> AlbumDiscItem(
                         trackSeparator = it,
                         modifier = Modifier.fillMaxWidth(),
                     )
+
                     else -> Unit
                 }
             }
@@ -196,13 +197,17 @@ private fun AlbumScreenMedium(
             },
         ) {
             when (it) {
-                is TrackUi.Item -> AlbumTrackItem(it) {
-                    trackState.onClick(it.track)
-                }
+                is TrackUi.Item -> AlbumTrackItem(
+                    track = it.track,
+                    onClick = { trackState.onClick(it.track) },
+                    onLongClick = { trackState.onLongClick(it.track) },
+                )
+
                 is TrackUi.Separator.Disc -> AlbumDiscItem(
                     trackSeparator = it,
                     modifier = Modifier.fillMaxWidth(),
                 )
+
                 else -> Unit
             }
         }
@@ -349,60 +354,6 @@ private fun AlbumHeaderText(
             text = album.artistText,
             textAlign = TextAlign.End,
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.alpha(floatResource(dimens.alpha_medium)),
-        )
-    }
-}
-
-@Composable
-private fun AlbumTrackItem(
-    trackItem: TrackUi.Item,
-    onClick: () -> Unit,
-) {
-    AlbumTrackItem(
-        trackItem = trackItem,
-        modifier = Modifier
-            .fillMaxWidth()
-            .defaultMinSize(minHeight = dimensionResource(dimens.padding_large_extra_extra))
-            .clickable { onClick() }
-            .padding(
-                horizontal = dimensionResource(dimens.padding_large),
-                vertical = dimensionResource(dimens.padding_large_extra),
-            ),
-    )
-}
-
-@Composable
-private fun AlbumTrackItem(
-    trackItem: TrackUi.Item,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(
-            space = dimensionResource(R.dimen.padding_large),
-            alignment = Alignment.Start,
-        ),
-        verticalAlignment = Alignment.Top,
-        modifier = modifier,
-    ) {
-        Text(
-            text = trackItem.trackText,
-            textAlign = TextAlign.Start,
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.alpha(floatResource(dimens.alpha_medium)),
-        )
-
-        Text(
-            text = trackItem.nameText,
-            textAlign = TextAlign.Start,
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.weight(1f),
-        )
-
-        Text(
-            text = trackItem.durationText,
-            textAlign = TextAlign.End,
-            style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.alpha(floatResource(dimens.alpha_medium)),
         )
     }

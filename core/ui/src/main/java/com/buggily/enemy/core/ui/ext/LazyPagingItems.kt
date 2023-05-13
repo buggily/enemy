@@ -2,13 +2,13 @@ package com.buggily.enemy.core.ui.ext
 
 import androidx.paging.compose.LazyPagingItems
 
-val <T : Any> LazyPagingItems<T>.range: IntRange
+val <Item : Any> LazyPagingItems<Item>.range: IntRange
     get() = 0 until itemCount
 
-val <T : Any> LazyPagingItems<T>.firstIndex: Int
+val <Item : Any> LazyPagingItems<Item>.firstIndex: Int
     get() = range.first
 
-fun <T : Any> LazyPagingItems<T>.peekFirst(): T? = try {
+fun <Item : Any> LazyPagingItems<Item>.peekFirst(): Item? = try {
     peek(firstIndex)
 } catch (e: IndexOutOfBoundsException) {
     null

@@ -6,9 +6,11 @@ import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.paging.PagingData
 import com.buggily.enemy.core.ext.indexOfOrNull
+import com.buggily.enemy.core.navigation.NavigationDestination
 import com.buggily.enemy.core.ui.ext.toMediaItem
-import com.buggily.enemy.data.track.Track
+import com.buggily.enemy.data.track.TrackWithIndex
 import com.buggily.enemy.domain.controller.PlayItems
+import com.buggily.enemy.domain.navigation.NavigateToPlaylistTrackPicker
 import com.buggily.enemy.domain.playlist.GetPlaylistById
 import com.buggily.enemy.domain.track.GetTrackPagingByPlaylistId
 import com.buggily.enemy.domain.track.GetTracksByPlaylistId
@@ -24,6 +26,7 @@ import javax.inject.Inject
 class PlaylistViewModel @Inject constructor(
     private val playItems: PlayItems,
     private val getTracksByPlaylistId: GetTracksByPlaylistId,
+    private val navigateToPlaylistTrackPicker: NavigateToPlaylistTrackPicker,
     getPlaylistById: GetPlaylistById,
     getTrackPagingByPlaylistId: GetTrackPagingByPlaylistId,
     savedStateHandle: SavedStateHandle,
@@ -34,33 +37,39 @@ class PlaylistViewModel @Inject constructor(
     private val _uiState: MutableStateFlow<PlaylistUiState>
     val uiState: StateFlow<PlaylistUiState> get() = _uiState
 
-    val tracks: Flow<PagingData<Track>>
+    val tracks: Flow<PagingData<TrackWithIndex>>
 
     init {
+        val playlistIdKey: String = NavigationDestination.Playlist.playlistId
+        playlistId = checkNotNull(savedStateHandle[playlistIdKey])
+        tracks = getTrackPagingByPlaylistId(playlistId)
+
         PlaylistUiState.default.copy(
             trackState = PlaylistUiState.TrackState.default.copy(
                 onClick = ::onTrackClick,
+                onLongClick = ::onTrackLongClick,
             ),
         ).let { _uiState = MutableStateFlow(it) }
 
-        playlistId = checkNotNull(savedStateHandle["id"])
-        tracks = getTrackPagingByPlaylistId(playlistId)
 
         viewModelScope.launch {
-            _uiState.update {
-                it.copy(playlist = getPlaylistById(playlistId))
-            }
+            _uiState.update { it.copy(playlist = getPlaylistById(playlistId)) }
         }
     }
 
-    private fun onTrackClick(track: Track) = viewModelScope.launch {
-        val tracks: List<Track> = getTracksByPlaylistId(playlistId)
+    private fun onTrackClick(track: TrackWithIndex) = viewModelScope.launch {
+        val tracks: List<TrackWithIndex> = getTracksByPlaylistId(playlistId)
         val index: Int = checkNotNull(tracks.indexOfOrNull(track))
-        val items: List<MediaItem> = tracks.map { it.toMediaItem() }
+        val items: List<MediaItem> = tracks.map { it.track.toMediaItem() }
 
         playItems(
             index = index,
             items = items,
         )
     }
+
+    private fun onTrackLongClick(track: TrackWithIndex) = navigateToPlaylistTrackPicker(
+        playlistId = playlistId,
+        trackIndex = track.index,
+    )
 }

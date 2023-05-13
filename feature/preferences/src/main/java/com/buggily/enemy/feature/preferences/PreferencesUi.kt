@@ -29,7 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.buggily.enemy.core.ui.composable.SingleLineText
+import com.buggily.enemy.core.ui.ui.SingleLineText
 import com.buggily.enemy.data.theme.Theme
 import com.buggily.enemy.core.ui.R.dimen as dimens
 

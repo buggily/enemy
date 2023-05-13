@@ -7,135 +7,44 @@ import androidx.navigation.navArgument
 
 sealed class NavigationDestination {
 
-    sealed class Argument(
-        open val name: String,
-    ) {
+    abstract val paths: List<NavigationComponent.Path>
+    abstract val queries: List<NavigationComponent.Query>
 
-        open val value: String
-            get() = "{$name}"
-
-        sealed class Config(
-            override val name: String,
-            open val type: NavType<*>,
-            open val isNullable: Boolean,
-        ) : Argument(
-            name = name,
-        ) {
-
-            open class Page(
-                override val name: String,
-                override val type: NavType<*>,
-            ) : Config(
-                name = name,
-                type = type,
-                isNullable = false,
-            ) {
-
-                override val value: String
-                    get() = "/${super.value}"
-            }
-
-            open class Query(
-                override val name: String,
-                override val type: NavType<*>,
-                override val isNullable: Boolean,
-            ) : Config(
-                name = name,
-                type = type,
-                isNullable = isNullable,
-            ) {
-
-                override val value: String
-                    get() = "$name=${super.value}"
-            }
-        }
-
-        sealed class Expression(
-            override val name: String,
-            open val expression: String?,
-        ) : Argument(
-            name = name,
-        ) {
-
-            class Page(
-                override val name: String,
-                override val expression: String,
-            ) : Expression(
-                name = name,
-                expression = expression,
-            )
-
-            class Query(
-                override val name: String,
-                override val expression: String?,
-            ) : Expression(
-                name = name,
-                expression = expression,
-            )
-        }
-    }
-
-    abstract val path: String
-
-    open val pageArgumentConfigs: List<Argument.Config.Page>
-        get() = emptyList()
-
-    open val queryArgumentConfigs: Set<Argument.Config.Query>
-        get() = emptySet()
+    private val dynamicPaths: List<NavigationComponent.Path.Dynamic>
+        get() = paths.filterIsInstance(NavigationComponent.Path.Dynamic::class.java)
 
     val arguments: List<NamedNavArgument>
-        get() = argumentConfigs.map {
+        get() = listOf(
+            dynamicPaths,
+            queries,
+        ).flatten().map {
             navArgument(it.name) {
                 type = it.type
-                nullable = it.isNullable
+                nullable = it.nullable
             }
         }
 
-    private val argumentConfigs: List<Argument.Config>
-        get() = pageArgumentConfigs + queryArgumentConfigs
-
     val route: String
-        get() = listOfNotNull(
-            path,
-            pageArgumentConfigsString,
-            queryArgumentConfigsString,
-        ).joinToString(String())
+        get() {
+            val separator: String = if (queries.isEmpty()) String() else "?"
 
-    private val pageArgumentConfigsString: String?
-        get() = getArgumentConfigsString(
-            prefix = "/",
-            separator = "/",
-            argumentConfigs = pageArgumentConfigs,
-        )
-
-    private val queryArgumentConfigsString: String?
-        get() = getArgumentConfigsString(
-            prefix = "?",
-            separator = "&",
-            argumentConfigs = queryArgumentConfigs.toList(),
-        )
-
-    private fun getArgumentConfigsString(
-        prefix: String,
-        separator: String,
-        argumentConfigs: List<Argument.Config>,
-    ): String? = argumentConfigs.takeUnless { it.isEmpty() }?.let {
-        prefix + it.joinToString(separator = separator) { argumentConfig: Argument.Config ->
-            argumentConfig.value
+            return listOf(
+                paths.joinToString(separator = "/") { it.value },
+                queries.joinToString(separator = "&") { it.value },
+            ).joinToString(separator = separator)
         }
-    }
 
-    protected fun getRoute(
-        pageArgumentExpressions: List<Argument.Expression.Page>,
-        queryArgumentExpressions: Set<Argument.Expression.Query>,
-    ): String {
+    fun getRoute(vararg args: Pair<String, Any>): String {
         var route: String = route
 
-        listOf(
-            pageArgumentExpressions,
-            queryArgumentExpressions,
-        ).flatten().forEach {
-            route = with(it) { route.replace(value, expression.toString()) }
+        args.forEach {
+            val key: String = it.first
+            val value: Any = it.second
+
+            route = route.replace(
+                oldValue = "{$key}",
+                newValue = value.toString(),
+            )
         }
 
         return route
@@ -143,114 +52,199 @@ sealed class NavigationDestination {
 
     object Orientation : NavigationDestination() {
 
-        override val path: String
-            get() = "orientation"
+        override val paths: List<NavigationComponent.Path>
+            get() = listOf(NavigationComponent.Path.Static(orientation))
+
+        override val queries: List<NavigationComponent.Query>
+            get() = emptyList()
+
+        private const val orientation = "orientation"
     }
 
     object Browse : NavigationDestination() {
 
-        override val path: String
-            get() = "browse"
+        override val paths: List<NavigationComponent.Path>
+            get() = listOf(NavigationComponent.Path.Static(browse))
+
+        override val queries: List<NavigationComponent.Query>
+            get() = emptyList()
+
+        private const val browse = "browse"
     }
 
     object Album : NavigationDestination() {
 
-        override val path: String
-            get() = "album"
-
-        override val pageArgumentConfigs: List<Argument.Config.Page>
-            get() = listOf(idPageArgumentConfig)
-
-        fun getRoute(id: Long): String {
-            val idPageArgumentExpression = Argument.Expression.Page(
-                name = idPageArgumentConfig.name,
-                expression = id.toString(),
+        override val paths: List<NavigationComponent.Path>
+            get() = listOf(
+                NavigationComponent.Path.Static(album),
+                NavigationComponent.Path.Dynamic(albumId, NavType.LongType),
             )
 
-            return getRoute(
-                pageArgumentExpressions = listOf(idPageArgumentExpression),
-                queryArgumentExpressions = emptySet(),
+        override val queries: List<NavigationComponent.Query>
+            get() = emptyList()
+
+        fun getRoute(
+            albumId: Long,
+        ): String = getRoute(
+            Album.albumId to albumId,
+        )
+
+        private const val album = "album"
+        const val albumId = "albumId"
+    }
+
+    object Track {
+
+        val paths: List<NavigationComponent.Path>
+            get() = listOf(
+                NavigationComponent.Path.Static(track),
+                NavigationComponent.Path.Dynamic(trackId, NavType.LongType),
             )
+
+        object Picker : NavigationDestination() {
+
+            override val paths: List<NavigationComponent.Path>
+                get() = Track.paths + listOf(NavigationComponent.Path.Static(picker))
+
+            override val queries: List<NavigationComponent.Query>
+                get() = emptyList()
+
+            fun getRoute(
+                trackId: Long,
+            ): String = getRoute(
+                Picker.trackId to trackId,
+            )
+
+            private const val picker = "picker"
+            const val trackId = Track.trackId
         }
 
-        private val idPageArgumentConfig: Argument.Config.Page
-            get() = Argument.Config.Page(
-                name = id,
-                type = NavType.LongType,
+        object PlaylistPicker : NavigationDestination() {
+
+            override val paths: List<NavigationComponent.Path>
+                get() = Track.paths + listOf(NavigationComponent.Path.Static(playlist))
+
+            override val queries: List<NavigationComponent.Query>
+                get() = emptyList()
+
+            fun getRoute(
+                trackId: Long,
+            ): String = getRoute(
+                PlaylistPicker.trackId to trackId,
             )
 
-        const val id = "id"
-    }
+            private const val playlist = Playlist.playlist
+            const val trackId = Track.trackId
+        }
 
-    object Preferences : NavigationDestination() {
-
-        override val path: String
-            get() = "preferences"
-    }
-
-    object Controller : NavigationDestination() {
-
-        override val path: String
-            get() = "controller"
+        const val track = "track"
+        const val trackId = "trackId"
     }
 
     object Playlist : NavigationDestination() {
 
-        override val path: String
-            get() = "playlist"
-
-        override val pageArgumentConfigs: List<Argument.Config.Page>
-            get() = listOf(idPageArgumentConfig)
-
-        fun getRoute(id: Long): String {
-            val idPageArgumentExpression = Argument.Expression.Page(
-                name = idPageArgumentConfig.name,
-                expression = id.toString(),
+        override val paths: List<NavigationComponent.Path>
+            get() = listOf(
+                NavigationComponent.Path.Static(playlist),
+                NavigationComponent.Path.Dynamic(playlistId, NavType.LongType),
             )
 
-            return getRoute(
-                pageArgumentExpressions = listOf(idPageArgumentExpression),
-                queryArgumentExpressions = emptySet(),
-            )
-        }
+        override val queries: List<NavigationComponent.Query>
+            get() = emptyList()
 
-        private val idPageArgumentConfig: Argument.Config.Page
-            get() = Argument.Config.Page(
-                name = id,
-                type = NavType.LongType,
-            )
+        fun getRoute(
+            playlistId: Long,
+        ): String = getRoute(
+            Playlist.playlistId to playlistId,
+        )
 
         object Create : NavigationDestination() {
 
-            override val path: String
-                get() = "createPlaylist"
-
-            override val queryArgumentConfigs: Set<Argument.Config.Query>
-                get() = setOf(nameQueryArgumentConfig)
-
-            fun getRoute(name: String): String {
-                val nameQueryArgumentExpression = Argument.Expression.Query(
-                    name = nameQueryArgumentConfig.name,
-                    expression = name,
+            override val paths: List<NavigationComponent.Path>
+                get() = listOf(
+                    NavigationComponent.Path.Static(playlist),
+                    NavigationComponent.Path.Static(create),
                 )
 
-                return getRoute(
-                    pageArgumentExpressions = emptyList(),
-                    queryArgumentExpressions = setOf(nameQueryArgumentExpression),
-                )
-            }
+            override val queries: List<NavigationComponent.Query>
+                get() = listOf(NavigationComponent.Query(name, NavType.StringType))
 
-            private val nameQueryArgumentConfig: Argument.Config.Query
-                get() = Argument.Config.Query(
-                    name = name,
-                    type = NavType.StringType,
-                    isNullable = false,
-                )
+            fun getRoute(
+                name: String,
+            ): String = getRoute(
+                Create.name to name,
+            )
 
+            private const val create = "create"
             const val name = "name"
         }
 
-        const val id = "id"
+        object Picker : NavigationDestination() {
+
+            override val paths: List<NavigationComponent.Path>
+                get() = Playlist.paths + listOf(NavigationComponent.Path.Static(picker))
+
+            override val queries: List<NavigationComponent.Query>
+                get() = emptyList()
+
+            fun getRoute(
+                playlistId: Long,
+            ): String = getRoute(
+                Picker.playlistId to playlistId,
+            )
+
+            private const val picker = "picker"
+            const val playlistId = "playlistId"
+        }
+
+        object TrackPicker : NavigationDestination() {
+
+            override val paths: List<NavigationComponent.Path>
+                get() = Playlist.paths + listOf(
+                    NavigationComponent.Path.Static(track),
+                    NavigationComponent.Path.Dynamic(trackIndex, NavType.IntType),
+                )
+
+            override val queries: List<NavigationComponent.Query>
+                get() = emptyList()
+
+            fun getRoute(
+                playlistId: Long,
+                trackIndex: Int,
+            ): String = getRoute(
+                TrackPicker.playlistId to playlistId,
+                TrackPicker.trackIndex to trackIndex,
+            )
+
+            private const val track = Track.track
+            const val playlistId = Playlist.playlistId
+            const val trackIndex = "trackIndex"
+        }
+
+        const val playlist = "playlist"
+        const val playlistId = "playlistId"
+    }
+
+    object Preferences : NavigationDestination() {
+
+        override val paths: List<NavigationComponent.Path>
+            get() = listOf(NavigationComponent.Path.Static(preferences))
+
+        override val queries: List<NavigationComponent.Query>
+            get() = emptyList()
+
+        private const val preferences = "preferences"
+    }
+
+    object Controller : NavigationDestination() {
+
+        override val paths: List<NavigationComponent.Path>
+            get() = listOf(NavigationComponent.Path.Static(controller))
+
+        override val queries: List<NavigationComponent.Query>
+            get() = emptyList()
+
+        private const val controller = "controller"
     }
 
     companion object {
@@ -267,6 +261,12 @@ sealed class NavigationDestination {
                 Orientation,
                 Browse,
                 Album,
+                Track.Picker,
+                Track.PlaylistPicker,
+                Playlist,
+                Playlist.Create,
+                Playlist.Picker,
+                Playlist.TrackPicker,
                 Preferences,
                 Controller,
             )

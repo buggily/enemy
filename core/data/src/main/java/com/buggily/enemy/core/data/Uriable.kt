@@ -5,18 +5,18 @@ import android.net.Uri
 
 interface Uriable {
 
-    val id: Long
+    val uriId: Long
     val contentUri: Uri
 
     val mediaUri: Uri
         get() = uri
 
     val mediaId: String
-        get() = id.toString()
+        get() = uriId.toString()
 
     val uri: Uri
         get() = ContentUris.withAppendedId(
             contentUri,
-            id
+            uriId
         )
 }

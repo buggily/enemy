@@ -22,4 +22,36 @@ internal class LocalTrackSource(
     ): List<LocalTrack> = localTrackDao.getByPlaylistId(
         playlistId = playlistId,
     )
+
+    override suspend fun getMaxIndexByPlaylistId(
+        playlistId: Long,
+    ): Int? = localTrackDao.getMaxIndexByPlaylistId(
+        playlistId = playlistId,
+    )
+
+    override suspend fun getByPlaylistIdAndIndex(
+        playlistId: Long,
+        index: Int,
+    ): LocalTrack? = localTrackDao.getByPlaylistIdAndIndex(
+        playlistId = playlistId,
+        index = index,
+    )
+
+    override suspend fun insert(
+        track: LocalTrack,
+    ) = localTrackDao.insert(
+        track = track,
+    )
+
+    override suspend fun delete(
+        track: LocalTrack,
+    ) = localTrackDao.delete(
+        track = track,
+    )
+
+    override suspend fun deleteByPlaylistId(
+        playlistId: Long,
+    ) = localTrackDao.deleteByPlaylistId(
+        playlistId = playlistId,
+    )
 }

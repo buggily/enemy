@@ -2,6 +2,8 @@ plugins {
     id("enemy.android.library")
     id("enemy.android.library.compose")
     id("enemy.android.hilt")
+
+    id("kotlin-parcelize")
 }
 
 android {
@@ -13,6 +15,10 @@ dependencies {
     implementation(project(":core:data"))
     implementation(project(":core:ext"))
 
+    implementation(project(":domain:track"))
+    implementation(project(":domain:playlist"))
+
+    implementation(project(":core:navigation"))
     implementation(project(":domain:navigation"))
 
     implementation(project(":data:album"))

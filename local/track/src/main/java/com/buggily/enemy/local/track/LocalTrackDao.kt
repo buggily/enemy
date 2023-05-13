@@ -6,7 +6,6 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Update
 
 @Dao
 interface LocalTrackDao {
@@ -31,14 +30,40 @@ interface LocalTrackDao {
 
     suspend fun getByPlaylistId(playlistId: Long): List<LocalTrack>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(track: List<LocalTrack>)
+    @Query(
+        """
+            SELECT * FROM ${LocalTrack.TABLE_NAME}
+            WHERE ${LocalTrack.PLAYLIST_ID} = :playlistId AND
+            ${LocalTrack.INDEX} = :index
+        """
+    )
 
-    @Update(onConflict = OnConflictStrategy.REPLACE)
-    fun update(tracks: List<LocalTrack>)
+    suspend fun getByPlaylistIdAndIndex(
+        playlistId: Long,
+        index: Int,
+    ): LocalTrack?
+
+    @Query(
+        """
+            SELECT MAX(${LocalTrack.INDEX}) FROM ${LocalTrack.TABLE_NAME}
+            WHERE ${LocalTrack.PLAYLIST_ID} = :playlistId
+        """
+    )
+
+    suspend fun getMaxIndexByPlaylistId(playlistId: Long): Int?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(track: LocalTrack)
 
     @Delete
-    fun delete(tracks: List<LocalTrack>)
+    suspend fun delete(track: LocalTrack)
 
+    @Query(
+        """
+            DELETE FROM ${LocalTrack.TABLE_NAME}
+            WHERE ${LocalTrack.PLAYLIST_ID} = :playlistId
+        """
+    )
 
+    suspend fun deleteByPlaylistId(playlistId: Long)
 }

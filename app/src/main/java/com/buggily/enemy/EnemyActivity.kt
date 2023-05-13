@@ -52,6 +52,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.concurrent.Executor
 import javax.inject.Inject
+import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -119,12 +120,12 @@ class EnemyActivity : ComponentActivity() {
                 windowSizeClass = windowSizeClass,
             )
 
-            LaunchedEffect(Unit) {
+            LaunchedEffect(navController) {
                 navController.removeOnDestinationChangedListener(destinationChangedListener)
                 navController.addOnDestinationChangedListener(destinationChangedListener)
             }
 
-            LaunchedEffect(Unit) {
+            LaunchedEffect(navigationOrchestrator) {
                 navigationOrchestrator.eventState.flowWithLifecycle(lifecycle).collect {
                     when (it) {
                         is NavigationEventState.Event -> when (val args: NavigationArgs = it.args) {
@@ -132,11 +133,14 @@ class EnemyActivity : ComponentActivity() {
                                 route = args.route,
                                 builder = args.builder,
                             )
+
                             is NavigationArgs.Route.WithoutOptions -> navController.navigate(
                                 route = args.route,
                             )
+
                             is NavigationArgs.Back -> navController.popBackStack()
                         }
+
                         is NavigationEventState.Default -> Unit
                     }
 
@@ -155,9 +159,11 @@ class EnemyActivity : ComponentActivity() {
                         isDynamic = isDynamic,
                         isSystemInDarkTheme = isSystemInDarkTheme,
                     )
+
                     is Theme.Scheme.Light -> EnemyPalette.Theme.Light(
                         isDynamic = isDynamic,
                     )
+
                     is Theme.Scheme.Dark -> EnemyPalette.Theme.Dark(
                         isDynamic = isDynamic,
                     )
@@ -208,6 +214,7 @@ class EnemyActivity : ComponentActivity() {
                 controllerViewModel.setDuration(duration)
                 controllerViewModel.setPosition(currentPosition)
 
+                removeListener(controllerListener)
                 addListener(controllerListener)
             }
         }
@@ -220,11 +227,13 @@ class EnemyActivity : ComponentActivity() {
             requireController().removeListener(controllerListener)
             MediaController.releaseFuture(controllerFuture)
         }
+
+        stopSetPosition()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        releaseSetPosition()
+        destroySetPosition()
     }
 
     private suspend fun onControllerEvent(event: ControllerEventState) {
@@ -238,24 +247,31 @@ class EnemyActivity : ComponentActivity() {
                 prepare()
                 play()
             }
+
             is ControllerEventState.Event.Pause -> {
                 requireController().pause()
             }
+
             is ControllerEventState.Event.Next -> {
                 requireController().seekToNextMediaItem()
             }
+
             is ControllerEventState.Event.Previous -> {
                 requireController().seekToPreviousMediaItem()
             }
+
             is ControllerEventState.Event.Repeat -> {
                 requireController().repeatMode = event.repeatMode
             }
+
             is ControllerEventState.Event.Shuffle -> {
                 requireController().shuffleModeEnabled = event.shuffleMode
             }
+
             is ControllerEventState.Event.Seek -> {
                 requireController().seekTo(event.milliseconds)
             }
+
             is ControllerEventState.Default -> Unit
         }
 
@@ -263,18 +279,20 @@ class EnemyActivity : ComponentActivity() {
     }
 
     private suspend fun requireController(): MediaController = suspendCoroutine {
-        val listener: () -> Unit = {
-            try {
-                it.resume(controllerFuture.get())
-            } catch (e: Exception) {
-                it.resumeWithException(e)
-            }
-        }
-
         controllerFuture.addListener(
-            listener,
+            getRequireControllerListener(it),
             executor,
         )
+    }
+
+    private fun getRequireControllerListener(
+        continuation: Continuation<MediaController>,
+    ): () -> Unit = {
+        try {
+            continuation.resume(controllerFuture.get())
+        } catch (e: Exception) {
+            continuation.resumeWithException(e)
+        }
     }
 
     private val destinationChangedListener: NavController.OnDestinationChangedListener =
@@ -341,22 +359,24 @@ class EnemyActivity : ComponentActivity() {
     }
 
     private fun startSetPosition() {
-        setPosition = lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                while (true) {
-                    controllerViewModel.setPosition(requireController().currentPosition)
-                    delay(timeMillis = 1000)
-                }
-            }
-        }
+        setPosition = lifecycleScope.launch { setPosition() }
     }
 
     private fun stopSetPosition() {
         setPosition?.cancel()
     }
 
-    private fun releaseSetPosition() {
+    private fun destroySetPosition() {
         stopSetPosition()
         setPosition = null
+    }
+
+    private suspend fun setPosition() {
+        repeatOnLifecycle(Lifecycle.State.STARTED) {
+            while (true) {
+                controllerViewModel.setPosition(requireController().currentPosition)
+                delay(timeMillis = 1000)
+            }
+        }
     }
 }

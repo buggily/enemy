@@ -1,5 +1,3 @@
-@file:Suppress("UnstableApiUsage")
-
 pluginManagement {
     includeBuild("builder")
 
@@ -50,6 +48,7 @@ include(":feature:albums")
 include(":feature:album")
 
 include(":feature:tracks")
+include(":feature:track")
 
 include(":feature:playlists")
 include(":feature:playlist")

@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 
 @Entity(
+
     tableName = LocalTrack.TABLE_NAME,
 
     primaryKeys = [

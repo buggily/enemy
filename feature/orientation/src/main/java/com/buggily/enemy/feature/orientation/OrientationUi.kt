@@ -27,7 +27,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import com.buggily.enemy.core.ext.readPermission
-import com.buggily.enemy.core.ui.composable.TextButton
+import com.buggily.enemy.core.ui.ui.TextButton
 import com.buggily.enemy.core.ui.R.dimen as dimens
 
 @Composable

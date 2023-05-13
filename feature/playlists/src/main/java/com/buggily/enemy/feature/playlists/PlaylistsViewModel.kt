@@ -4,7 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.paging.PagingData
 import com.buggily.enemy.core.ui.SearchableViewModel
 import com.buggily.enemy.data.playlist.Playlist
-import com.buggily.enemy.domain.navigation.NavigateFromPlaylistsToPlaylist
+import com.buggily.enemy.domain.navigation.NavigateToPlaylist
+import com.buggily.enemy.domain.navigation.NavigateToPlaylistPicker
 import com.buggily.enemy.domain.playlist.GetPlaylistPaging
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -18,7 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PlaylistsViewModel @Inject constructor(
-    private val navigateFromPlaylistsToPlaylist: NavigateFromPlaylistsToPlaylist,
+    private val navigateToPlaylist: NavigateToPlaylist,
+    private val navigateToPlaylistPicker: NavigateToPlaylistPicker,
     getPlaylistPaging: GetPlaylistPaging,
 ) : ViewModel(), SearchableViewModel {
 
@@ -31,6 +33,7 @@ class PlaylistsViewModel @Inject constructor(
         PlaylistsUiState.default.copy(
             playlistState = PlaylistsUiState.PlaylistState.default.copy(
                 onClick = ::onPlaylistClick,
+                onLongClick = ::onPlaylistLongClick,
             ),
         ).let { _uiState = MutableStateFlow(it) }
 
@@ -49,7 +52,11 @@ class PlaylistsViewModel @Inject constructor(
         it.copy(searchState = it.searchState.copy(value = value))
     }
 
-    private fun onPlaylistClick(playlist: Playlist) = navigateFromPlaylistsToPlaylist(
-        id = playlist.id,
+    private fun onPlaylistClick(playlist: Playlist) = navigateToPlaylist(
+        playlistId = playlist.id,
+    )
+
+    private fun onPlaylistLongClick(playlist: Playlist) = navigateToPlaylistPicker(
+        playlistId = playlist.id,
     )
 }

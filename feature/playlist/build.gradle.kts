@@ -1,6 +1,7 @@
 plugins {
     id("enemy.android.library.compose")
     id("enemy.android.library.feature")
+    id("kotlin-parcelize")
 }
 
 android {
