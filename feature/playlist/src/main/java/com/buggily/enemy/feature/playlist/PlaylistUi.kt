@@ -32,7 +32,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.items
 import com.buggily.enemy.core.ui.LocalWindowSizeClass
 import com.buggily.enemy.core.ui.ext.floatResource
 import com.buggily.enemy.core.ui.ext.nameText
@@ -132,12 +131,12 @@ private fun PlaylistScreenCompact(
             contentPadding = WindowInsets.systemBars.asPaddingValues(),
             modifier = itemModifier.weight(2f),
         ) {
-            items(tracks) {
-                when (it) {
+            items(tracks.itemCount) {
+                when (val trackWithIndex: TrackWithIndex? = tracks[it]) {
                     is TrackWithIndex -> PlaylistTrackItem(
-                        track = it.track,
-                        onClick = { trackState.onClick(it) },
-                        onLongClick = { trackState.onLongClick(it) },
+                        track = trackWithIndex.track,
+                        onClick = { trackState.onClick(trackWithIndex) },
+                        onLongClick = { trackState.onLongClick(trackWithIndex) },
                     )
 
                     else -> Unit
@@ -175,12 +174,12 @@ private fun PlaylistScreenMedium(
                 }
             }
 
-            items(tracks) {
-                when (it) {
+            items(tracks.itemCount) {
+                when (val trackWithIndex: TrackWithIndex? = tracks[it]) {
                     is TrackWithIndex -> PlaylistTrackItem(
-                        track = it.track,
-                        onClick = { trackState.onClick(it) },
-                        onLongClick = { trackState.onLongClick(it) },
+                        track = trackWithIndex.track,
+                        onClick = { trackState.onClick(trackWithIndex) },
+                        onLongClick = { trackState.onLongClick(trackWithIndex) },
                     )
 
                     else -> Unit

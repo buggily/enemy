@@ -17,7 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.items
+import androidx.paging.compose.itemKey
 import com.buggily.enemy.core.ui.ui.playlist.PlaylistItem
 import com.buggily.enemy.data.playlist.Playlist
 import com.buggily.enemy.feature.track.R
@@ -74,14 +74,16 @@ private fun TrackPlaylistPickerDialog(
             }
 
             items(
-                items = playlists,
-                key = { it.id },
+                count = playlists.itemCount,
+                key = playlists.itemKey { it.id },
             ) {
-                when (it) {
+                when (val playlist: Playlist? = playlists[it]) {
                     is Playlist -> PlaylistItem(
-                        playlist = it,
-                        onClick = { playlistState.onClick(it) },
+                        playlist = playlist,
+                        onClick = { playlistState.onClick(playlist) },
                     )
+
+                    else -> Unit
                 }
             }
         }

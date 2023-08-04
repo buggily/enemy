@@ -16,7 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.items
+import androidx.paging.compose.itemKey
 import com.buggily.enemy.core.ui.ui.TrackItem
 import com.buggily.enemy.data.track.Track
 import com.buggily.enemy.feature.tracks.R
@@ -79,14 +79,14 @@ private fun TracksColumn(
         stickyHeader { TracksHeader(Modifier.fillMaxWidth()) }
 
         items(
-            items = tracks,
-            key = { it.id },
+            count = tracks.itemCount,
+            key = tracks.itemKey { it.id },
         ) {
-            when (it) {
+            when (val track: Track? = tracks[it]) {
                 is Track -> TrackItem(
-                    track = it,
-                    onClick = { trackState.onClick(it) },
-                    onLongClick = { trackState.onLongClick(it) },
+                    track = track,
+                    onClick = { trackState.onClick(track) },
+                    onLongClick = { trackState.onLongClick(track) },
                 )
 
                 else -> Unit

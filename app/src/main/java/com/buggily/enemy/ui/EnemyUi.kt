@@ -489,8 +489,11 @@ private fun EnemySearchTextField(
         onValueChange = searchState.onChange,
         label = { BrowseSearchLabel() },
         trailingIcon = { BrowseSearchTrailingIcon(searchState) },
-        colors = TextFieldDefaults.textFieldColors(
-            containerColor = Color.Transparent,
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent,
+            disabledContainerColor = Color.Transparent,
+            errorContainerColor = Color.Transparent,
         ),
         modifier = modifier,
     )
