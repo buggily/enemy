@@ -1,11 +1,11 @@
 package com.buggily.enemy.core.controller
 
 import androidx.media3.common.MediaItem
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.SharedFlow
 
 interface ControllerOrchestratable {
 
-    val eventState: StateFlow<ControllerEventState>
+    val eventState: SharedFlow<ControllerEventState>
 
     fun playItems(
         index: Int,

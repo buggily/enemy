@@ -1,7 +1,6 @@
 package com.buggily.enemy.ui
 
 import android.content.Context
-import android.content.pm.PackageManager
 import androidx.activity.ComponentActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExitTransition
@@ -38,7 +37,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -49,7 +47,6 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.window.DialogProperties
-import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
@@ -58,7 +55,6 @@ import androidx.navigation.compose.dialog
 import com.buggily.enemy.R
 import com.buggily.enemy.controller.ControllerBottomSheet
 import com.buggily.enemy.controller.ControllerScreen
-import com.buggily.enemy.core.ext.readPermission
 import com.buggily.enemy.core.navigation.NavigationDestination
 import com.buggily.enemy.core.ui.GlobalUiState
 import com.buggily.enemy.core.ui.GlobalUiViewModel
@@ -117,7 +113,6 @@ private fun EnemyApp(
         appState = appState,
         hostState = hostState,
         searchState = globalUiState.searchState,
-        orientationState = uiState.orientationState,
         destinationState = uiState.destinationState,
         preferencesState = globalUiState.preferencesState,
         createPlaylistState = globalUiState.createPlaylistState,
@@ -126,33 +121,18 @@ private fun EnemyApp(
     )
 }
 
-@OptIn(
-    ExperimentalLayoutApi::class,
-    ExperimentalMaterial3Api::class,
-)
-
 @Composable
+@OptIn(ExperimentalLayoutApi::class)
 private fun EnemyApp(
     appState: EnemyAppState,
     hostState: SnackbarHostState,
     searchState: GlobalUiState.SearchState,
-    orientationState: EnemyUiState.OrientationState,
     destinationState: EnemyUiState.DestinationState,
     preferencesState: GlobalUiState.PreferencesState,
     createPlaylistState: GlobalUiState.CreatePlaylistState,
     controllerState: GlobalUiState.ControllerState,
     modifier: Modifier = Modifier,
 ) {
-    val permissionResult: Int = ContextCompat.checkSelfPermission(
-        LocalContext.current,
-        readPermission
-    )
-
-    LaunchedEffect(permissionResult) {
-        val isGranted: Boolean = permissionResult == PackageManager.PERMISSION_GRANTED
-        if (!isGranted) orientationState.to()
-    }
-
     Scaffold(
         snackbarHost = { SnackbarHost(hostState) },
         contentWindowInsets = WindowInsets.ZERO,
