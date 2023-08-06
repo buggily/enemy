@@ -16,8 +16,8 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import com.buggily.enemy.core.ui.ui.AlbumItem
-import com.buggily.enemy.core.ui.ext.items
 import com.buggily.enemy.data.album.Album
 import com.buggily.enemy.core.ui.R.dimen as dimens
 
@@ -78,14 +78,16 @@ private fun AlbumsGrid(
         modifier = modifier,
     ) {
         items(
-            items = albums,
-            key = { it.id },
+            count = albums.itemCount,
+            key = albums.itemKey { it.id },
         ) {
-            when (it) {
+            when (val album: Album? = albums[it]) {
                 is Album -> AlbumItem(
-                    album = it,
-                    onClick = { albumState.onClick(it) },
+                    album = album,
+                    onClick = { albumState.onClick(album) },
                 )
+
+                else -> Unit
             }
         }
     }

@@ -6,7 +6,6 @@ import com.buggily.enemy.core.navigation.NavigationDestination
 
 data class EnemyUiState(
     val destinationState: DestinationState,
-    val orientationState: OrientationState,
 ) {
 
     data class DestinationState(
@@ -50,23 +49,10 @@ data class EnemyUiState(
         }
     }
 
-    data class OrientationState(
-        val to: () -> Unit,
-    ) {
-
-        companion object {
-            val default: OrientationState
-                get() = OrientationState(
-                    to = {},
-                )
-        }
-    }
-
     companion object {
         val default: EnemyUiState
             get() = EnemyUiState(
                 destinationState = DestinationState.default,
-                orientationState = OrientationState.default,
             )
     }
 }

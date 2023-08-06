@@ -36,16 +36,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.items
 import com.buggily.enemy.core.ui.LocalWindowSizeClass
-import com.buggily.enemy.core.ui.ui.AlbumTrackItem
-import com.buggily.enemy.core.ui.ui.ArtImage
-import com.buggily.enemy.core.ui.ui.SingleLineText
 import com.buggily.enemy.core.ui.ext.artistText
 import com.buggily.enemy.core.ui.ext.discText
 import com.buggily.enemy.core.ui.ext.floatResource
 import com.buggily.enemy.core.ui.ext.nameText
+import com.buggily.enemy.core.ui.model.PagingPlaceholderKey
 import com.buggily.enemy.core.ui.model.TrackUi
+import com.buggily.enemy.core.ui.ui.AlbumTrackItem
+import com.buggily.enemy.core.ui.ui.ArtImage
+import com.buggily.enemy.core.ui.ui.SingleLineText
 import com.buggily.enemy.data.album.Album
 import com.buggily.enemy.core.ui.R.dimen as dimens
 import com.buggily.enemy.core.ui.R.string as strings
@@ -135,23 +135,24 @@ private fun AlbumScreenCompact(
             modifier = itemModifier.weight(2f),
         ) {
             items(
-                items = tracks,
+                count = tracks.itemCount,
                 key = {
-                    when (it) {
-                        is TrackUi.Item -> it.track.id
-                        is TrackUi.Separator.Disc -> it.disc
+                    when (val track: TrackUi? = tracks[it]) {
+                        is TrackUi.Item -> track.track.id
+                        is TrackUi.Separator.Disc -> track.disc
+                        else -> PagingPlaceholderKey(it)
                     }
                 },
             ) {
-                when (it) {
+                when (val track: TrackUi? = tracks[it]) {
                     is TrackUi.Item -> AlbumTrackItem(
-                        track = it.track,
-                        onClick = { trackState.onClick(it.track) },
-                        onLongClick = { trackState.onLongClick(it.track) },
+                        track = track.track,
+                        onClick = { trackState.onClick(track.track) },
+                        onLongClick = { trackState.onLongClick(track.track) },
                     )
 
                     is TrackUi.Separator.Disc -> AlbumDiscItem(
-                        trackSeparator = it,
+                        trackSeparator = track,
                         modifier = Modifier.fillMaxWidth(),
                     )
 
@@ -188,23 +189,24 @@ private fun AlbumScreenMedium(
         }
 
         items(
-            items = tracks,
+            count = tracks.itemCount,
             key = {
-                when (it) {
-                    is TrackUi.Item -> it.track.id
-                    is TrackUi.Separator.Disc -> it.disc
+                when (val track: TrackUi? = tracks[it]) {
+                    is TrackUi.Item -> track.track.id
+                    is TrackUi.Separator.Disc -> track.disc
+                    else -> PagingPlaceholderKey(it)
                 }
             },
         ) {
-            when (it) {
+            when (val track: TrackUi? = tracks[it]) {
                 is TrackUi.Item -> AlbumTrackItem(
-                    track = it.track,
-                    onClick = { trackState.onClick(it.track) },
-                    onLongClick = { trackState.onLongClick(it.track) },
+                    track = track.track,
+                    onClick = { trackState.onClick(track.track) },
+                    onLongClick = { trackState.onLongClick(track.track) },
                 )
 
                 is TrackUi.Separator.Disc -> AlbumDiscItem(
-                    trackSeparator = it,
+                    trackSeparator = track,
                     modifier = Modifier.fillMaxWidth(),
                 )
 

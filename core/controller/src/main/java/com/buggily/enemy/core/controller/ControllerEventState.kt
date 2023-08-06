@@ -4,70 +4,30 @@ import androidx.media3.common.MediaItem
 
 sealed class ControllerEventState {
 
-    object Default : ControllerEventState()
+    sealed class Play : ControllerEventState() {
 
-    sealed class Event(
-        open val onEvent: () -> Unit,
-    ) : ControllerEventState() {
+        data class With(
+            val index: Int,
+            val items: List<MediaItem>,
+        ) : Play()
 
-        sealed class Play(
-            override val onEvent: () -> Unit,
-        ) : Event(
-            onEvent = onEvent,
-        ) {
-
-            data class With(
-                val index: Int,
-                val items: List<MediaItem>,
-                override val onEvent: () -> Unit,
-            ) : Play(
-                onEvent = onEvent,
-            )
-
-            data class Without(
-                override val onEvent: () -> Unit,
-            ) : Play(
-                onEvent = onEvent,
-            )
-        }
-
-        data class Pause(
-            override val onEvent: () -> Unit,
-        ) : Event(
-            onEvent = onEvent,
-        )
-
-        data class Previous(
-            override val onEvent: () -> Unit,
-        ) : Event(
-            onEvent = onEvent,
-        )
-
-        data class Next(
-            override val onEvent: () -> Unit,
-        ) : Event(
-            onEvent = onEvent,
-        )
-
-        data class Repeat(
-            val repeatMode: Int,
-            override val onEvent: () -> Unit,
-        ) : Event(
-            onEvent = onEvent
-        )
-
-        data class Shuffle(
-            val shuffleMode: Boolean,
-            override val onEvent: () -> Unit,
-        ) : Event(
-            onEvent = onEvent,
-        )
-
-        data class Seek(
-            val milliseconds: Long,
-            override val onEvent: () -> Unit,
-        ) : Event(
-            onEvent = onEvent,
-        )
+        object Without : Play()
     }
+
+    object Pause : ControllerEventState()
+
+    object Next : ControllerEventState()
+    object Previous : ControllerEventState()
+
+    data class Repeat(
+        val repeatMode: Int,
+    ) : ControllerEventState()
+
+    data class Shuffle(
+        val shuffleMode: Boolean,
+    ) : ControllerEventState()
+
+    data class Seek(
+        val milliseconds: Long,
+    ) : ControllerEventState()
 }

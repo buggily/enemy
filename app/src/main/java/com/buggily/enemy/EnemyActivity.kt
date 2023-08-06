@@ -1,5 +1,6 @@
 package com.buggily.enemy
 
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,6 +14,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -34,8 +36,9 @@ import androidx.navigation.compose.rememberNavController
 import com.buggily.enemy.controller.ControllerViewModel
 import com.buggily.enemy.core.controller.ControllerEventState
 import com.buggily.enemy.core.controller.ControllerOrchestratable
+import com.buggily.enemy.core.ext.readPermission
 import com.buggily.enemy.core.navigation.NavigationArgs
-import com.buggily.enemy.core.navigation.NavigationEventState
+import com.buggily.enemy.core.navigation.NavigationDestination
 import com.buggily.enemy.core.navigation.NavigationOrchestratable
 import com.buggily.enemy.data.theme.Theme
 import com.buggily.enemy.di.DirectExecutorQualifier
@@ -121,30 +124,42 @@ class EnemyActivity : ComponentActivity() {
             )
 
             LaunchedEffect(navController) {
+                val permissionResult: Int = ContextCompat.checkSelfPermission(
+                    this@EnemyActivity,
+                    readPermission
+                )
+
                 navController.removeOnDestinationChangedListener(destinationChangedListener)
                 navController.addOnDestinationChangedListener(destinationChangedListener)
+
+                val isGranted: Boolean = permissionResult == PackageManager.PERMISSION_GRANTED
+                if (isGranted) return@LaunchedEffect
+
+                navController.navigate(NavigationDestination.Orientation.route) {
+                    launchSingleTop = true
+                    restoreState = false
+
+                    popUpTo(NavigationDestination.startDestination.route) {
+                        saveState = false
+                        inclusive = true
+                    }
+                }
             }
 
             LaunchedEffect(navigationOrchestrator) {
                 navigationOrchestrator.eventState.flowWithLifecycle(lifecycle).collect {
-                    when (it) {
-                        is NavigationEventState.Event -> when (val args: NavigationArgs = it.args) {
-                            is NavigationArgs.Route.WithOptions -> navController.navigate(
-                                route = args.route,
-                                builder = args.builder,
-                            )
+                    when (val args: NavigationArgs = it.args) {
+                        is NavigationArgs.Route.WithOptions -> navController.navigate(
+                            route = args.route,
+                            builder = args.builder,
+                        )
 
-                            is NavigationArgs.Route.WithoutOptions -> navController.navigate(
-                                route = args.route,
-                            )
+                        is NavigationArgs.Route.WithoutOptions -> navController.navigate(
+                            route = args.route,
+                        )
 
-                            is NavigationArgs.Back -> navController.popBackStack()
-                        }
-
-                        is NavigationEventState.Default -> Unit
+                        is NavigationArgs.Back -> navController.popBackStack()
                     }
-
-                    if (it is NavigationEventState.Event) it.onEvent()
                 }
             }
 
@@ -238,8 +253,8 @@ class EnemyActivity : ComponentActivity() {
 
     private suspend fun onControllerEvent(event: ControllerEventState) {
         when (event) {
-            is ControllerEventState.Event.Play -> with(requireController()) {
-                if (event is ControllerEventState.Event.Play.With) {
+            is ControllerEventState.Play -> with(requireController()) {
+                if (event is ControllerEventState.Play.With) {
                     setMediaItems(event.items)
                     seekToDefaultPosition(event.index)
                 }
@@ -248,34 +263,32 @@ class EnemyActivity : ComponentActivity() {
                 play()
             }
 
-            is ControllerEventState.Event.Pause -> {
+            is ControllerEventState.Pause -> {
                 requireController().pause()
             }
 
-            is ControllerEventState.Event.Next -> {
+            is ControllerEventState.Next -> {
                 requireController().seekToNextMediaItem()
+                setPosition()
             }
 
-            is ControllerEventState.Event.Previous -> {
+            is ControllerEventState.Previous -> {
                 requireController().seekToPreviousMediaItem()
+                setPosition()
             }
 
-            is ControllerEventState.Event.Repeat -> {
+            is ControllerEventState.Repeat -> {
                 requireController().repeatMode = event.repeatMode
             }
 
-            is ControllerEventState.Event.Shuffle -> {
+            is ControllerEventState.Shuffle -> {
                 requireController().shuffleModeEnabled = event.shuffleMode
             }
 
-            is ControllerEventState.Event.Seek -> {
+            is ControllerEventState.Seek -> {
                 requireController().seekTo(event.milliseconds)
             }
-
-            is ControllerEventState.Default -> Unit
         }
-
-        if (event is ControllerEventState.Event) event.onEvent()
     }
 
     private suspend fun requireController(): MediaController = suspendCoroutine {
@@ -359,7 +372,14 @@ class EnemyActivity : ComponentActivity() {
     }
 
     private fun startSetPosition() {
-        setPosition = lifecycleScope.launch { setPosition() }
+        setPosition = lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                while (true) {
+                    setPosition()
+                    delay(timeMillis = 1000)
+                }
+            }
+        }
     }
 
     private fun stopSetPosition() {
@@ -372,11 +392,6 @@ class EnemyActivity : ComponentActivity() {
     }
 
     private suspend fun setPosition() {
-        repeatOnLifecycle(Lifecycle.State.STARTED) {
-            while (true) {
-                controllerViewModel.setPosition(requireController().currentPosition)
-                delay(timeMillis = 1000)
-            }
-        }
+        controllerViewModel.setPosition(requireController().currentPosition)
     }
 }
