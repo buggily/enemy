@@ -29,19 +29,22 @@ class GlobalUiViewModel @Inject constructor(
     val search: StateFlow<String>
 
     init {
-        GlobalUiState.default.copy(
-            searchState = GlobalUiState.SearchState.default.copy(
+        GlobalUiState(
+            searchState = GlobalUiState.SearchState(
+                value = String(),
+                isVisible = false,
+
                 onClick = ::onSearchClick,
                 onChange = ::onSearchChange,
                 onClear = ::onSearchClear,
             ),
-            createPlaylistState = GlobalUiState.CreatePlaylistState.default.copy(
+            createPlaylistState = GlobalUiState.CreatePlaylistState(
                 to = ::toCreatePlaylist,
             ),
-            preferencesState = GlobalUiState.PreferencesState.default.copy(
+            preferencesState = GlobalUiState.PreferencesState(
                 to = ::toPreferences,
             ),
-            controllerState = GlobalUiState.ControllerState.default.copy(
+            controllerState = GlobalUiState.ControllerState(
                 to = ::toController,
             ),
         ).let { _uiState = MutableStateFlow(it) }
@@ -53,7 +56,7 @@ class GlobalUiViewModel @Inject constructor(
         search = searchState.map { it.value }.debounce(1000).stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(),
-            initialValue = GlobalUiState.SearchState.default.value,
+            initialValue = String(),
         )
     }
 
@@ -75,16 +78,16 @@ class GlobalUiViewModel @Inject constructor(
 
     private fun onSearchClear() = _uiState.update {
         val searchState: GlobalUiState.SearchState = it.searchState.copy(
-            value = GlobalUiState.SearchState.default.value,
+            value = String(),
             isVisible = !it.searchState.isVisible,
         )
 
         it.copy(searchState = searchState)
     }
 
-    private fun toCreatePlaylist() = uiState.value.let {
-        navigateToCreatePlaylist(name = it.searchState.value)
-    }
+    private fun toCreatePlaylist() = navigateToCreatePlaylist(
+        name = uiState.value.searchState.value,
+    )
 
     private fun toPreferences() = navigateToPreferences()
     private fun toController() = navigateToController()

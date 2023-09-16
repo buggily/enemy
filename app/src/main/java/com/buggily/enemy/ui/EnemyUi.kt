@@ -459,7 +459,6 @@ private fun EnemyBottomBarSearch(
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
 private fun EnemySearchTextField(
     searchState: GlobalUiState.SearchState,
     modifier: Modifier = Modifier,

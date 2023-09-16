@@ -8,18 +8,5 @@ data class TrackPlaylistPickerUiState(
 
     data class PlaylistState(
         val onClick: (Playlist) -> Unit,
-    ) {
-
-        companion object {
-            val default: PlaylistState
-                get() = PlaylistState {}
-        }
-    }
-
-    companion object {
-        val default: TrackPlaylistPickerUiState
-            get() = TrackPlaylistPickerUiState(
-                playlistState = PlaylistState.default,
-            )
-    }
+    )
 }

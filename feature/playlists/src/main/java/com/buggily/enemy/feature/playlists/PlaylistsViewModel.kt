@@ -30,10 +30,13 @@ class PlaylistsViewModel @Inject constructor(
     val playlists: Flow<PagingData<Playlist>>
 
     init {
-        PlaylistsUiState.default.copy(
-            playlistState = PlaylistsUiState.PlaylistState.default.copy(
+        PlaylistsUiState(
+            playlistState = PlaylistsUiState.PlaylistState(
                 onClick = ::onPlaylistClick,
                 onLongClick = ::onPlaylistLongClick,
+            ),
+            searchState = PlaylistsUiState.SearchState(
+                value = String(),
             ),
         ).let { _uiState = MutableStateFlow(it) }
 

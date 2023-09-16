@@ -9,35 +9,10 @@ data class TracksUiState(
 
     data class SearchState(
         val value: String,
-    ) {
-
-        companion object {
-            val default: SearchState
-                get() = SearchState(
-                    value = String(),
-                )
-        }
-    }
+    )
 
     data class TrackState(
         val onClick: (Track) -> Unit,
         val onLongClick: (Track) -> Unit,
-    ) {
-
-        companion object {
-            val default: TrackState
-                get() = TrackState(
-                    onClick = {},
-                    onLongClick = {},
-                )
-        }
-    }
-
-    companion object {
-        val default: TracksUiState
-            get() = TracksUiState(
-                trackState = TrackState.default,
-                searchState = SearchState.default,
-            )
-    }
+    )
 }

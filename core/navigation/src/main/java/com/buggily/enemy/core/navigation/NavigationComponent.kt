@@ -2,23 +2,16 @@ package com.buggily.enemy.core.navigation
 
 import androidx.navigation.NavType
 
-sealed class NavigationComponent(
-    open val name: String,
-) {
+sealed interface NavigationComponent {
 
-    abstract val value: String
+    val name: String
+    val value: String
 
-    sealed class Path(
-        override val name: String,
-    ) : NavigationComponent(
-        name = name,
-    ) {
+    sealed interface Path : NavigationComponent {
 
         data class Static(
             override val name: String,
-        ) : Path(
-            name = name,
-        ) {
+        ) : Path {
 
             override val value: String
                 get() = name
@@ -27,9 +20,7 @@ sealed class NavigationComponent(
         data class Dynamic(
             override val name: String,
             override val type: NavType<*>,
-        ) : Path(
-            name = name,
-        ), Arguable {
+        ) : Path, Arguable {
 
             override val value: String
                 get() = "{$name}"
@@ -43,9 +34,7 @@ sealed class NavigationComponent(
         override val name: String,
         override val type: NavType<*>,
         override val nullable: Boolean = false,
-    ) : NavigationComponent(
-        name = name,
-    ), Arguable {
+    ) : NavigationComponent, Arguable {
 
         override val value: String
             get() = "$name={$name}"

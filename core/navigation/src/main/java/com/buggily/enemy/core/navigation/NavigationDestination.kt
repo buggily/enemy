@@ -5,10 +5,10 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 
-sealed class NavigationDestination {
+sealed interface NavigationDestination {
 
-    abstract val paths: List<NavigationComponent.Path>
-    abstract val queries: List<NavigationComponent.Query>
+    val paths: List<NavigationComponent.Path>
+    val queries: List<NavigationComponent.Query>
 
     private val dynamicPaths: List<NavigationComponent.Path.Dynamic>
         get() = paths.filterIsInstance(NavigationComponent.Path.Dynamic::class.java)
@@ -50,7 +50,7 @@ sealed class NavigationDestination {
         return route
     }
 
-    object Orientation : NavigationDestination() {
+    data object Orientation : NavigationDestination {
 
         override val paths: List<NavigationComponent.Path>
             get() = listOf(NavigationComponent.Path.Static(orientation))
@@ -61,7 +61,7 @@ sealed class NavigationDestination {
         private const val orientation = "orientation"
     }
 
-    object Browse : NavigationDestination() {
+    data object Browse : NavigationDestination {
 
         override val paths: List<NavigationComponent.Path>
             get() = listOf(NavigationComponent.Path.Static(browse))
@@ -72,7 +72,7 @@ sealed class NavigationDestination {
         private const val browse = "browse"
     }
 
-    object Album : NavigationDestination() {
+    data object Album : NavigationDestination {
 
         override val paths: List<NavigationComponent.Path>
             get() = listOf(
@@ -101,7 +101,7 @@ sealed class NavigationDestination {
                 NavigationComponent.Path.Dynamic(trackId, NavType.LongType),
             )
 
-        object Picker : NavigationDestination() {
+        data object Picker : NavigationDestination {
 
             override val paths: List<NavigationComponent.Path>
                 get() = Track.paths + listOf(NavigationComponent.Path.Static(picker))
@@ -119,7 +119,7 @@ sealed class NavigationDestination {
             const val trackId = Track.trackId
         }
 
-        object PlaylistPicker : NavigationDestination() {
+        data object PlaylistPicker : NavigationDestination {
 
             override val paths: List<NavigationComponent.Path>
                 get() = Track.paths + listOf(NavigationComponent.Path.Static(playlist))
@@ -141,7 +141,7 @@ sealed class NavigationDestination {
         const val trackId = "trackId"
     }
 
-    object Playlist : NavigationDestination() {
+    data object Playlist : NavigationDestination {
 
         override val paths: List<NavigationComponent.Path>
             get() = listOf(
@@ -158,7 +158,7 @@ sealed class NavigationDestination {
             Playlist.playlistId to playlistId,
         )
 
-        object Create : NavigationDestination() {
+        data object Create : NavigationDestination {
 
             override val paths: List<NavigationComponent.Path>
                 get() = listOf(
@@ -179,7 +179,7 @@ sealed class NavigationDestination {
             const val name = "name"
         }
 
-        object Picker : NavigationDestination() {
+        data object Picker : NavigationDestination {
 
             override val paths: List<NavigationComponent.Path>
                 get() = Playlist.paths + listOf(NavigationComponent.Path.Static(picker))
@@ -197,7 +197,7 @@ sealed class NavigationDestination {
             const val playlistId = "playlistId"
         }
 
-        object TrackPicker : NavigationDestination() {
+        data object TrackPicker : NavigationDestination {
 
             override val paths: List<NavigationComponent.Path>
                 get() = Playlist.paths + listOf(
@@ -225,7 +225,7 @@ sealed class NavigationDestination {
         const val playlistId = "playlistId"
     }
 
-    object Preferences : NavigationDestination() {
+    data object Preferences : NavigationDestination {
 
         override val paths: List<NavigationComponent.Path>
             get() = listOf(NavigationComponent.Path.Static(preferences))
@@ -236,7 +236,7 @@ sealed class NavigationDestination {
         private const val preferences = "preferences"
     }
 
-    object Controller : NavigationDestination() {
+    data object Controller : NavigationDestination {
 
         override val paths: List<NavigationComponent.Path>
             get() = listOf(NavigationComponent.Path.Static(controller))
@@ -256,19 +256,18 @@ sealed class NavigationDestination {
             it.route == destination?.route
         }
 
-        private val values: List<NavigationDestination>
-            get() = listOf(
-                Orientation,
-                Browse,
-                Album,
-                Track.Picker,
-                Track.PlaylistPicker,
-                Playlist,
-                Playlist.Create,
-                Playlist.Picker,
-                Playlist.TrackPicker,
-                Preferences,
-                Controller,
-            )
+        private val values: List<NavigationDestination> = listOf(
+            Orientation,
+            Browse,
+            Album,
+            Track.Picker,
+            Track.PlaylistPicker,
+            Playlist,
+            Playlist.Create,
+            Playlist.Picker,
+            Playlist.TrackPicker,
+            Preferences,
+            Controller,
+        )
     }
 }

@@ -11,8 +11,10 @@ class BrowseViewModel : ViewModel() {
     val uiState: StateFlow<BrowseUiState> get() = _uiState
 
     init {
-        BrowseUiState.default.copy(
-            tabState = BrowseUiState.TabState.default.copy(
+        BrowseUiState(
+            tabState = BrowseUiState.TabState(
+                tab = BrowseUiState.TabState.Tab.Albums,
+                tabs = BrowseUiState.TabState.Tab.values,
                 onClick = ::onTabClick,
             ),
         ).let { _uiState = MutableStateFlow(it) }

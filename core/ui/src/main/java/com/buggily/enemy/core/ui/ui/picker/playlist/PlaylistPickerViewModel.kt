@@ -32,7 +32,7 @@ class PlaylistPickerViewModel @Inject constructor(
         val playlistIdKey: String = NavigationDestination.Playlist.Picker.playlistId
         playlistId = checkNotNull(savedStateHandle[playlistIdKey])
 
-        PickerUiState.default.copy(
+        PickerUiState(
             values = PlaylistPicker.values,
             onClick = ::onPickerClick,
         ).let { _uiState = MutableStateFlow(it) }

@@ -16,13 +16,24 @@ import javax.inject.Inject
 @HiltViewModel
 class EnemyViewModel @Inject constructor(getTheme: GetTheme) : ViewModel() {
 
-    private val _uiState: MutableStateFlow<EnemyUiState> = MutableStateFlow(EnemyUiState.default)
+    private val _uiState: MutableStateFlow<EnemyUiState>
     val uiState: StateFlow<EnemyUiState> get() = _uiState
+
+    init {
+        EnemyUiState(
+            destinationState = EnemyUiState.DestinationState(
+                destination = null,
+            ),
+        ).let { _uiState = MutableStateFlow(it) }
+    }
 
     val theme: StateFlow<Theme> = getTheme().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(),
-        initialValue = Theme.default,
+        initialValue = Theme(
+            scheme = Theme.Scheme.Default,
+            dynamic = Theme.Dynamic.On,
+        ),
     )
 
     fun onDestinationChange(destination: NavDestination) = _uiState.update {

@@ -36,12 +36,13 @@ class CreatePlaylistViewModel @Inject constructor(
         val playlistNameKey: String = NavigationDestination.Playlist.Create.name
         val playlistName: String = checkNotNull(savedStateHandle[playlistNameKey])
 
-        CreatePlaylistUiState.default.copy(
-            nameState = CreatePlaylistUiState.NameState.default.copy(
+        CreatePlaylistUiState(
+            nameState = CreatePlaylistUiState.NameState(
                 value = playlistName,
                 onChange = ::onNameChange,
             ),
-            confirmState = CreatePlaylistUiState.ConfirmState.default.copy(
+            confirmState = CreatePlaylistUiState.ConfirmState(
+                isEnabled = false,
                 onClick = ::onConfirmClick,
             ),
         ).let { _uiState = MutableStateFlow(it) }
@@ -58,7 +59,7 @@ class CreatePlaylistViewModel @Inject constructor(
             isConfirmEnabled.stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(),
-                initialValue = CreatePlaylistUiState.ConfirmState.default.isEnabled,
+                initialValue = false,
             ).collectLatest { setIsConfirmStateEnabled(it) }
         }
     }

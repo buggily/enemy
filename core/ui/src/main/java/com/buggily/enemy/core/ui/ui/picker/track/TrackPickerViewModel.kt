@@ -27,7 +27,7 @@ class TrackPickerViewModel @Inject constructor(
         val trackIdKey: String = NavigationDestination.Track.Picker.trackId
         trackId = checkNotNull(savedStateHandle[trackIdKey])
 
-        PickerUiState.default.copy(
+        PickerUiState(
             values = TrackPicker.values,
             onClick = ::onPickerClick,
         ).let { _uiState = MutableStateFlow(it) }

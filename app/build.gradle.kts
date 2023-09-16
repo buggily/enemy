@@ -1,4 +1,4 @@
-@file:Suppress("UnstableApiUsage")
+import java.util.Properties
 
 plugins {
     id("enemy.android.application")
@@ -19,8 +19,23 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    val keyStorePropertiesFile: File = rootProject.file("keystore.properties")
+    val keyStoreProperties: Properties = Properties().apply {
+        load(keyStorePropertiesFile.inputStream())
+    }
+
+    signingConfigs {
+        create("release") {
+            storeFile = file(keyStoreProperties.getProperty("storeFileName"))
+            storePassword = keyStoreProperties.getProperty("storePassword")
+
+            keyAlias = keyStoreProperties.getProperty("keyAlias")
+            keyPassword = keyStoreProperties.getProperty("keyPassword")
+        }
+    }
+
     buildTypes {
-        release {
+        getByName("release") {
             isMinifyEnabled = true
             isShrinkResources = true
 
@@ -28,6 +43,10 @@ android {
                 getDefaultProguardFile("proguard-android.txt"),
                 "proguard-rules.pro",
             )
+        }
+
+        forEach {
+            it.signingConfig = signingConfigs.getByName(it.name)
         }
     }
 

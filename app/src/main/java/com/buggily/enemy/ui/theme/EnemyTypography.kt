@@ -8,7 +8,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import com.buggily.enemy.R
 
-private val ProductSans = FontFamily(
+private val productSans = FontFamily(
     Font(
         resId = R.font.product_sans,
         weight = FontWeight.Normal,
@@ -37,20 +37,20 @@ private val ProductSans = FontFamily(
 
 val Typography: Typography = with(Typography()) {
     copy(
-        displayLarge = displayLarge.copy(fontFamily = ProductSans),
-        displayMedium = displayMedium.copy(fontFamily = ProductSans),
-        displaySmall = displaySmall.copy(fontFamily = ProductSans),
-        headlineLarge = headlineLarge.copy(fontFamily = ProductSans),
-        headlineMedium = headlineMedium.copy(fontFamily = ProductSans),
-        headlineSmall = headlineSmall.copy(fontFamily = ProductSans),
-        titleLarge = titleLarge.copy(fontFamily = ProductSans),
-        titleMedium = titleMedium.copy(fontFamily = ProductSans),
-        titleSmall = titleSmall.copy(fontFamily = ProductSans),
-        bodyLarge = bodyLarge.copy(fontFamily = ProductSans),
-        bodyMedium = bodyMedium.copy(fontFamily = ProductSans),
-        bodySmall = bodySmall.copy(fontFamily = ProductSans),
-        labelLarge = labelLarge.copy(fontFamily = ProductSans),
-        labelMedium = labelMedium.copy(fontFamily = ProductSans),
-        labelSmall = labelSmall.copy(fontFamily = ProductSans),
+        displayLarge = displayLarge.copy(fontFamily = productSans),
+        displayMedium = displayMedium.copy(fontFamily = productSans),
+        displaySmall = displaySmall.copy(fontFamily = productSans),
+        headlineLarge = headlineLarge.copy(fontFamily = productSans),
+        headlineMedium = headlineMedium.copy(fontFamily = productSans),
+        headlineSmall = headlineSmall.copy(fontFamily = productSans),
+        titleLarge = titleLarge.copy(fontFamily = productSans),
+        titleMedium = titleMedium.copy(fontFamily = productSans),
+        titleSmall = titleSmall.copy(fontFamily = productSans),
+        bodyLarge = bodyLarge.copy(fontFamily = productSans),
+        bodyMedium = bodyMedium.copy(fontFamily = productSans),
+        bodySmall = bodySmall.copy(fontFamily = productSans),
+        labelLarge = labelLarge.copy(fontFamily = productSans),
+        labelMedium = labelMedium.copy(fontFamily = productSans),
+        labelSmall = labelSmall.copy(fontFamily = productSans),
     )
 }
