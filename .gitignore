@@ -3,6 +3,7 @@
 build
 captures
 local.properties
+keystore.properties
 
 .idea/*
 

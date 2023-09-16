@@ -14,10 +14,9 @@ data class DurationWithMetadata(
         get() = value.inWholeSeconds
 
     companion object {
-        val default: DurationWithMetadata
-            get() = DurationWithMetadata(
-                text = String(),
-                value = Duration.ZERO,
-            )
+        val ZERO: DurationWithMetadata = DurationWithMetadata(
+            text = String(),
+            value = Duration.ZERO,
+        )
     }
 }

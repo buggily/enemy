@@ -1,6 +1,7 @@
 package com.buggily.enemy
 
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -88,15 +89,7 @@ class EnemyActivity : ComponentActivity() {
         installSplashScreen()
         super.onCreate(savedInstanceState)
 
-        WindowCompat.setDecorFitsSystemWindows(
-            window,
-            false
-        )
-
-        val insetsController = WindowInsetsControllerCompat(
-            window,
-            window.decorView
-        )
+        setupWindow()
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -140,13 +133,13 @@ class EnemyActivity : ComponentActivity() {
                     restoreState = false
 
                     popUpTo(NavigationDestination.startDestination.route) {
-                        saveState = false
                         inclusive = true
+                        saveState = false
                     }
                 }
             }
 
-            LaunchedEffect(navigationOrchestrator) {
+            LaunchedEffect(navController, navigationOrchestrator) {
                 navigationOrchestrator.eventState.flowWithLifecycle(lifecycle).collect {
                     when (val args: NavigationArgs = it.args) {
                         is NavigationArgs.Route.WithOptions -> navController.navigate(
@@ -166,7 +159,7 @@ class EnemyActivity : ComponentActivity() {
             val isSystemInDarkTheme: Boolean = isSystemInDarkTheme()
             val theme: Theme by viewModel.theme.collectAsStateWithLifecycle()
 
-            val paletteTheme: EnemyPalette.Theme = remember(theme) {
+            val paletteTheme: EnemyPalette.Theme = remember(isSystemInDarkTheme, theme) {
                 val isDynamic: Boolean = theme.dynamic is Theme.Dynamic.On
 
                 when (theme.scheme) {
@@ -185,14 +178,8 @@ class EnemyActivity : ComponentActivity() {
                 }
             }
 
-            val palette: EnemyPalette = remember(paletteTheme) { EnemyPalette(paletteTheme) }
-            val isLight: Boolean = remember(palette) { palette.isLight }
-
-            LaunchedEffect(isLight) {
-                with(insetsController) {
-                    isAppearanceLightStatusBars = isLight
-                    isAppearanceLightNavigationBars = isLight
-                }
+            val palette: EnemyPalette = remember(paletteTheme) {
+                EnemyPalette(paletteTheme)
             }
 
             EnemyTheme(palette) {
@@ -249,6 +236,30 @@ class EnemyActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
         destroySetPosition()
+    }
+
+    private fun setupWindow() {
+        WindowCompat.setDecorFitsSystemWindows(
+            window,
+            false
+        )
+
+        val insetsController = WindowInsetsControllerCompat(
+            window,
+            window.decorView
+        )
+
+        val uiMode: Int = resources.configuration.uiMode
+        val isLight: Boolean = when (uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+            Configuration.UI_MODE_NIGHT_NO,
+            Configuration.UI_MODE_NIGHT_UNDEFINED -> true
+            else -> false
+        }
+
+        with(insetsController) {
+            isAppearanceLightStatusBars = isLight
+            isAppearanceLightNavigationBars = isLight
+        }
     }
 
     private suspend fun onControllerEvent(event: ControllerEventState) {

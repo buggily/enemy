@@ -32,8 +32,8 @@ class OrientationViewModel @Inject constructor(
         get() = _eventState
 
     init {
-        OrientationUiState.default.copy(
-            permissionState = OrientationUiState.PermissionState.default.copy(
+        OrientationUiState(
+            permissionState = OrientationUiState.PermissionState.Default(
                 onClick = ::onResultCheck,
             ),
         ).let { _uiState = MutableStateFlow(it) }

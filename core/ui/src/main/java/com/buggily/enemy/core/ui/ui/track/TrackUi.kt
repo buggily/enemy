@@ -1,4 +1,4 @@
-package com.buggily.enemy.core.ui.ui
+package com.buggily.enemy.core.ui.ui.track
 
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.runtime.Composable
@@ -8,6 +8,9 @@ import com.buggily.enemy.core.ui.ext.artistText
 import com.buggily.enemy.core.ui.ext.durationText
 import com.buggily.enemy.core.ui.ext.nameText
 import com.buggily.enemy.core.ui.ext.trackText
+import com.buggily.enemy.core.ui.ui.ItemRow
+import com.buggily.enemy.core.ui.ui.ItemTextMajor
+import com.buggily.enemy.core.ui.ui.ItemTextMinor
 import com.buggily.enemy.data.track.Track
 
 @Composable

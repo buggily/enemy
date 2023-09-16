@@ -1,4 +1,4 @@
-package com.buggily.enemy.core.ui.ui
+package com.buggily.enemy.core.ui.ui.album
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,6 +12,10 @@ import androidx.compose.ui.text.style.TextAlign
 import com.buggily.enemy.core.ui.R
 import com.buggily.enemy.core.ui.ext.artistText
 import com.buggily.enemy.core.ui.ext.nameText
+import com.buggily.enemy.core.ui.ui.ArtImage
+import com.buggily.enemy.core.ui.ui.ItemCell
+import com.buggily.enemy.core.ui.ui.ItemTextMajor
+import com.buggily.enemy.core.ui.ui.ItemTextMinor
 import com.buggily.enemy.data.album.Album
 
 @Composable

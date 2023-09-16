@@ -37,7 +37,7 @@ class PlaylistTrackPickerViewModel @Inject constructor(
         playlistId = checkNotNull(savedStateHandle[playlistIdKey])
         trackIndex = checkNotNull(savedStateHandle[trackIndexKey])
 
-        PickerUiState.default.copy(
+        PickerUiState(
             values = PlaylistTrackPicker.values,
             onClick = ::onPickerClick,
         ).let { _uiState = MutableStateFlow(it) }

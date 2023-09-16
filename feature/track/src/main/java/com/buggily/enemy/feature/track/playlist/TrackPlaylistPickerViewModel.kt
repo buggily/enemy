@@ -38,8 +38,8 @@ class TrackPlaylistPickerViewModel @Inject constructor(
         val trackIdKey: String = NavigationDestination.Track.PlaylistPicker.trackId
         trackId = checkNotNull(savedStateHandle[trackIdKey])
 
-        TrackPlaylistPickerUiState.default.copy(
-            playlistState = TrackPlaylistPickerUiState.PlaylistState.default.copy(
+        TrackPlaylistPickerUiState(
+            playlistState = TrackPlaylistPickerUiState.PlaylistState(
                 onClick = ::onPlaylistClick,
             ),
         ).let { _uiState = MutableStateFlow(it) }

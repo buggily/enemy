@@ -30,10 +30,13 @@ class AlbumsViewModel @Inject constructor(
     val albums: Flow<PagingData<Album>>
 
     init {
-        AlbumsUiState.default.copy(
-            albumState = AlbumsUiState.AlbumState.default.copy(
+        AlbumsUiState(
+            albumState = AlbumsUiState.AlbumState(
                 onClick = ::onAlbumClick,
-            )
+            ),
+            searchState = AlbumsUiState.SearchState(
+                value = String(),
+            ),
         ).let { _uiState = MutableStateFlow(it) }
 
         val searchState: Flow<AlbumsUiState.SearchState> = uiState.map {

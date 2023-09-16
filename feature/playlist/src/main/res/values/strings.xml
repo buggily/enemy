@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-
-    <string name="create_playlist">create playlist</string>
-    <string name="create_playlist_name">name</string>
-    <string name="create_playlist_confirm">confirm</string>
-</resources>

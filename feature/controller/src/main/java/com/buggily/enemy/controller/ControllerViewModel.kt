@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.session.MediaController
 import com.buggily.core.domain.GetDurationWithMetadata
+import com.buggily.enemy.core.data.DurationWithMetadata
 import com.buggily.enemy.domain.controller.Next
 import com.buggily.enemy.domain.controller.Pause
 import com.buggily.enemy.domain.controller.Play
@@ -43,23 +44,32 @@ class ControllerViewModel @Inject constructor(
     val isPlaying: StateFlow<Boolean>
 
     init {
-        ControllerUiState.default.copy(
-            playState = ControllerUiState.PlayState.default.copy(
+        ControllerUiState(
+            mediaItem = null,
+            playState = ControllerUiState.PlayState(
+                state = ControllerUiState.PlayState.State.Default,
+                isPlaying = false,
                 onClick = ::onPlayClick,
             ),
-            nextState = ControllerUiState.NextState.default.copy(
+            nextState = ControllerUiState.NextState(
+                hasNext = false,
                 onClick = ::onNextClick,
             ),
-            previousState = ControllerUiState.PreviousState.default.copy(
+            previousState = ControllerUiState.PreviousState(
+                hasPrevious = false,
                 onClick = ::onPreviousClick,
             ),
-            repeatState = ControllerUiState.RepeatState.default.copy(
+            repeatState = ControllerUiState.RepeatState(
+                mode = ControllerUiState.RepeatState.Mode.Off,
                 onClick = ::onRepeatClick,
             ),
-            shuffleState = ControllerUiState.ShuffleState.default.copy(
+            shuffleState = ControllerUiState.ShuffleState(
+                mode = ControllerUiState.ShuffleState.Mode.Off,
                 onClick = ::onShuffleClick,
             ),
-            seekState = ControllerUiState.SeekState.default.copy(
+            seekState = ControllerUiState.SeekState(
+                current = DurationWithMetadata.ZERO,
+                duration = DurationWithMetadata.ZERO,
                 onChange = ::onSeekChange,
                 onChangeFinish = ::onSeekChangeFinish,
             ),
@@ -72,7 +82,7 @@ class ControllerViewModel @Inject constructor(
         isPlaying = playState.map { it.isPlaying }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(),
-            initialValue = ControllerUiState.PlayState.default.isPlaying,
+            initialValue = false,
         )
     }
 

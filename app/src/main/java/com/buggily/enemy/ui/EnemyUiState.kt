@@ -40,19 +40,5 @@ data class EnemyUiState(
 
         private val navigationHierarchy: Sequence<NavDestination>
             get() = destination?.hierarchy ?: emptySequence()
-
-        companion object {
-            val default: DestinationState
-                get() = DestinationState(
-                    destination = null,
-                )
-        }
-    }
-
-    companion object {
-        val default: EnemyUiState
-            get() = EnemyUiState(
-                destinationState = DestinationState.default,
-            )
     }
 }

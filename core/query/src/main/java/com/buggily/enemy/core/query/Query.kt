@@ -43,21 +43,19 @@ class Query(
             }
 
         companion object {
-            val NONE: Selections
-                get() = Selections()
+            val NONE = Selections()
         }
     }
 
-    sealed class Selection {
+    sealed interface Selection {
 
-        abstract val identity: String
+        val identity: String
 
-        sealed class Expression(
-            open val argumentIdentity: String,
-            open val expressionIdentity: Any?,
-        ) : Selection() {
+        sealed interface Expression : Selection {
 
-            abstract val operator: String
+            val operator: String
+            val argumentIdentity: String
+            val expressionIdentity: Any?
 
             override val identity: String
                 get() = "$argumentIdentity $operator ?"
@@ -65,75 +63,55 @@ class Query(
             class Equals(
                 override val argumentIdentity: String,
                 override val expressionIdentity: Any?,
-            ) : Expression(
-                argumentIdentity = argumentIdentity,
-                expressionIdentity = expressionIdentity,
-            ) {
+            ) : Expression {
 
-                override val operator: String
-                    get() = "="
+                override val operator: String = "="
             }
 
             class Unequals(
                 override val argumentIdentity: String,
                 override val expressionIdentity: Any?,
-            ) : Expression(
-                argumentIdentity = argumentIdentity,
-                expressionIdentity = expressionIdentity,
-            ) {
+            ) : Expression {
 
-                override val operator: String
-                    get() = "!="
+                override val operator: String = "!="
             }
 
             class Like(
                 override val argumentIdentity: String,
                 override val expressionIdentity: Any?,
-            ) : Expression(
-                argumentIdentity = argumentIdentity,
-                expressionIdentity = expressionIdentity,
-            ) {
+            ) : Expression {
 
-                override val operator: String
-                    get() = "LIKE"
+                override val operator: String = "LIKE"
             }
         }
 
-        sealed class Operator : Selection() {
+        sealed interface Operator : Selection {
 
-            object And : Operator() {
-
-                override val identity: String
-                    get() = "AND"
+            data object And : Operator {
+                override val identity: String = "AND"
             }
 
-            object Or : Operator() {
-
-                override val identity: String
-                    get() = "OR"
+            data object Or : Operator {
+                override val identity: String = "OR"
             }
         }
     }
 
-    class Sort(
+    data class Sort(
         private val columns: Map<String, Type>,
         private val direction: Direction?,
     ) {
 
-        sealed class Type {
+        sealed interface Type {
 
-            abstract val identity: String
+            val identity: String
 
-            object Text : Type() {
-
-                override val identity: String
-                    get() = "VARCHAR"
+            data object Text : Type {
+                override val identity: String = "VARCHAR"
             }
 
-            object Number : Type() {
-
-                override val identity: String
-                    get() = "NUMERIC"
+            data object Number : Type {
+                override val identity: String = "NUMERIC"
             }
         }
 
@@ -151,29 +129,24 @@ class Query(
         private val directionIdentity: Int?
             get() = direction?.identity
 
-        sealed class Direction {
+        sealed interface Direction {
 
-            abstract val identity: Int
+            val identity: Int
 
-            object Ascending : Direction() {
-
-                override val identity: Int
-                    get() = ContentResolver.QUERY_SORT_DIRECTION_ASCENDING
+            data object Ascending : Direction {
+                override val identity: Int = ContentResolver.QUERY_SORT_DIRECTION_ASCENDING
             }
 
-            object Descending : Direction() {
-
-                override val identity: Int
-                    get() = ContentResolver.QUERY_SORT_DIRECTION_DESCENDING
+            data object Descending : Direction {
+                override val identity: Int = ContentResolver.QUERY_SORT_DIRECTION_DESCENDING
             }
         }
 
         companion object {
-            val NONE: Sort
-                get() = Sort(
-                    columns = emptyMap(),
-                    direction = null,
-                )
+            val NONE = Sort(
+                columns = emptyMap(),
+                direction = null,
+            )
         }
     }
 
@@ -194,10 +167,9 @@ class Query(
     }
 
     companion object {
-        val NONE: Query
-            get() = Query(
-                selections = Selections.NONE,
-                sort = Sort.NONE,
-            )
+        val NONE = Query(
+            selections = Selections.NONE,
+            sort = Sort.NONE,
+        )
     }
 }

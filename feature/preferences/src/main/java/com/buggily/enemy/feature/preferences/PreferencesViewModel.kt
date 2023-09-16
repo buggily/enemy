@@ -29,16 +29,18 @@ class PreferencesViewModel @Inject constructor(
     val uiState: StateFlow<PreferencesUiState> get() = _uiState
 
     init {
-        PreferencesUiState.default.copy(
-            themeState = PreferencesUiState.ThemeState.default.copy(
-                schemeState = PreferencesUiState.ThemeState.SchemeState.default.copy(
+        PreferencesUiState(
+            themeState = PreferencesUiState.ThemeState(
+                schemeState = PreferencesUiState.ThemeState.SchemeState(
+                    scheme = Theme.Scheme.Default,
                     schemes = schemes,
                     onClick = ::onThemeSchemeClick,
                 ),
-                dynamicState = PreferencesUiState.ThemeState.DynamicState.default.copy(
+                dynamicState = PreferencesUiState.ThemeState.DynamicState(
+                    dynamic = Theme.Dynamic.On,
                     onCheck = ::onThemeDynamicCheck,
                 ),
-                resetState = PreferencesUiState.ThemeState.ResetState.default.copy(
+                resetState = PreferencesUiState.ThemeState.ResetState(
                     onClick = ::onThemeResetClick,
                 ),
             ),
@@ -48,7 +50,10 @@ class PreferencesViewModel @Inject constructor(
             getTheme().stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(),
-                initialValue = Theme.default,
+                initialValue = Theme(
+                    scheme = Theme.Scheme.Default,
+                    dynamic = Theme.Dynamic.On,
+                ),
             ).collectLatest { setThemeState(it) }
         }
     }
@@ -62,7 +67,10 @@ class PreferencesViewModel @Inject constructor(
     }
 
     private fun onThemeResetClick() = viewModelScope.launch {
-        setTheme(Theme.default)
+        Theme(
+            scheme = Theme.Scheme.Default,
+            dynamic = Theme.Dynamic.On,
+        ).let { setTheme(it) }
     }
 
     private fun setThemeState(theme: Theme) = with(theme) {

@@ -5,10 +5,10 @@ import com.buggily.enemy.core.ui.ui.picker.Pickerable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-sealed class TrackPicker : Pickerable {
+sealed interface TrackPicker : Pickerable {
 
     @Parcelize
-    object Playlist : TrackPicker() {
+    data object Playlist : TrackPicker {
 
         override val stringResId: Int
             get() = R.string.add_playlist
@@ -21,7 +21,6 @@ sealed class TrackPicker : Pickerable {
     }
 
     companion object {
-        val values: List<TrackPicker>
-            get() = listOf(Playlist)
+        val values: List<TrackPicker> = listOf(Playlist)
     }
 }

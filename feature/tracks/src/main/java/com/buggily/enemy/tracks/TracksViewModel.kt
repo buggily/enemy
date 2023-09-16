@@ -33,10 +33,13 @@ class TracksViewModel @Inject constructor(
     val tracks: Flow<PagingData<Track>>
 
     init {
-        TracksUiState.default.copy(
-            trackState = TracksUiState.TrackState.default.copy(
+        TracksUiState(
+            trackState = TracksUiState.TrackState(
                 onClick = ::onTrackClick,
                 onLongClick = ::onTrackLongClick,
+            ),
+            searchState = TracksUiState.SearchState(
+                value = String(),
             ),
         ).let { _uiState = MutableStateFlow(it) }
 

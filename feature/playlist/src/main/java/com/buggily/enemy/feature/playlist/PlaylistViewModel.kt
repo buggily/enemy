@@ -44,13 +44,13 @@ class PlaylistViewModel @Inject constructor(
         playlistId = checkNotNull(savedStateHandle[playlistIdKey])
         tracks = getTrackPagingByPlaylistId(playlistId)
 
-        PlaylistUiState.default.copy(
-            trackState = PlaylistUiState.TrackState.default.copy(
+        PlaylistUiState(
+            playlist = null,
+            trackState = PlaylistUiState.TrackState(
                 onClick = ::onTrackClick,
                 onLongClick = ::onTrackLongClick,
             ),
         ).let { _uiState = MutableStateFlow(it) }
-
 
         viewModelScope.launch {
             _uiState.update { it.copy(playlist = getPlaylistById(playlistId)) }

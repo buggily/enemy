@@ -37,7 +37,7 @@ import com.buggily.enemy.core.ui.ext.floatResource
 import com.buggily.enemy.core.ui.ext.nameText
 import com.buggily.enemy.core.ui.ext.peekFirst
 import com.buggily.enemy.core.ui.ui.ArtImage
-import com.buggily.enemy.core.ui.ui.PlaylistTrackItem
+import com.buggily.enemy.core.ui.ui.track.PlaylistTrackItem
 import com.buggily.enemy.data.playlist.Playlist
 import com.buggily.enemy.data.track.Track
 import com.buggily.enemy.data.track.TrackWithIndex

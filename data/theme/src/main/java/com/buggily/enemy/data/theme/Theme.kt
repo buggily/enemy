@@ -5,22 +5,14 @@ data class Theme(
     val dynamic: Dynamic
 ) {
 
-    sealed class Scheme {
-        object Default : Scheme()
-        object Light : Scheme()
-        object Dark : Scheme()
+    sealed interface Scheme {
+        data object Default : Scheme
+        data object Light : Scheme
+        data object Dark : Scheme
     }
 
-    sealed class Dynamic {
-        object On : Dynamic()
-        object Off : Dynamic()
-    }
-
-    companion object {
-        val default: Theme
-            get() = Theme(
-                scheme = Scheme.Default,
-                dynamic = Dynamic.On,
-            )
+    sealed interface Dynamic {
+        data object On : Dynamic
+        data object Off : Dynamic
     }
 }

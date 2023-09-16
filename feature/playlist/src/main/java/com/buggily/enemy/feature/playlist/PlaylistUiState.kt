@@ -11,22 +11,5 @@ data class PlaylistUiState(
     data class TrackState(
         val onClick: (TrackWithIndex) -> Unit,
         val onLongClick: (TrackWithIndex) -> Unit,
-    ) {
-
-        companion object {
-            val default: TrackState
-                get() = TrackState(
-                    onClick = {},
-                    onLongClick = {},
-                )
-        }
-    }
-
-    companion object {
-        val default: PlaylistUiState
-            get() = PlaylistUiState(
-                playlist = null,
-                trackState = TrackState.default,
-            )
-    }
+    )
 }

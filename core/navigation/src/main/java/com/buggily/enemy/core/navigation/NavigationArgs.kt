@@ -2,25 +2,21 @@ package com.buggily.enemy.core.navigation
 
 import androidx.navigation.NavOptionsBuilder
 
-sealed class NavigationArgs {
+sealed interface NavigationArgs {
 
-    object Back : NavigationArgs()
+    data object Back : NavigationArgs
 
-    sealed class Route(
-        open val route: String,
-    ) : NavigationArgs() {
+    sealed interface Route : NavigationArgs {
+
+        val route: String
 
         data class WithoutOptions(
             override val route: String,
-        ) : Route(
-            route = route,
-        )
+        ) : Route
 
         data class WithOptions(
             override val route: String,
             val builder: NavOptionsBuilder.() -> Unit,
-        ) : Route(
-            route = route,
-        )
+        ) : Route
     }
 }

@@ -1,5 +1,3 @@
-@file:Suppress("UnstableApiUsage")
-
 package com.buggily.enemy
 
 import com.android.build.api.dsl.CommonExtension
@@ -8,10 +6,10 @@ import com.buggily.enemy.ext.getVersion
 import org.gradle.api.Project
 
 internal fun Project.configureAndroidCompose(
-    commonExtension: CommonExtension<*, *, *, *>,
+    commonExtension: CommonExtension<*, *, *, *, *>,
 ) = with(commonExtension) {
 
-    compileSdk = 33
+    compileSdk = 34
 
     buildFeatures {
         compose = true

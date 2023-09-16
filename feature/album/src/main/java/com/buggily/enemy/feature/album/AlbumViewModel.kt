@@ -48,8 +48,9 @@ class AlbumViewModel @Inject constructor(
         val albumIdKey: String = NavigationDestination.Album.albumId
         albumId = checkNotNull(savedStateHandle[albumIdKey])
 
-        AlbumUiState.default.copy(
-            trackState = AlbumUiState.TrackState.default.copy(
+        AlbumUiState(
+            album = null,
+            trackState = AlbumUiState.TrackState(
                 onClick = ::onTrackClick,
                 onLongClick = ::onTrackLongClick,
             ),

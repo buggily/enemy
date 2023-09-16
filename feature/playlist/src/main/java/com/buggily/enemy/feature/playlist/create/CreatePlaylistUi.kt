@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.buggily.enemy.core.ui.ui.SingleLineTextField
+import com.buggily.enemy.core.ui.ui.OutlinedSingleLineTextField
 import com.buggily.enemy.core.ui.ui.TextButton
 import com.buggily.enemy.feature.playlist.R
 import com.buggily.enemy.core.ui.R.dimen as dimens
@@ -93,7 +93,7 @@ private fun CreatePlaylistNameTextField(
     nameState: CreatePlaylistUiState.NameState,
     modifier: Modifier = Modifier,
 ) {
-    SingleLineTextField(
+    OutlinedSingleLineTextField(
         value = nameState.value,
         onValueChange = nameState.onChange,
         label = { CreatePlaylistNameLabel() },

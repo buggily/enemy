@@ -1,5 +1,5 @@
 package com.buggily.enemy.feature.orientation
 
-sealed class OrientationEventState {
-    object ReadPermission : OrientationEventState()
+sealed interface OrientationEventState {
+    data object ReadPermission : OrientationEventState
 }

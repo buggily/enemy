@@ -2,32 +2,32 @@ package com.buggily.enemy.core.controller
 
 import androidx.media3.common.MediaItem
 
-sealed class ControllerEventState {
+sealed interface ControllerEventState {
 
-    sealed class Play : ControllerEventState() {
+    sealed interface Play : ControllerEventState {
 
         data class With(
             val index: Int,
             val items: List<MediaItem>,
-        ) : Play()
+        ) : Play
 
-        object Without : Play()
+        data object Without : Play
     }
 
-    object Pause : ControllerEventState()
+    data object Pause : ControllerEventState
 
-    object Next : ControllerEventState()
-    object Previous : ControllerEventState()
+    data object Next : ControllerEventState
+    data object Previous : ControllerEventState
 
     data class Repeat(
         val repeatMode: Int,
-    ) : ControllerEventState()
+    ) : ControllerEventState
 
     data class Shuffle(
         val shuffleMode: Boolean,
-    ) : ControllerEventState()
+    ) : ControllerEventState
 
     data class Seek(
         val milliseconds: Long,
-    ) : ControllerEventState()
+    ) : ControllerEventState
 }

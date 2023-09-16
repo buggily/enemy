@@ -23,80 +23,45 @@ data class ControllerUiState(
         val onClick: () -> Unit,
     ) {
 
-        sealed class State {
-            object Default : State()
-            object Loading : State()
-            object Ready : State()
-            object Done : State()
+        sealed interface State {
+            data object Default : State
+            data object Loading : State
+            data object Ready : State
+            data object Done : State
         }
 
         val isEnabled: Boolean
             get() = when (state) {
                 is State.Ready -> true
                 is State.Default,
-                State.Loading,
-                State.Done -> false
+                is State.Loading,
+                is State.Done -> false
             }
-
-        companion object {
-            val default: PlayState
-                get() = PlayState(
-                    state = State.Default,
-                    isPlaying = false,
-                    onClick = {},
-                )
-        }
     }
 
     data class NextState(
         val hasNext: Boolean,
         val onClick: () -> Unit,
-    ) {
-
-        companion object {
-            val default: NextState
-                get() = NextState(
-                    hasNext = false,
-                    onClick = {},
-                )
-        }
-    }
+    )
 
     data class PreviousState(
         val hasPrevious: Boolean,
         val onClick: () -> Unit,
-    ) {
-
-        companion object {
-            val default: PreviousState
-                get() = PreviousState(
-                    hasPrevious = false,
-                    onClick = {},
-                )
-        }
-    }
+    )
 
     data class RepeatState(
         val mode: Mode,
         val onClick: () -> Unit,
     ) {
 
-        sealed class Mode {
+        sealed interface Mode {
 
-            sealed class On : Mode() {
-                object One : On()
-                object All : On()
+            sealed interface On : Mode {
+                data object One : On
+                data object All : On
             }
 
-            object Off : Mode()
-        }
-
-        companion object {
-            val default: RepeatState
-                get() = RepeatState(
-                    mode = Mode.Off,
-                    onClick = {},
-                )
+            data object Off : Mode
         }
     }
 
@@ -105,17 +70,9 @@ data class ControllerUiState(
         val onClick: () -> Unit,
     ) {
 
-        sealed class Mode {
-            object On : Mode()
-            object Off : Mode()
-        }
-
-        companion object {
-            val default: ShuffleState
-                get() = ShuffleState(
-                    mode = Mode.Off,
-                    onClick = {},
-                )
+        sealed interface Mode {
+            data object On : Mode
+            data object Off : Mode
         }
     }
 
@@ -136,35 +93,12 @@ data class ControllerUiState(
             get() = last.takeIf { it.isPositive }?.let { value / it } ?: first
 
         private val first: Float
-            get() = DurationWithMetadata.default.inWholeSeconds.toFloat()
+            get() = DurationWithMetadata.ZERO.inWholeSeconds.toFloat()
 
         private val last: Float
             get() = duration.inWholeSeconds.toFloat()
 
         val range: ClosedFloatingPointRange<Float>
             get() = first..last
-
-        companion object {
-            val default: SeekState
-                get() = SeekState(
-                    current = DurationWithMetadata.default,
-                    duration = DurationWithMetadata.default,
-                    onChange = {},
-                    onChangeFinish = {},
-                )
-        }
-    }
-
-    companion object {
-        val default: ControllerUiState
-            get() = ControllerUiState(
-                mediaItem = null,
-                playState = ControllerUiState.PlayState.default,
-                nextState = NextState.default,
-                previousState = PreviousState.default,
-                repeatState = RepeatState.default,
-                shuffleState = ShuffleState.default,
-                seekState = SeekState.default,
-            )
     }
 }

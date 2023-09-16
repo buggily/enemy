@@ -17,7 +17,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
-import com.buggily.enemy.core.ui.ui.TrackItem
+import com.buggily.enemy.core.ui.ui.track.TrackItem
 import com.buggily.enemy.data.track.Track
 import com.buggily.enemy.feature.tracks.R
 

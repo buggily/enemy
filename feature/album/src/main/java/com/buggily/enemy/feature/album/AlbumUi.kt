@@ -43,7 +43,7 @@ import com.buggily.enemy.core.ui.ext.floatResource
 import com.buggily.enemy.core.ui.ext.nameText
 import com.buggily.enemy.core.ui.model.PagingPlaceholderKey
 import com.buggily.enemy.core.ui.model.TrackUi
-import com.buggily.enemy.core.ui.ui.AlbumTrackItem
+import com.buggily.enemy.core.ui.ui.track.AlbumTrackItem
 import com.buggily.enemy.core.ui.ui.ArtImage
 import com.buggily.enemy.core.ui.ui.SingleLineText
 import com.buggily.enemy.data.album.Album
