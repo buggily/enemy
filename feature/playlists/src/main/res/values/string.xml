@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="name">name</string>
-    <string name="modification_date">modification date</string>
+    <string name="playlists_name">name</string>
+    <string name="playlists_modification_date">modification date</string>
 </resources>

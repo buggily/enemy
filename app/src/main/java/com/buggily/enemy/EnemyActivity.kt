@@ -35,7 +35,7 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.buggily.enemy.controller.ControllerViewModel
-import com.buggily.enemy.core.controller.ControllerEventState
+import com.buggily.enemy.core.controller.ControllerEvent
 import com.buggily.enemy.core.controller.ControllerOrchestratable
 import com.buggily.enemy.core.ext.readPermission
 import com.buggily.enemy.core.navigation.NavigationArgs
@@ -49,6 +49,7 @@ import com.buggily.enemy.ui.EnemyViewModel
 import com.buggily.enemy.ui.rememberEnemyAppState
 import com.buggily.enemy.ui.theme.EnemyPalette
 import com.buggily.enemy.ui.theme.EnemyTheme
+import com.buggily.enemy.ui.theme.to
 import com.google.common.util.concurrent.ListenableFuture
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
@@ -100,7 +101,7 @@ class EnemyActivity : ComponentActivity() {
                 }
 
                 launch {
-                    controllerOrchestrator.eventState.collect {
+                    controllerOrchestrator.event.collect {
                         onControllerEvent(it)
                     }
                 }
@@ -122,8 +123,8 @@ class EnemyActivity : ComponentActivity() {
                     readPermission
                 )
 
-                navController.removeOnDestinationChangedListener(destinationChangedListener)
-                navController.addOnDestinationChangedListener(destinationChangedListener)
+                navController.removeOnDestinationChangedListener(onDestinationChangedListener)
+                navController.addOnDestinationChangedListener(onDestinationChangedListener)
 
                 val isGranted: Boolean = permissionResult == PackageManager.PERMISSION_GRANTED
                 if (isGranted) return@LaunchedEffect
@@ -140,7 +141,7 @@ class EnemyActivity : ComponentActivity() {
             }
 
             LaunchedEffect(navController, navigationOrchestrator) {
-                navigationOrchestrator.eventState.flowWithLifecycle(lifecycle).collect {
+                navigationOrchestrator.event.flowWithLifecycle(lifecycle).collect {
                     when (val args: NavigationArgs = it.args) {
                         is NavigationArgs.Route.WithOptions -> navController.navigate(
                             route = args.route,
@@ -162,20 +163,10 @@ class EnemyActivity : ComponentActivity() {
             val paletteTheme: EnemyPalette.Theme = remember(isSystemInDarkTheme, theme) {
                 val isDynamic: Boolean = theme.dynamic is Theme.Dynamic.On
 
-                when (theme.scheme) {
-                    is Theme.Scheme.Default -> EnemyPalette.Theme.Default(
-                        isDynamic = isDynamic,
-                        isSystemInDarkTheme = isSystemInDarkTheme,
-                    )
-
-                    is Theme.Scheme.Light -> EnemyPalette.Theme.Light(
-                        isDynamic = isDynamic,
-                    )
-
-                    is Theme.Scheme.Dark -> EnemyPalette.Theme.Dark(
-                        isDynamic = isDynamic,
-                    )
-                }
+                theme.scheme.to(
+                    isDynamic = isDynamic,
+                    isSystemInDarkTheme = isSystemInDarkTheme,
+                )
             }
 
             val palette: EnemyPalette = remember(paletteTheme) {
@@ -262,10 +253,10 @@ class EnemyActivity : ComponentActivity() {
         }
     }
 
-    private suspend fun onControllerEvent(event: ControllerEventState) {
+    private suspend fun onControllerEvent(event: ControllerEvent) {
         when (event) {
-            is ControllerEventState.Play -> with(requireController()) {
-                if (event is ControllerEventState.Play.With) {
+            is ControllerEvent.Play -> with(requireController()) {
+                if (event is ControllerEvent.Play.With) {
                     setMediaItems(event.items)
                     seekToDefaultPosition(event.index)
                 }
@@ -274,29 +265,29 @@ class EnemyActivity : ComponentActivity() {
                 play()
             }
 
-            is ControllerEventState.Pause -> {
+            is ControllerEvent.Pause -> {
                 requireController().pause()
             }
 
-            is ControllerEventState.Next -> {
+            is ControllerEvent.Next -> {
                 requireController().seekToNextMediaItem()
                 setPosition()
             }
 
-            is ControllerEventState.Previous -> {
+            is ControllerEvent.Previous -> {
                 requireController().seekToPreviousMediaItem()
                 setPosition()
             }
 
-            is ControllerEventState.Repeat -> {
+            is ControllerEvent.Repeat -> {
                 requireController().repeatMode = event.repeatMode
             }
 
-            is ControllerEventState.Shuffle -> {
+            is ControllerEvent.Shuffle -> {
                 requireController().shuffleModeEnabled = event.shuffleMode
             }
 
-            is ControllerEventState.Seek -> {
+            is ControllerEvent.Seek -> {
                 requireController().seekTo(event.milliseconds)
             }
         }
@@ -319,7 +310,7 @@ class EnemyActivity : ComponentActivity() {
         }
     }
 
-    private val destinationChangedListener: NavController.OnDestinationChangedListener =
+    private val onDestinationChangedListener: NavController.OnDestinationChangedListener =
         NavController.OnDestinationChangedListener { _, it: NavDestination, _ ->
             viewModel.onDestinationChange(it)
         }

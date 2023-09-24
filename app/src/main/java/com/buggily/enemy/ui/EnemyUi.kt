@@ -29,7 +29,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.systemBars
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -75,9 +74,7 @@ import com.buggily.enemy.feature.playlist.create.CreatePlaylistDialog
 import com.buggily.enemy.feature.playlist.track.PlaylistTrackPickerViewModel
 import com.buggily.enemy.feature.preferences.PreferencesScreen
 import com.buggily.enemy.feature.track.playlist.TrackPlaylistPickerDialog
-import com.buggily.enemy.core.ui.R.dimen as dimens
-import com.buggily.enemy.core.ui.R.drawable as drawables
-import com.buggily.enemy.core.ui.R.string as strings
+import com.buggily.enemy.core.ui.R as CR
 
 @Composable
 fun EnemyApp(
@@ -353,19 +350,19 @@ private fun EnemyBottomBar(
     createPlaylistState: GlobalUiState.CreatePlaylistState,
     modifier: Modifier = Modifier,
 ) {
-    val iconButtonModifier: Modifier = Modifier.size(dimensionResource(dimens.icon_medium))
+    val iconButtonModifier: Modifier = Modifier.size(dimensionResource(CR.dimen.icon_medium))
 
     Surface(modifier) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(
-                space = dimensionResource(dimens.padding_large),
+                space = dimensionResource(CR.dimen.padding_large),
                 alignment = Alignment.Start,
             ),
             verticalAlignment = Alignment.Bottom,
             modifier = Modifier
                 .fillMaxWidth()
                 .navigationBarsPadding()
-                .padding(dimensionResource(dimens.padding_large)),
+                .padding(dimensionResource(CR.dimen.padding_large)),
         ) {
             AnimatedVisibility(
                 visible = searchState.isVisible,
@@ -408,15 +405,15 @@ private fun EnemyBottomBarSearchIconButton(
     modifier: Modifier = Modifier,
 ) {
     val painterResId: Int = if (searchState.isEnabled) {
-        drawables.search_disable
+        CR.drawable.search_disable
     } else {
-        drawables.search_enable
+        CR.drawable.search_enable
     }
 
     val stringResId: Int = if (searchState.isEnabled) {
-        strings.search_disable
+        CR.string.search_disable
     } else {
-        strings.search_enable
+        CR.string.search_enable
     }
 
     IconButton(
@@ -439,8 +436,8 @@ private fun RowScope.EnemyBottomBarPreferencesIconButton(
         exit = shrinkHorizontally(),
     ) {
         IconButton(
-            painter = painterResource(drawables.preferences),
-            contentDescription = stringResource(R.string.preferences),
+            painter = painterResource(CR.drawable.preferences),
+            contentDescription = stringResource(R.string.app_preferences),
             onClick = preferencesState.to,
             contentModifier = modifier,
         )
@@ -483,7 +480,7 @@ private fun BrowseSearchLabel(
     modifier: Modifier = Modifier,
 ) {
     SingleLineText(
-        text = stringResource(R.string.search),
+        text = stringResource(CR.string.search),
         modifier = modifier,
     )
 }
@@ -494,11 +491,11 @@ private fun BrowseSearchTrailingIcon(
     modifier: Modifier = Modifier,
 ) {
     IconButton(
-        painter = painterResource(drawables.clear),
-        contentDescription = stringResource(strings.clear),
+        painter = painterResource(CR.drawable.clear),
+        contentDescription = stringResource(CR.string.clear),
         onClick = searchState.onClear,
         modifier = modifier,
-        contentModifier = Modifier.size(dimensionResource(dimens.icon_medium)),
+        contentModifier = Modifier.size(dimensionResource(CR.dimen.icon_medium)),
     )
 }
 
@@ -508,8 +505,8 @@ private fun EnemyBottomBarFloatingActionButton(
     modifier: Modifier = Modifier,
 ) {
     IconFloatingActionButton(
-        painter = painterResource(drawables.create),
-        contentDescription = stringResource(strings.create),
+        painter = painterResource(CR.drawable.create),
+        contentDescription = stringResource(CR.string.create),
         onClick = createPlaylistState.to,
         modifier = modifier,
     )

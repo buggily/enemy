@@ -18,7 +18,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.buggily.enemy.core.ui.ui.album.AlbumItem
 import com.buggily.enemy.data.album.Album
-import com.buggily.enemy.core.ui.R.dimen as dimens
+import com.buggily.enemy.core.ui.R as CR
 
 @Composable
 fun AlbumsScreen(
@@ -58,20 +58,20 @@ private fun AlbumsGrid(
     modifier: Modifier = Modifier,
 ) {
     LazyVerticalGrid(
-        columns = GridCells.Adaptive(dimensionResource(dimens.item)),
+        columns = GridCells.Adaptive(dimensionResource(CR.dimen.item)),
         verticalArrangement = Arrangement.spacedBy(
-            space = dimensionResource(dimens.padding_large),
+            space = dimensionResource(CR.dimen.padding_large),
             alignment = Alignment.Top,
         ),
         horizontalArrangement = Arrangement.spacedBy(
-            space = dimensionResource(dimens.padding_large),
+            space = dimensionResource(CR.dimen.padding_large),
             alignment = Alignment.Start,
         ),
         contentPadding = WindowInsets(
-            left = dimensionResource(dimens.padding_large),
-            top = dimensionResource(dimens.padding_large),
-            right = dimensionResource(dimens.padding_large),
-            bottom = dimensionResource(dimens.padding_large),
+            left = dimensionResource(CR.dimen.padding_large),
+            top = dimensionResource(CR.dimen.padding_large),
+            right = dimensionResource(CR.dimen.padding_large),
+            bottom = dimensionResource(CR.dimen.padding_large),
         ).asPaddingValues(),
         modifier = modifier,
     ) {

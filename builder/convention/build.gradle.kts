@@ -51,10 +51,6 @@ gradlePlugin {
             id = "enemy.android.library.feature"
             implementationClass = "AndroidLibraryFeatureConventionPlugin"
         }
-        register("androidLibraryLocal") {
-            id = "enemy.android.library.local"
-            implementationClass = "AndroidLibraryLocalConventionPlugin"
-        }
         register("androidTest") {
             id = "enemy.android.test"
             implementationClass = "AndroidTestConventionPlugin"
@@ -66,6 +62,10 @@ gradlePlugin {
         register("kotlinLibrary") {
             id = "enemy.kotlin.library"
             implementationClass = "KotlinLibraryConventionPlugin"
+        }
+        register("kotlinLibraryLocal") {
+            id = "enemy.kotlin.library.local"
+            implementationClass = "KotlinLibraryLocalConventionPlugin"
         }
         register("kotlinTest") {
             id = "enemy.kotlin.test"

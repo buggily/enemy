@@ -8,22 +8,23 @@ import kotlinx.coroutines.flow.SharedFlow
 
 class ControllerOrchestrator : ControllerOrchestratable {
 
-    private val _eventState: MutableSharedFlow<ControllerEventState> = MutableSharedFlow(
+    private val _event: MutableSharedFlow<ControllerEvent> = MutableSharedFlow(
         replay = 0,
         extraBufferCapacity = 1,
         onBufferOverflow = BufferOverflow.SUSPEND,
     )
 
-    override val eventState: SharedFlow<ControllerEventState> get() = _eventState
+    override val event: SharedFlow<ControllerEvent>
+        get() = _event
 
     override fun playItems(
         index: Int,
         items: List<MediaItem>,
     ) {
-        ControllerEventState.Play.With(
+        ControllerEvent.Play.With(
             index = index,
             items = items,
-        ).let { _eventState.tryEmit(it) }
+        ).let { _event.tryEmit(it) }
     }
 
     override fun playItem(item: MediaItem) = listOf(item).let {
@@ -34,36 +35,36 @@ class ControllerOrchestrator : ControllerOrchestratable {
     }
 
     override fun play() {
-        _eventState.tryEmit(ControllerEventState.Play.Without)
+        _event.tryEmit(ControllerEvent.Play.Without)
     }
 
     override fun pause() {
-        _eventState.tryEmit(ControllerEventState.Pause)
+        _event.tryEmit(ControllerEvent.Pause)
     }
 
     override fun previous() {
-        _eventState.tryEmit(ControllerEventState.Previous)
+        _event.tryEmit(ControllerEvent.Previous)
     }
 
     override fun next() {
-        _eventState.tryEmit(ControllerEventState.Next)
+        _event.tryEmit(ControllerEvent.Next)
     }
 
     override fun repeat(repeatMode: Int) {
-        ControllerEventState.Repeat(
+        ControllerEvent.Repeat(
             repeatMode = repeatMode,
-        ).let { _eventState.tryEmit(it) }
+        ).let { _event.tryEmit(it) }
     }
 
     override fun shuffle(shuffleMode: Boolean) {
-        ControllerEventState.Shuffle(
+        ControllerEvent.Shuffle(
             shuffleMode = shuffleMode,
-        ).let { _eventState.tryEmit(it) }
+        ).let { _event.tryEmit(it) }
     }
 
     override fun seek(milliseconds: Long) {
-        ControllerEventState.Seek(
+        ControllerEvent.Seek(
             milliseconds = milliseconds,
-        ).let { _eventState.tryEmit(it) }
+        ).let { _event.tryEmit(it) }
     }
 }

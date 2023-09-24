@@ -10,11 +10,15 @@ android {
 dependencies {
     implementation(project(":local:track"))
     implementation(project(":local:playlist"))
+    implementation(project(":local:preferences"))
 
-    implementation(libs.kotlinx.datetime)
+    implementation(libs.kotlinx.dateTime)
 
     implementation(libs.androidx.room)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.paging)
     kapt(libs.androidx.room.compiler)
+
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.paging)
 }

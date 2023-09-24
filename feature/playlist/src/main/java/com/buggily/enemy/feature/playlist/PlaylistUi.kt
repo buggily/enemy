@@ -41,7 +41,7 @@ import com.buggily.enemy.core.ui.ui.track.PlaylistTrackItem
 import com.buggily.enemy.data.playlist.Playlist
 import com.buggily.enemy.data.track.Track
 import com.buggily.enemy.data.track.TrackWithIndex
-import com.buggily.enemy.core.ui.R.dimen as dimens
+import com.buggily.enemy.core.ui.R as CR
 
 @Composable
 fun PlaylistScreen(
@@ -204,7 +204,7 @@ private fun PlaylistHeader(
                 track = track,
                 modifier = Modifier
                     .fillMaxSize()
-                    .alpha(floatResource(dimens.alpha_low)),
+                    .alpha(floatResource(CR.dimen.alpha_low)),
             )
         }
 
@@ -213,7 +213,7 @@ private fun PlaylistHeader(
             modifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding()
-                .padding(dimensionResource(dimens.padding_large)),
+                .padding(dimensionResource(CR.dimen.padding_large)),
         )
     }
 }

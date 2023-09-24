@@ -1,16 +1,9 @@
 plugins {
-    id("enemy.android.library.local")
-}
-
-android {
-    namespace = "com.buggily.enemy.local.playlist"
+    id("enemy.kotlin.library.local")
 }
 
 dependencies {
-    implementation(libs.kotlinx.datetime)
-
-    implementation(libs.androidx.room)
-    implementation(libs.androidx.room.ktx)
-    implementation(libs.androidx.room.paging)
-    kapt(libs.androidx.room.compiler)
+    implementation(libs.kotlinx.dateTime)
+    implementation(libs.androidx.room.core)
+    implementation(libs.androidx.paging.core)
 }

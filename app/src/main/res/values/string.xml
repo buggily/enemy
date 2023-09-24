@@ -1,6 +1,4 @@
 <resources>
-    <string name="enemy">enemy</string>
-
-    <string name="search">search</string>
-    <string name="preferences">preferences</string>
+    <string name="app">enemy</string>
+    <string name="app_preferences">preferences</string>
 </resources>

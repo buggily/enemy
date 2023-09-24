@@ -11,5 +11,5 @@ dependencies {
     implementation(project(":core:data"))
     implementation(project(":core:ext"))
 
-    implementation(libs.kotlinx.datetime)
+    implementation(libs.kotlinx.dateTime)
 }

@@ -98,17 +98,11 @@ private fun BrowseTabs(
         tabState.tabs.forEach {
             val isSelected: Boolean = it == tabState.tab
 
-            val stringResId: Int = when (it) {
-                is BrowseUiState.TabState.Tab.Albums -> R.string.albums
-                is BrowseUiState.TabState.Tab.Tracks -> R.string.tracks
-                is BrowseUiState.TabState.Tab.Playlists -> R.string.playlists
-            }
-
             Tab(
                 selected = isSelected,
                 text = {
                     Text(
-                        text = stringResource(stringResId),
+                        text = stringResource(it.stringResId),
                         modifier = Modifier,
                     )
                 },
@@ -194,7 +188,7 @@ private fun BrowseSearchableContent(
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
     val lifecycle: Lifecycle = lifecycleOwner.lifecycle
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(globalUiViewModel) {
         globalUiViewModel.search.flowWithLifecycle(lifecycle).collectLatest {
             viewModel.onSearchChange(it)
         }
