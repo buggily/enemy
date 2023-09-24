@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="albums">albums</string>
-    <string name="tracks">tracks</string>
-    <string name="playlists">playlists</string>
+    <string name="browse_albums">albums</string>
+    <string name="browse_tracks">tracks</string>
+    <string name="browse_playlists">playlists</string>
 </resources>

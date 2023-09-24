@@ -104,9 +104,9 @@ private fun TracksHeader(
         modifier = modifier,
     ) {
         TrackItem(
-            nameText = stringResource(R.string.name),
-            artistText = stringResource(R.string.artist),
-            durationText = stringResource(R.string.duration),
+            nameText = stringResource(R.string.tracks_name),
+            artistText = stringResource(R.string.tracks_artist),
+            durationText = stringResource(R.string.tracks_duration),
         )
     }
 }

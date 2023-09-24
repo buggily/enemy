@@ -21,7 +21,7 @@ import androidx.paging.compose.itemKey
 import com.buggily.enemy.core.ui.ui.playlist.PlaylistItem
 import com.buggily.enemy.data.playlist.Playlist
 import com.buggily.enemy.feature.track.R
-import com.buggily.enemy.core.ui.R.dimen as dimens
+import com.buggily.enemy.core.ui.R as CR
 
 @Composable
 fun TrackPlaylistPickerDialog(
@@ -69,7 +69,7 @@ private fun TrackPlaylistPickerDialog(
         ) {
             stickyHeader {
                 TrackPlaylistPickerTitleText(
-                    modifier = Modifier.padding(dimensionResource(dimens.padding_large))
+                    modifier = Modifier.padding(dimensionResource(CR.dimen.padding_large))
                 )
             }
 
@@ -95,7 +95,7 @@ private fun TrackPlaylistPickerTitleText(
     modifier: Modifier = Modifier,
 ) {
     Text(
-        text = stringResource(R.string.add_playlist),
+        text = stringResource(R.string.track_add_playlist),
         style = MaterialTheme.typography.titleLarge,
         modifier = modifier,
     )

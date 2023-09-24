@@ -18,7 +18,7 @@ import com.buggily.enemy.local.track.LocalTrackDao
     ],
 )
 
-@TypeConverters(InstantConverter::class)
+@TypeConverters(InstantTypeConverter::class)
 internal abstract class EnemyDatabase : RoomDatabase(), EnemyDatabaseable {
     abstract override fun getLocalPlaylistDao(): LocalPlaylistDao
     abstract override fun getLocalTrackDao(): LocalTrackDao

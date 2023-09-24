@@ -40,9 +40,7 @@ import com.buggily.enemy.core.ui.ext.nameText
 import com.buggily.enemy.core.ui.ui.ArtImage
 import com.buggily.enemy.core.ui.ui.IconButton
 import com.buggily.enemy.core.ui.ui.SingleLineText
-import com.buggily.enemy.core.ui.R.dimen as dimens
-import com.buggily.enemy.core.ui.R.drawable as drawables
-import com.buggily.enemy.core.ui.R.string as strings
+import com.buggily.enemy.core.ui.R as CR
 
 @Composable
 fun ControllerScreen(
@@ -91,7 +89,7 @@ private fun ControllerScreenCompact(
                 mediaItem = mediaItem,
                 modifier = Modifier
                     .fillMaxSize()
-                    .alpha(floatResource(dimens.alpha_low)),
+                    .alpha(floatResource(CR.dimen.alpha_low)),
             )
         }
 
@@ -100,7 +98,7 @@ private fun ControllerScreenCompact(
             modifier = Modifier
                 .fillMaxSize()
                 .safeContentPadding()
-                .padding(dimensionResource(dimens.padding_large)),
+                .padding(dimensionResource(CR.dimen.padding_large)),
         )
     }
 }
@@ -119,7 +117,7 @@ private fun ControllerScreenMedium(
                 mediaItem = mediaItem,
                 modifier = Modifier
                     .fillMaxSize()
-                    .alpha(floatResource(dimens.alpha_low)),
+                    .alpha(floatResource(CR.dimen.alpha_low)),
             )
         }
 
@@ -128,7 +126,7 @@ private fun ControllerScreenMedium(
             modifier = Modifier
                 .fillMaxSize()
                 .safeContentPadding()
-                .padding(dimensionResource(dimens.padding_large)),
+                .padding(dimensionResource(CR.dimen.padding_large)),
         )
     }
 }
@@ -165,7 +163,7 @@ private fun ControllerBottomSheet(
                     mediaItem = mediaItem,
                     modifier = Modifier
                         .fillMaxSize()
-                        .alpha(floatResource(dimens.alpha_low)),
+                        .alpha(floatResource(CR.dimen.alpha_low)),
                 )
             }
 
@@ -186,7 +184,7 @@ private fun ControllerForegroundCompact(
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(
-            space = dimensionResource(dimens.padding_large),
+            space = dimensionResource(CR.dimen.padding_large),
             alignment = Alignment.End,
         ),
         verticalAlignment = Alignment.Bottom,
@@ -211,7 +209,7 @@ private fun ControllerForegroundMedium(
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(
-            space = dimensionResource(dimens.padding_large),
+            space = dimensionResource(CR.dimen.padding_large),
             alignment = Alignment.Top,
         ),
         horizontalAlignment = Alignment.Start,
@@ -238,7 +236,7 @@ private fun ControllerControls(
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(
-            space = dimensionResource(dimens.padding_large),
+            space = dimensionResource(CR.dimen.padding_large),
             alignment = Alignment.CenterVertically,
         ),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -270,7 +268,7 @@ private fun ControllerText(
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(
-            space = dimensionResource(dimens.padding_medium),
+            space = dimensionResource(CR.dimen.padding_medium),
             alignment = Alignment.CenterVertically,
         ),
         horizontalAlignment = Alignment.Start,
@@ -284,7 +282,7 @@ private fun ControllerText(
         Text(
             text = mediaItem?.artistText ?: String(),
             style = MaterialTheme.typography.displaySmall,
-            modifier = Modifier.alpha(floatResource(dimens.alpha_medium)),
+            modifier = Modifier.alpha(floatResource(CR.dimen.alpha_medium)),
         )
     }
 }
@@ -361,8 +359,17 @@ private fun ControllerPlayButton(
     playState: ControllerUiState.PlayState,
     modifier: Modifier = Modifier,
 ) {
-    val painterResId: Int = if (playState.isPlaying) drawables.pause else drawables.play
-    val stringResId: Int = if (playState.isPlaying) strings.pause else strings.play
+    val painterResId: Int = if (playState.isPlaying) {
+        CR.drawable.pause
+    } else {
+        CR.drawable.play
+    }
+
+    val stringResId: Int = if (playState.isPlaying) {
+        CR.string.pause
+    } else {
+        CR.string.play
+    }
 
     IconButton(
         onClick = playState.onClick,
@@ -370,7 +377,7 @@ private fun ControllerPlayButton(
         painter = painterResource(painterResId),
         contentDescription = stringResource(stringResId),
         modifier = modifier,
-        contentModifier = Modifier.size(dimensionResource(dimens.icon_large)),
+        contentModifier = Modifier.size(dimensionResource(CR.dimen.icon_large)),
     )
 }
 
@@ -382,10 +389,10 @@ private fun ControllerNextButton(
     IconButton(
         enabled = nextState.hasNext,
         onClick = nextState.onClick,
-        painter = painterResource(drawables.next),
-        contentDescription = stringResource(strings.next),
+        painter = painterResource(CR.drawable.next),
+        contentDescription = stringResource(CR.string.next),
         modifier = modifier,
-        contentModifier = Modifier.size(dimensionResource(dimens.icon_medium)),
+        contentModifier = Modifier.size(dimensionResource(CR.dimen.icon_medium)),
     )
 }
 
@@ -397,10 +404,10 @@ private fun ControllerPreviousButton(
     IconButton(
         enabled = previousState.hasPrevious,
         onClick = previousState.onClick,
-        painter = painterResource(drawables.previous),
-        contentDescription = stringResource(strings.previous),
+        painter = painterResource(CR.drawable.previous),
+        contentDescription = stringResource(CR.string.previous),
         modifier = modifier,
-        contentModifier = Modifier.size(dimensionResource(dimens.icon_medium)),
+        contentModifier = Modifier.size(dimensionResource(CR.dimen.icon_medium)),
     )
 }
 
@@ -410,20 +417,20 @@ private fun ControllerRepeatButton(
     modifier: Modifier = Modifier,
 ) {
     val painterResId: Int = when (repeatState.mode) {
-        is ControllerUiState.RepeatState.Mode.Off -> drawables.repeat_off
-        is ControllerUiState.RepeatState.Mode.On.One -> drawables.repeat_on_one
-        is ControllerUiState.RepeatState.Mode.On.All -> drawables.repeat_on_all
+        is ControllerUiState.RepeatState.Mode.Off -> CR.drawable.repeat_off
+        is ControllerUiState.RepeatState.Mode.On.One -> CR.drawable.repeat_on_one
+        is ControllerUiState.RepeatState.Mode.On.All -> CR.drawable.repeat_on_all
     }
 
     val stringResId: Int = when (repeatState.mode) {
-        is ControllerUiState.RepeatState.Mode.Off -> strings.repeat_off
-        is ControllerUiState.RepeatState.Mode.On.One -> strings.repeat_on_one
-        is ControllerUiState.RepeatState.Mode.On.All -> strings.repeat_on_all
+        is ControllerUiState.RepeatState.Mode.Off -> CR.string.repeat_off
+        is ControllerUiState.RepeatState.Mode.On.One -> CR.string.repeat_on_one
+        is ControllerUiState.RepeatState.Mode.On.All -> CR.string.repeat_on_all
     }
 
     val floatResId: Int = when (repeatState.mode) {
-        is ControllerUiState.RepeatState.Mode.Off -> dimens.alpha_low
-        is ControllerUiState.RepeatState.Mode.On -> dimens.alpha_high
+        is ControllerUiState.RepeatState.Mode.Off -> CR.dimen.alpha_low
+        is ControllerUiState.RepeatState.Mode.On -> CR.dimen.alpha_high
     }
 
     IconButton(
@@ -431,7 +438,7 @@ private fun ControllerRepeatButton(
         painter = painterResource(painterResId),
         contentDescription = stringResource(stringResId),
         modifier = modifier.alpha(floatResource(floatResId)),
-        contentModifier = Modifier.size(dimensionResource(dimens.icon_medium)),
+        contentModifier = Modifier.size(dimensionResource(CR.dimen.icon_medium)),
     )
 }
 
@@ -441,18 +448,18 @@ private fun ControllerShuffleButton(
     modifier: Modifier = Modifier,
 ) {
     val painterResId: Int = when (shuffleState.mode) {
-        is ControllerUiState.ShuffleState.Mode.Off -> drawables.shuffle_off
-        is ControllerUiState.ShuffleState.Mode.On -> drawables.shuffle_on
+        is ControllerUiState.ShuffleState.Mode.Off -> CR.drawable.shuffle_off
+        is ControllerUiState.ShuffleState.Mode.On -> CR.drawable.shuffle_on
     }
 
     val stringResId: Int = when (shuffleState.mode) {
-        is ControllerUiState.ShuffleState.Mode.Off -> strings.shuffle_off
-        is ControllerUiState.ShuffleState.Mode.On -> strings.shuffle_on
+        is ControllerUiState.ShuffleState.Mode.Off -> CR.string.shuffle_off
+        is ControllerUiState.ShuffleState.Mode.On -> CR.string.shuffle_on
     }
 
     val floatResId: Int = when (shuffleState.mode) {
-        is ControllerUiState.ShuffleState.Mode.Off -> dimens.alpha_low
-        is ControllerUiState.ShuffleState.Mode.On -> dimens.alpha_high
+        is ControllerUiState.ShuffleState.Mode.Off -> CR.dimen.alpha_low
+        is ControllerUiState.ShuffleState.Mode.On -> CR.dimen.alpha_high
     }
 
     IconButton(
@@ -460,7 +467,7 @@ private fun ControllerShuffleButton(
         painter = painterResource(painterResId),
         contentDescription = stringResource(stringResId),
         modifier = modifier.alpha(floatResource(floatResId)),
-        contentModifier = Modifier.size(dimensionResource(dimens.icon_medium)),
+        contentModifier = Modifier.size(dimensionResource(CR.dimen.icon_medium)),
     )
 }
 
@@ -471,7 +478,7 @@ private fun ControllerSeekBar(
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(
-            space = dimensionResource(dimens.padding_small),
+            space = dimensionResource(CR.dimen.padding_small),
             alignment = Alignment.CenterVertically,
         ),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -512,7 +519,7 @@ private fun ControllerSeekBarText(
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(
-            space = dimensionResource(dimens.padding_large),
+            space = dimensionResource(CR.dimen.padding_large),
             alignment = Alignment.CenterHorizontally,
         ),
         verticalAlignment = Alignment.CenterVertically,
@@ -553,13 +560,13 @@ private fun ControllerBottomSheetForeground(
 
         Row(
             horizontalArrangement = Arrangement.spacedBy(
-                space = dimensionResource(dimens.padding_large),
+                space = dimensionResource(CR.dimen.padding_large),
                 alignment = Alignment.End,
             ),
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(dimensionResource(dimens.padding_large)),
+                .padding(dimensionResource(CR.dimen.padding_large)),
         ) {
             when (val mediaItem: MediaItem? = uiState.mediaItem) {
                 is MediaItem -> ControllerBottomSheetText(
@@ -586,7 +593,7 @@ private fun ControllerBottomSheetText(
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(
-            space = dimensionResource(dimens.padding_small),
+            space = dimensionResource(CR.dimen.padding_small),
             alignment = Alignment.Top,
         ),
         horizontalAlignment = Alignment.Start,
@@ -600,7 +607,7 @@ private fun ControllerBottomSheetText(
         SingleLineText(
             text = mediaItem.artistText ?: String(),
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.alpha(floatResource(dimens.alpha_medium)),
+            modifier = Modifier.alpha(floatResource(CR.dimen.alpha_medium)),
         )
     }
 }

@@ -9,6 +9,6 @@ android {
 dependencies {
     implementation(project(":local:playlist"))
 
-    implementation(libs.kotlinx.datetime)
+    implementation(libs.kotlinx.dateTime)
     implementation(libs.androidx.paging.core)
 }

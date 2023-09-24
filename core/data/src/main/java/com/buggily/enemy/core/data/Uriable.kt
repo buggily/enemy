@@ -15,8 +15,5 @@ interface Uriable {
         get() = uriId.toString()
 
     val uri: Uri
-        get() = ContentUris.withAppendedId(
-            contentUri,
-            uriId
-        )
+        get() = ContentUris.withAppendedId(contentUri, uriId)
 }

@@ -14,6 +14,6 @@ dependencies {
     implementation(libs.androidx.media.ui)
     implementation(libs.androidx.media.session)
 
-    implementation(libs.kotlinx.datetime)
+    implementation(libs.kotlinx.dateTime)
     implementation(libs.androidx.compose.material3.windowSizeClass)
 }

@@ -93,7 +93,7 @@ dependencies {
 
     with(libs) {
         implementation(kotlin)
-        implementation(kotlinx.datetime)
+        implementation(kotlinx.dateTime)
 
         implementation(kotlinx.coroutines.core)
         implementation(kotlinx.coroutines.android)

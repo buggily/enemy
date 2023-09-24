@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="add_playlist">add to playlist</string>
+    <string name="track_add_playlist">add to playlist</string>
 </resources>

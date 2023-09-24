@@ -103,8 +103,8 @@ private fun PlaylistsHeader(
         modifier = modifier,
     ) {
         PlaylistItem(
-            nameText = stringResource(R.string.name),
-            modificationText = stringResource(R.string.modification_date),
+            nameText = stringResource(R.string.playlists_name),
+            modificationText = stringResource(R.string.playlists_modification_date),
         )
     }
 }

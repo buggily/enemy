@@ -43,12 +43,11 @@ import com.buggily.enemy.core.ui.ext.floatResource
 import com.buggily.enemy.core.ui.ext.nameText
 import com.buggily.enemy.core.ui.model.PagingPlaceholderKey
 import com.buggily.enemy.core.ui.model.TrackUi
-import com.buggily.enemy.core.ui.ui.track.AlbumTrackItem
 import com.buggily.enemy.core.ui.ui.ArtImage
 import com.buggily.enemy.core.ui.ui.SingleLineText
+import com.buggily.enemy.core.ui.ui.track.AlbumTrackItem
 import com.buggily.enemy.data.album.Album
-import com.buggily.enemy.core.ui.R.dimen as dimens
-import com.buggily.enemy.core.ui.R.string as strings
+import com.buggily.enemy.core.ui.R as CR
 
 @Composable
 fun AlbumScreen(
@@ -229,14 +228,14 @@ private fun AlbumHeaderCompact(
 
         AlbumHeaderBackground(
             album = album,
-            modifier = itemModifier.alpha(floatResource(dimens.alpha_low)),
+            modifier = itemModifier.alpha(floatResource(CR.dimen.alpha_low)),
         )
 
         AlbumHeaderCompactForeground(
             album = album,
             modifier = itemModifier
                 .systemBarsPadding()
-                .padding(dimensionResource(dimens.padding_large)),
+                .padding(dimensionResource(CR.dimen.padding_large)),
         )
     }
 }
@@ -254,14 +253,14 @@ private fun AlbumHeaderMedium(
 
         AlbumHeaderBackground(
             album = album,
-            modifier = itemModifier.alpha(floatResource(dimens.alpha_low)),
+            modifier = itemModifier.alpha(floatResource(CR.dimen.alpha_low)),
         )
 
         AlbumHeaderMediumForeground(
             album = album,
             modifier = itemModifier
                 .statusBarsPadding()
-                .padding(dimensionResource(dimens.padding_large)),
+                .padding(dimensionResource(CR.dimen.padding_large)),
         )
     }
 }
@@ -286,7 +285,7 @@ private fun AlbumHeaderMediumForeground(
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(
-            space = dimensionResource(dimens.padding_large),
+            space = dimensionResource(CR.dimen.padding_large),
             alignment = Alignment.Start,
         ),
         verticalAlignment = Alignment.Bottom,
@@ -340,7 +339,7 @@ private fun AlbumHeaderText(
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(
-            space = dimensionResource(dimens.padding_small),
+            space = dimensionResource(CR.dimen.padding_small),
             alignment = Alignment.Bottom,
         ),
         horizontalAlignment = Alignment.End,
@@ -356,7 +355,7 @@ private fun AlbumHeaderText(
             text = album.artistText,
             textAlign = TextAlign.End,
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.alpha(floatResource(dimens.alpha_medium)),
+            modifier = Modifier.alpha(floatResource(CR.dimen.alpha_medium)),
         )
     }
 }
@@ -372,13 +371,13 @@ private fun AlbumDiscItem(
     ) {
         SingleLineText(
             text = stringResource(
-                strings.disc,
+                CR.string.disc,
                 trackSeparator.discText
             ),
             style = MaterialTheme.typography.titleSmall,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(dimensionResource(dimens.padding_large)),
+                .padding(dimensionResource(CR.dimen.padding_large)),
         )
     }
 }

@@ -3,6 +3,6 @@ package com.buggily.enemy.core.navigation
 import kotlinx.coroutines.flow.SharedFlow
 
 interface NavigationOrchestratable {
-    val eventState: SharedFlow<NavigationEventState>
+    val event: SharedFlow<NavigationEvent>
     fun navigate(args: NavigationArgs)
 }

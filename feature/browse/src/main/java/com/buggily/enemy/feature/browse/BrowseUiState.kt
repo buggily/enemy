@@ -15,16 +15,18 @@ data class BrowseUiState(
 
         sealed interface Tab {
 
+            val stringResId: Int
+
             data object Albums : Tab {
-                override fun toString(): String = "albums"
+                override val stringResId: Int = R.string.browse_albums
             }
 
             data object Tracks : Tab {
-                override fun toString(): String = "tracks"
+                override val stringResId: Int = R.string.browse_tracks
             }
 
             data object Playlists : Tab {
-                override fun toString(): String = "playlists"
+                override val stringResId: Int = R.string.browse_playlists
             }
 
             companion object {

@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.SharedFlow
 
 interface ControllerOrchestratable {
 
-    val eventState: SharedFlow<ControllerEventState>
+    val event: SharedFlow<ControllerEvent>
 
     fun playItems(
         index: Int,

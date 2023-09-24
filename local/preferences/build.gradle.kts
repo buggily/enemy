@@ -1,11 +1,7 @@
 plugins {
-    id("enemy.android.library.local")
-}
-
-android {
-    namespace = "com.buggily.enemy.local.preferences"
+    id("enemy.kotlin.library.local")
 }
 
 dependencies {
-    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.datastore.preferences.core)
 }

@@ -13,6 +13,6 @@ internal object LocalPlaylistDaoProvider {
 
     @Provides
     fun provides(
-        database: EnemyDatabaseable,
-    ): LocalPlaylistDao = database.getLocalPlaylistDao()
+        enemyDatabase: EnemyDatabaseable,
+    ): LocalPlaylistDao = enemyDatabase.getLocalPlaylistDao()
 }

@@ -30,7 +30,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.buggily.enemy.core.ui.ui.SingleLineText
 import com.buggily.enemy.data.theme.Theme
-import com.buggily.enemy.core.ui.R.dimen as dimens
+import com.buggily.enemy.core.ui.R as CR
 
 @Composable
 fun PreferencesScreen(
@@ -65,15 +65,15 @@ private fun PreferencesScreen(
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(
-            space = dimensionResource(dimens.padding_large_extra),
+            space = dimensionResource(CR.dimen.padding_large_extra),
             alignment = Alignment.Top,
         ),
         horizontalAlignment = Alignment.Start,
         contentPadding = WindowInsets(
-            left = dimensionResource(dimens.padding_large),
-            top = dimensionResource(dimens.padding_large),
-            right = dimensionResource(dimens.padding_large),
-            bottom = dimensionResource(dimens.padding_large),
+            left = dimensionResource(CR.dimen.padding_large),
+            top = dimensionResource(CR.dimen.padding_large),
+            right = dimensionResource(CR.dimen.padding_large),
+            bottom = dimensionResource(CR.dimen.padding_large),
         )
             .add(WindowInsets.safeContent)
             .asPaddingValues(),
@@ -99,7 +99,7 @@ private fun PreferencesHeader(
     modifier: Modifier = Modifier,
 ) {
     SingleLineText(
-        text = stringResource(R.string.preferences),
+        text = stringResource(R.string.preferences_theme_preferences),
         style = MaterialTheme.typography.headlineLarge,
         modifier = modifier,
     )
@@ -112,7 +112,7 @@ private fun PreferencesContent(
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(
-            space = dimensionResource(dimens.padding_large),
+            space = dimensionResource(CR.dimen.padding_large),
             alignment = Alignment.Top,
         ),
         horizontalAlignment = Alignment.Start,
@@ -131,12 +131,12 @@ private fun PreferencesThemeContent(
     modifier: Modifier = Modifier,
 ) {
     PreferencesPreference(
-        text = stringResource(R.string.theme_scheme),
+        text = stringResource(R.string.preferences_theme_scheme),
         modifier = modifier,
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(
-                space = dimensionResource(dimens.padding_large),
+                space = dimensionResource(CR.dimen.padding_large),
                 alignment = Alignment.Top,
             ),
             horizontalAlignment = Alignment.Start,
@@ -191,14 +191,14 @@ private fun PreferencesThemeSchemeRadioButton(
     modifier: Modifier = Modifier,
 ) {
     val text: String = when (scheme) {
-        is Theme.Scheme.Default -> R.string.theme_scheme_default
-        is Theme.Scheme.Dark -> R.string.theme_scheme_dark
-        is Theme.Scheme.Light -> R.string.theme_scheme_light
+        is Theme.Scheme.Default -> R.string.preferences_theme_scheme_default
+        is Theme.Scheme.Dark -> R.string.preferences_theme_scheme_dark
+        is Theme.Scheme.Light -> R.string.preferences_theme_scheme_light
     }.let { stringResource(it) }
 
     Row(
         horizontalArrangement = Arrangement.spacedBy(
-            space = dimensionResource(dimens.padding_large),
+            space = dimensionResource(CR.dimen.padding_large),
             alignment = Alignment.Start,
         ),
         verticalAlignment = Alignment.CenterVertically,
@@ -225,14 +225,14 @@ private fun PreferencesThemeDynamic(
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(
-            space = dimensionResource(dimens.padding_large),
+            space = dimensionResource(CR.dimen.padding_large),
             alignment = Alignment.Start,
         ),
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier,
     ) {
         SingleLineText(
-            text = stringResource(R.string.theme_dynamic),
+            text = stringResource(R.string.preferences_theme_dynamic),
             style = MaterialTheme.typography.labelLarge,
             modifier = Modifier.weight(1f),
         )
@@ -254,7 +254,7 @@ private fun PreferencesThemeReset(
         modifier = modifier,
     ) {
         Text(
-            text = stringResource(R.string.theme_reset),
+            text = stringResource(R.string.preferences_theme_reset),
             style = MaterialTheme.typography.labelLarge,
         )
     }
@@ -273,13 +273,13 @@ private fun PreferencesPreference(
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(
-                space = dimensionResource(dimens.padding_large),
+                space = dimensionResource(CR.dimen.padding_large),
                 alignment = Alignment.Top,
             ),
             horizontalAlignment = Alignment.Start,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(dimensionResource(dimens.padding_large)),
+                .padding(dimensionResource(CR.dimen.padding_large)),
         ) {
             SingleLineText(
                 text = text,
@@ -287,7 +287,7 @@ private fun PreferencesPreference(
                 modifier = modifier,
             )
 
-            Box(Modifier.padding(horizontal = dimensionResource(dimens.padding_large))) {
+            Box(Modifier.padding(horizontal = dimensionResource(CR.dimen.padding_large))) {
                 content()
             }
         }

@@ -18,7 +18,7 @@ dependencies {
     implementation(project(":domain:controller"))
     implementation(project(":domain:navigation"))
 
-    implementation(libs.kotlinx.datetime)
+    implementation(libs.kotlinx.dateTime)
     implementation(libs.androidx.media.core)
 
     implementation(libs.androidx.paging)

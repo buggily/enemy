@@ -17,7 +17,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.buggily.enemy.core.ui.ui.OutlinedSingleLineTextField
 import com.buggily.enemy.core.ui.ui.TextButton
 import com.buggily.enemy.feature.playlist.R
-import com.buggily.enemy.core.ui.R.dimen as dimens
+import com.buggily.enemy.core.ui.R as CR
 
 @Composable
 fun CreatePlaylistDialog(
@@ -56,11 +56,11 @@ private fun CreatePlaylistDialog(
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(
-                space = dimensionResource(dimens.padding_large),
+                space = dimensionResource(CR.dimen.padding_large),
                 alignment = Alignment.Top,
             ),
             horizontalAlignment = Alignment.Start,
-            modifier = Modifier.padding(dimensionResource(dimens.padding_large))
+            modifier = Modifier.padding(dimensionResource(CR.dimen.padding_large))
         ) {
             CreatePlaylistTitleText()
 
