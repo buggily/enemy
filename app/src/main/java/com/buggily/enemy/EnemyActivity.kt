@@ -141,7 +141,10 @@ class EnemyActivity : ComponentActivity() {
             }
 
             LaunchedEffect(navController, navigationOrchestrator) {
-                navigationOrchestrator.event.flowWithLifecycle(lifecycle).collect {
+                navigationOrchestrator.event.flowWithLifecycle(
+                    lifecycle = lifecycle,
+                    minActiveState = Lifecycle.State.RESUMED,
+                ).collect {
                     when (val args: NavigationArgs = it.args) {
                         is NavigationArgs.Route.WithOptions -> navController.navigate(
                             route = args.route,
@@ -152,7 +155,12 @@ class EnemyActivity : ComponentActivity() {
                             route = args.route,
                         )
 
-                        is NavigationArgs.Back -> navController.popBackStack()
+                        is NavigationArgs.Back.WithOptions -> navController.popBackStack(
+                            route = args.route,
+                            inclusive = true,
+                        )
+
+                        is NavigationArgs.Back.WithoutOptions -> navController.popBackStack()
                     }
                 }
             }
@@ -244,6 +252,7 @@ class EnemyActivity : ComponentActivity() {
         val isLight: Boolean = when (uiMode and Configuration.UI_MODE_NIGHT_MASK) {
             Configuration.UI_MODE_NIGHT_NO,
             Configuration.UI_MODE_NIGHT_UNDEFINED -> true
+
             else -> false
         }
 
@@ -375,7 +384,7 @@ class EnemyActivity : ComponentActivity() {
 
     private fun startSetPosition() {
         setPosition = lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+            repeatOnLifecycle(Lifecycle.State.RESUMED) {
                 while (true) {
                     setPosition()
                     delay(timeMillis = 1000)

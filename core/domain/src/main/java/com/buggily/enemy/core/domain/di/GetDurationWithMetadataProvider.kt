@@ -1,6 +1,6 @@
 package com.buggily.enemy.core.domain.di
 
-import com.buggily.core.domain.GetDurationWithMetadata
+import com.buggily.enemy.core.domain.GetDurationWithMetadata
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

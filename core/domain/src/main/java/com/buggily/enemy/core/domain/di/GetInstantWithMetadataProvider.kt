@@ -1,8 +1,8 @@
 package com.buggily.enemy.core.domain.di
 
-import com.buggily.core.domain.GetInstant
-import com.buggily.core.domain.GetInstantWithMetadata
-import com.buggily.core.domain.GetInstantWithMetadataFromInstant
+import com.buggily.enemy.core.domain.GetInstant
+import com.buggily.enemy.core.domain.GetInstantWithMetadata
+import com.buggily.enemy.core.domain.GetInstantWithMetadataFromInstant
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

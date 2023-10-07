@@ -1,6 +1,6 @@
 package com.buggily.enemy.core.domain.di
 
-import com.buggily.core.domain.GetTimeZone
+import com.buggily.enemy.core.domain.GetTimeZone
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

@@ -7,7 +7,7 @@ import androidx.paging.PagingData
 import com.buggily.enemy.core.navigation.NavigationDestination
 import com.buggily.enemy.data.playlist.Playlist
 import com.buggily.enemy.data.track.Track
-import com.buggily.enemy.domain.navigation.NavigateBack
+import com.buggily.enemy.domain.navigation.NavigateBackFromTrackPlaylistPicker
 import com.buggily.enemy.domain.playlist.GetPlaylistPaging
 import com.buggily.enemy.domain.track.GetTrackById
 import com.buggily.enemy.domain.track.InsertTrackByPlaylistId
@@ -22,7 +22,7 @@ import javax.inject.Inject
 class TrackPlaylistPickerViewModel @Inject constructor(
     private val getTrackById: GetTrackById,
     private val insertTrackByPlaylistId: InsertTrackByPlaylistId,
-    private val navigateBack: NavigateBack,
+    private val navigateBackFromTrackPlaylistPicker: NavigateBackFromTrackPlaylistPicker,
     getPlaylistPaging: GetPlaylistPaging,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -53,6 +53,6 @@ class TrackPlaylistPickerViewModel @Inject constructor(
             playlistId = playlist.id,
         )
 
-        navigateBack()
+        navigateBackFromTrackPlaylistPicker(trackId)
     }
 }

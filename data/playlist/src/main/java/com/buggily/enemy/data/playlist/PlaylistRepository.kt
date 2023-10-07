@@ -2,7 +2,7 @@ package com.buggily.enemy.data.playlist
 
 import androidx.paging.PagingData
 import androidx.paging.map
-import com.buggily.core.domain.GetInstantWithMetadataFromInstant
+import com.buggily.enemy.core.domain.GetInstantWithMetadataFromInstant
 import com.buggily.enemy.local.playlist.LocalPlaylist
 import com.buggily.enemy.local.playlist.LocalPlaylistSourceable
 import kotlinx.coroutines.flow.Flow

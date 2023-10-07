@@ -1,6 +1,6 @@
 package com.buggily.enemy.data.track
 
-import com.buggily.core.domain.GetDurationWithMetadata
+import com.buggily.enemy.core.domain.GetDurationWithMetadata
 import com.buggily.enemy.external.track.ExternalTrack
 import com.buggily.enemy.local.track.LocalTrack
 

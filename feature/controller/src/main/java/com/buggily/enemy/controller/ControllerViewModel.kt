@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.session.MediaController
-import com.buggily.core.domain.GetDurationWithMetadata
 import com.buggily.enemy.core.data.DurationWithMetadata
+import com.buggily.enemy.core.domain.GetDurationWithMetadata
 import com.buggily.enemy.domain.controller.Next
 import com.buggily.enemy.domain.controller.Pause
 import com.buggily.enemy.domain.controller.Play
@@ -13,6 +13,8 @@ import com.buggily.enemy.domain.controller.Previous
 import com.buggily.enemy.domain.controller.Repeat
 import com.buggily.enemy.domain.controller.Seek
 import com.buggily.enemy.domain.controller.Shuffle
+import com.buggily.enemy.domain.navigation.NavigateBack
+import com.buggily.enemy.domain.navigation.NavigateBackFromController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,11 +38,13 @@ class ControllerViewModel @Inject constructor(
     private val shuffle: Shuffle,
     private val seek: Seek,
     private val getDurationWithMetadata: GetDurationWithMetadata,
+    private val navigateBackFromController: NavigateBackFromController,
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<ControllerUiState>
     val uiState: StateFlow<ControllerUiState> get() = _uiState
 
+    val isEmpty: StateFlow<Boolean>
     val isPlaying: StateFlow<Boolean>
 
     init {
@@ -80,6 +84,12 @@ class ControllerViewModel @Inject constructor(
         }
 
         isPlaying = playState.map { it.isPlaying }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = false,
+        )
+
+        isEmpty = uiState.map { it.mediaItem == null && !it.playState.isPlaying }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(),
             initialValue = false,
@@ -145,6 +155,8 @@ class ControllerViewModel @Inject constructor(
 
         it.copy(seekState = it.seekState.copy(duration = getDurationWithMetadata(milliseconds)))
     }
+
+    fun onEmpty() = navigateBackFromController()
 
     private fun onSeekChange(seconds: Float) = onSeekChange(
         duration = seconds.toLong().toDuration(DurationUnit.SECONDS),

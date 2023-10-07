@@ -3,11 +3,11 @@ package com.buggily.enemy.feature.playlist.create
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.buggily.core.domain.GetInstantWithMetadata
 import com.buggily.enemy.core.data.InstantWithMetadata
+import com.buggily.enemy.core.domain.GetInstantWithMetadata
 import com.buggily.enemy.core.navigation.NavigationDestination
 import com.buggily.enemy.data.playlist.Playlist
-import com.buggily.enemy.domain.navigation.NavigateBack
+import com.buggily.enemy.domain.navigation.NavigateBackFromCreatePlaylist
 import com.buggily.enemy.domain.playlist.InsertPlaylist
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -25,16 +25,18 @@ import javax.inject.Inject
 class CreatePlaylistViewModel @Inject constructor(
     private val insertPlaylist: InsertPlaylist,
     private val getInstantWithMetadata: GetInstantWithMetadata,
-    private val navigateBack: NavigateBack,
+    private val navigateBackFromCreatePlaylist: NavigateBackFromCreatePlaylist,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
+
+    private val playlistName: String
 
     private val _uiState: MutableStateFlow<CreatePlaylistUiState>
     val uiState: StateFlow<CreatePlaylistUiState> get() = _uiState
 
     init {
         val playlistNameKey: String = NavigationDestination.Playlist.Create.name
-        val playlistName: String = checkNotNull(savedStateHandle[playlistNameKey])
+        playlistName = checkNotNull(savedStateHandle[playlistNameKey])
 
         CreatePlaylistUiState(
             nameState = CreatePlaylistUiState.NameState(
@@ -80,7 +82,7 @@ class CreatePlaylistViewModel @Inject constructor(
 
         viewModelScope.launch {
             insertPlaylist(playlist)
-            navigateBack()
+            navigateBackFromCreatePlaylist(playlistName)
         }
     }
 

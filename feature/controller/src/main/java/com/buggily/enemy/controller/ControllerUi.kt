@@ -23,15 +23,20 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.media3.common.MediaItem
 import com.buggily.enemy.core.ui.LocalWindowSizeClass
 import com.buggily.enemy.core.ui.ext.artistText
@@ -48,6 +53,15 @@ fun ControllerScreen(
     modifier: Modifier = Modifier,
 ) {
     val uiState: ControllerUiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
+    val lifecycle: Lifecycle = lifecycleOwner.lifecycle
+
+    LaunchedEffect(Unit) {
+        viewModel.isEmpty.flowWithLifecycle(
+            lifecycle = lifecycle,
+            minActiveState = Lifecycle.State.RESUMED,
+        ).collect { if (it) viewModel.onEmpty() }
+    }
 
     Box(modifier) {
         ControllerScreen(

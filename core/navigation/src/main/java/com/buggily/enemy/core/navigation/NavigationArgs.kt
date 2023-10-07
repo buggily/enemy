@@ -4,7 +4,14 @@ import androidx.navigation.NavOptionsBuilder
 
 sealed interface NavigationArgs {
 
-    data object Back : NavigationArgs
+    sealed interface Back : NavigationArgs {
+
+        data object WithoutOptions : Back
+
+        data class WithOptions(
+            val route: String,
+        ) : Back
+    }
 
     sealed interface Route : NavigationArgs {
 
