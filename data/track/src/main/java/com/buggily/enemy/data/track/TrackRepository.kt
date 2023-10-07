@@ -2,7 +2,7 @@ package com.buggily.enemy.data.track
 
 import androidx.paging.PagingData
 import androidx.paging.map
-import com.buggily.core.domain.GetDurationWithMetadata
+import com.buggily.enemy.core.domain.GetDurationWithMetadata
 import com.buggily.enemy.external.track.ExternalTrack
 import com.buggily.enemy.external.track.ExternalTrackSourceable
 import com.buggily.enemy.local.track.LocalTrack

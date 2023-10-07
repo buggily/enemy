@@ -1,6 +1,6 @@
 package com.buggily.enemy.core.domain.di
 
-import com.buggily.core.domain.GetInstant
+import com.buggily.enemy.core.domain.GetInstant
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

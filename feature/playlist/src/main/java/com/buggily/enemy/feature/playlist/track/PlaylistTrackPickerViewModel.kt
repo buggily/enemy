@@ -7,7 +7,7 @@ import com.buggily.enemy.core.ui.ui.picker.PickerUiState
 import com.buggily.enemy.core.ui.ui.picker.PickerViewModel
 import com.buggily.enemy.core.ui.ui.picker.Pickerable
 import com.buggily.enemy.data.track.TrackWithIndex
-import com.buggily.enemy.domain.navigation.NavigateBack
+import com.buggily.enemy.domain.navigation.NavigateBackFromPlaylistTrackPicker
 import com.buggily.enemy.domain.track.GetTrackByPlaylistIdAndIndex
 import com.buggily.enemy.domain.track.RemoveTrackByPlaylistId
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,7 +20,7 @@ import javax.inject.Inject
 class PlaylistTrackPickerViewModel @Inject constructor(
     private val getTrackByPlaylistIdAndIndex: GetTrackByPlaylistIdAndIndex,
     private val removeTrackByPlaylistId: RemoveTrackByPlaylistId,
-    private val navigateBack: NavigateBack,
+    private val navigateBackFromPlaylistTrackPicker: NavigateBackFromPlaylistTrackPicker,
     savedStateHandle: SavedStateHandle,
 ) : PickerViewModel() {
 
@@ -56,7 +56,10 @@ class PlaylistTrackPickerViewModel @Inject constructor(
                     track = track,
                 )
 
-                navigateBack()
+                navigateBackFromPlaylistTrackPicker(
+                    playlistId = playlistId,
+                    trackIndex = trackIndex,
+                )
             }
             else -> Unit
         }

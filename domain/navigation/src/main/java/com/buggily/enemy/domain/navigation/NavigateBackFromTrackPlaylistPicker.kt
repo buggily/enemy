@@ -3,7 +3,7 @@ package com.buggily.enemy.domain.navigation
 import com.buggily.enemy.core.navigation.NavigationArgs
 import com.buggily.enemy.core.navigation.NavigationDestination
 
-class NavigateToTrackPlaylistPicker(
+class NavigateBackFromTrackPlaylistPicker(
     private val navigate: Navigate,
 ) {
 
@@ -12,11 +12,8 @@ class NavigateToTrackPlaylistPicker(
             trackId = trackId,
         )
 
-        NavigationArgs.Route.WithOptions(route) {
-            popUpTo(NavigationDestination.Track.Picker.route) {
-                inclusive = true
-                saveState = false
-            }
-        }.let { navigate(it) }
+        NavigationArgs.Back.WithOptions(
+            route = route,
+        ).let { navigate(it) }
     }
 }

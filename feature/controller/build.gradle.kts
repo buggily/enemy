@@ -9,6 +9,7 @@ android {
 
 dependencies {
     implementation(project(":domain:controller"))
+    implementation(project(":domain:navigation"))
 
     implementation(libs.androidx.media.core)
     implementation(libs.androidx.media.ui)

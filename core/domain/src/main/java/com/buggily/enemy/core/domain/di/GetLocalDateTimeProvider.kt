@@ -1,8 +1,8 @@
 package com.buggily.enemy.core.domain.di
 
-import com.buggily.core.domain.GetInstant
-import com.buggily.core.domain.GetLocalDateTime
-import com.buggily.core.domain.GetLocalDateTimeFromInstant
+import com.buggily.enemy.core.domain.GetInstant
+import com.buggily.enemy.core.domain.GetLocalDateTime
+import com.buggily.enemy.core.domain.GetLocalDateTimeFromInstant
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

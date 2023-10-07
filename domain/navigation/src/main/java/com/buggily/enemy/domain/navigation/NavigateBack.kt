@@ -6,5 +6,5 @@ class NavigateBack(
     private val navigate: Navigate,
 ) {
 
-    operator fun invoke() = navigate(NavigationArgs.Back)
+    operator fun invoke() = navigate(NavigationArgs.Back.WithoutOptions)
 }

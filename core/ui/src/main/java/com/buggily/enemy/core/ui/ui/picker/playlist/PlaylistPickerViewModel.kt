@@ -6,7 +6,7 @@ import com.buggily.enemy.core.navigation.NavigationDestination
 import com.buggily.enemy.core.ui.ui.picker.PickerUiState
 import com.buggily.enemy.core.ui.ui.picker.PickerViewModel
 import com.buggily.enemy.core.ui.ui.picker.Pickerable
-import com.buggily.enemy.domain.navigation.NavigateBack
+import com.buggily.enemy.domain.navigation.NavigateBackFromPlaylistPicker
 import com.buggily.enemy.domain.playlist.DeletePlaylistById
 import com.buggily.enemy.domain.track.DeleteTracksByPlaylistId
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,7 +19,7 @@ import javax.inject.Inject
 class PlaylistPickerViewModel @Inject constructor(
     private val deletePlaylistById: DeletePlaylistById,
     private val deleteTracksByPlaylistId: DeleteTracksByPlaylistId,
-    private val navigateBack: NavigateBack,
+    private val navigateBackFromPlaylistPicker: NavigateBackFromPlaylistPicker,
     savedStateHandle: SavedStateHandle,
 ) : PickerViewModel() {
 
@@ -43,7 +43,7 @@ class PlaylistPickerViewModel @Inject constructor(
             is PlaylistPicker.Delete -> viewModelScope.launch {
                 deletePlaylistById(playlistId)
                 deleteTracksByPlaylistId(playlistId)
-                navigateBack()
+                navigateBackFromPlaylistPicker(playlistId)
             }
             else -> Unit
         }
