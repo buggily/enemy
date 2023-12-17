@@ -69,6 +69,8 @@ class EnemyActivity : ComponentActivity() {
     private val controllerViewModel: ControllerViewModel by viewModels()
 
     private var setPosition: Job? = null
+    private var controller: MediaController? = null
+
     private lateinit var controllerFuture: ListenableFuture<MediaController>
 
     @Inject
@@ -227,6 +229,7 @@ class EnemyActivity : ComponentActivity() {
         lifecycleScope.launch {
             requireController().removeListener(controllerListener)
             MediaController.releaseFuture(controllerFuture)
+            controller = null
         }
 
         stopSetPosition()
@@ -250,10 +253,8 @@ class EnemyActivity : ComponentActivity() {
 
         val uiMode: Int = resources.configuration.uiMode
         val isLight: Boolean = when (uiMode and Configuration.UI_MODE_NIGHT_MASK) {
-            Configuration.UI_MODE_NIGHT_NO,
-            Configuration.UI_MODE_NIGHT_UNDEFINED -> true
-
-            else -> false
+            Configuration.UI_MODE_NIGHT_YES -> false
+            else -> true
         }
 
         with(insetsController) {
@@ -302,12 +303,12 @@ class EnemyActivity : ComponentActivity() {
         }
     }
 
-    private suspend fun requireController(): MediaController = suspendCoroutine {
+    private suspend fun requireController(): MediaController = controller ?: suspendCoroutine {
         controllerFuture.addListener(
             getRequireControllerListener(it),
             executor,
         )
-    }
+    }.also { controller = it }
 
     private fun getRequireControllerListener(
         continuation: Continuation<MediaController>,
