@@ -13,7 +13,6 @@ import com.buggily.enemy.domain.controller.Previous
 import com.buggily.enemy.domain.controller.Repeat
 import com.buggily.enemy.domain.controller.Seek
 import com.buggily.enemy.domain.controller.Shuffle
-import com.buggily.enemy.domain.navigation.NavigateBack
 import com.buggily.enemy.domain.navigation.NavigateBackFromController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -46,6 +45,7 @@ class ControllerViewModel @Inject constructor(
 
     val isEmpty: StateFlow<Boolean>
     val isPlaying: StateFlow<Boolean>
+    private var isSeeking = false
 
     init {
         ControllerUiState(
@@ -100,9 +100,9 @@ class ControllerViewModel @Inject constructor(
         it.copy(mediaItem = mediaItem)
     }
 
-    fun setPosition(position: Long) = onSeekChange(
-        duration = position.toDuration(DurationUnit.MILLISECONDS),
-    )
+    fun setPosition(position: Long) {
+        if (!isSeeking) onSeekChange(duration = position.toDuration(DurationUnit.MILLISECONDS))
+    }
 
     fun setPlaybackState(playbackState: Int) = _uiState.update {
         val state: ControllerUiState.PlayState.State = when (playbackState) {
@@ -158,9 +158,10 @@ class ControllerViewModel @Inject constructor(
 
     fun onEmpty() = navigateBackFromController()
 
-    private fun onSeekChange(seconds: Float) = onSeekChange(
-        duration = seconds.toLong().toDuration(DurationUnit.SECONDS),
-    )
+    private fun onSeekChange(seconds: Float) {
+        isSeeking = true
+        onSeekChange(duration = seconds.toLong().toDuration(DurationUnit.SECONDS))
+    }
 
     private fun onSeekChange(duration: Duration) = _uiState.update {
         it.copy(seekState = it.seekState.copy(current = getDurationWithMetadata(duration)))
@@ -194,5 +195,6 @@ class ControllerViewModel @Inject constructor(
 
     private fun onSeekChangeFinish() {
         seek(uiState.value.seekState.milliseconds)
+        isSeeking = false
     }
 }
