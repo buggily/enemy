@@ -1,6 +1,5 @@
 package com.buggily.enemy.core.domain.di
 
-import com.buggily.enemy.core.domain.GetDateTimeFormatter
 import com.buggily.enemy.core.domain.GetInstantText
 import com.buggily.enemy.core.domain.GetLocalDateTimeFromInstant
 import dagger.Module

@@ -37,7 +37,7 @@ object MediaSessionProvider {
                     .setMediaId(mediaId)
                     .setUri(mediaUri)
                     .build()
-            }.toMutableList().let { Futures.immediateFuture(it) }
+            }.let { Futures.immediateFuture(it.toMutableList()) }
         }
 
         return MediaSession.Builder(

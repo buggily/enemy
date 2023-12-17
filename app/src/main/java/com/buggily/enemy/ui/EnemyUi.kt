@@ -223,7 +223,7 @@ private fun EnemyApp(
                 arguments = NavigationDestination.Playlist.Create.arguments,
                 dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
             ) {
-                Box(Modifier.fillMaxWidth(3/4f)) {
+                Box(Modifier.fillMaxWidth(3 / 4f)) {
                     CreatePlaylistDialog(hiltViewModel())
                 }
             }
@@ -235,7 +235,7 @@ private fun EnemyApp(
             ) {
                 val viewModel: PlaylistPickerViewModel = hiltViewModel()
 
-                Box(Modifier.fillMaxWidth(3/4f)) {
+                Box(Modifier.fillMaxWidth(3 / 4f)) {
                     PickerDialog(viewModel)
                 }
             }
@@ -247,7 +247,7 @@ private fun EnemyApp(
             ) {
                 val viewModel: PlaylistTrackPickerViewModel = hiltViewModel()
 
-                Box(Modifier.fillMaxWidth(3/4f)) {
+                Box(Modifier.fillMaxWidth(3 / 4f)) {
                     PickerDialog(viewModel)
                 }
             }
@@ -259,7 +259,7 @@ private fun EnemyApp(
             ) {
                 val viewModel: TrackPickerViewModel = hiltViewModel()
 
-                Box(Modifier.fillMaxWidth(3/4f)) {
+                Box(Modifier.fillMaxWidth(3 / 4f)) {
                     PickerDialog(viewModel)
                 }
             }
@@ -269,7 +269,7 @@ private fun EnemyApp(
                 arguments = NavigationDestination.Track.PlaylistPicker.arguments,
                 dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
             ) {
-                Box(Modifier.fillMaxWidth(3/4f)) {
+                Box(Modifier.fillMaxWidth(3 / 4f)) {
                     TrackPlaylistPickerDialog(hiltViewModel())
                 }
             }
