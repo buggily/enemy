@@ -41,13 +41,11 @@ fun ItemRow(
                 minWidth = Dp.Unspecified,
                 minHeight = dimensionResource(R.dimen.padding_large_extra_extra),
             )
-            .clickable(
-                onClick = onClick,
-            )
             .padding(
                 horizontal = dimensionResource(R.dimen.padding_large),
                 vertical = dimensionResource(R.dimen.padding_large_extra),
-            ),
+            )
+            .clickable { onClick() },
     )
 }
 

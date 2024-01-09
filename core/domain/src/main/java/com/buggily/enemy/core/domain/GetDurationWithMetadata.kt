@@ -11,10 +11,11 @@ class GetDurationWithMetadata(
     private val locale: Locale,
 ) {
 
-    operator fun invoke(milliseconds: Long): DurationWithMetadata {
-        val duration: Duration = milliseconds.toDuration(DurationUnit.MILLISECONDS)
-        return invoke(duration)
-    }
+    operator fun invoke(
+        milliseconds: Long,
+    ): DurationWithMetadata = invoke(
+        duration = milliseconds.toDuration(DurationUnit.MILLISECONDS),
+    )
 
     operator fun invoke(duration: Duration): DurationWithMetadata {
         require(duration.isFinite())

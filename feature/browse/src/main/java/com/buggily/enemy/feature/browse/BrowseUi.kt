@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,6 +30,8 @@ import com.buggily.enemy.core.ui.GlobalUiViewModel
 import com.buggily.enemy.core.ui.SearchableViewModel
 import com.buggily.enemy.feature.playlists.PlaylistsScreen
 import com.buggily.enemy.feature.playlists.PlaylistsViewModel
+import com.buggily.enemy.feature.recent.RecentScreen
+import com.buggily.enemy.feature.recent.RecentViewModel
 import com.buggily.enemy.tracks.TracksScreen
 import com.buggily.enemy.tracks.TracksViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -91,7 +93,7 @@ private fun BrowseTabs(
     tabState: BrowseUiState.TabState,
     modifier: Modifier = Modifier,
 ) {
-    TabRow(
+    ScrollableTabRow(
         selectedTabIndex = tabState.index,
         modifier = modifier,
     ) {
@@ -117,74 +119,79 @@ private fun BrowseContent(
     tabState: BrowseUiState.TabState,
     modifier: Modifier = Modifier,
 ) {
+    val context: Context = LocalContext.current
+    val activity: ComponentActivity = checkNotNull(context as? ComponentActivity)
+    val globalUiViewModel: GlobalUiViewModel = hiltViewModel(activity)
+
     Box(modifier) {
         val contentModifier: Modifier = Modifier.fillMaxSize()
+        val tab: BrowseUiState.TabState.Tab = tabState.tab
 
-        when (tabState.tab) {
-            is BrowseUiState.TabState.Tab.Albums -> BrowseAlbumsContent(
-                viewModel = hiltViewModel(),
-                modifier = contentModifier,
-            )
-            is BrowseUiState.TabState.Tab.Tracks -> BrowseTracksContent(
-                viewModel = hiltViewModel(),
-                modifier = contentModifier,
-            )
-            is BrowseUiState.TabState.Tab.Playlists -> BrowsePlaylistsContent(
-                viewModel = hiltViewModel(),
-                modifier = contentModifier,
-            )
+        LaunchedEffect(tab) {
+            globalUiViewModel.onIsSearchableChange(tab.isSearchable)
         }
-    }
-}
 
-@Composable
-private fun BrowseAlbumsContent(
-    viewModel: AlbumsViewModel,
-    modifier: Modifier = Modifier,
-) {
-    BrowseSearchableContent(viewModel) {
-        AlbumsScreen(
-            viewModel = viewModel,
-            modifier = modifier,
-        )
-    }
-}
+        when (tab) {
+            is BrowseUiState.TabState.Tab.Recent -> {
+                val viewModel: RecentViewModel = hiltViewModel()
 
-@Composable
-private fun BrowseTracksContent(
-    viewModel: TracksViewModel,
-    modifier: Modifier = Modifier,
-) {
-    BrowseSearchableContent(viewModel) {
-        TracksScreen(
-            viewModel = viewModel,
-            modifier = modifier,
-        )
-    }
-}
+                RecentScreen(
+                    viewModel = viewModel,
+                    modifier = contentModifier,
+                )
+            }
 
-@Composable
-private fun BrowsePlaylistsContent(
-    viewModel: PlaylistsViewModel,
-    modifier: Modifier = Modifier,
-) {
-    BrowseSearchableContent(viewModel) {
-        PlaylistsScreen(
-            viewModel = viewModel,
-            modifier = modifier,
-        )
+            is BrowseUiState.TabState.Tab.Albums -> {
+                val viewModel: AlbumsViewModel = hiltViewModel()
+
+                BrowseSearchableContent(
+                    viewModel = viewModel,
+                    globalUiViewModel = globalUiViewModel,
+                ) {
+                    AlbumsScreen(
+                        viewModel = viewModel,
+                        modifier = contentModifier,
+                    )
+                }
+            }
+
+            is BrowseUiState.TabState.Tab.Tracks -> {
+                val viewModel: TracksViewModel = hiltViewModel()
+
+                BrowseSearchableContent(
+                    viewModel = viewModel,
+                    globalUiViewModel = globalUiViewModel,
+                ) {
+                    TracksScreen(
+                        viewModel = viewModel,
+                        modifier = contentModifier,
+                    )
+                }
+            }
+
+            is BrowseUiState.TabState.Tab.Playlists -> {
+                val viewModel: PlaylistsViewModel = hiltViewModel()
+
+                BrowseSearchableContent(
+                    viewModel = viewModel,
+                    globalUiViewModel = globalUiViewModel,
+                ) {
+                    PlaylistsScreen(
+                        viewModel = viewModel,
+                        modifier = contentModifier,
+                    )
+                }
+            }
+        }
     }
 }
 
 @Composable
 private fun BrowseSearchableContent(
     viewModel: SearchableViewModel,
+    globalUiViewModel: GlobalUiViewModel,
     content: @Composable () -> Unit,
 ) {
-    val context: Context = LocalContext.current
-    val activity: ComponentActivity = checkNotNull(context as? ComponentActivity)
-    val globalUiViewModel: GlobalUiViewModel = hiltViewModel(activity)
-
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
     val lifecycle: Lifecycle = lifecycleOwner.lifecycle
 

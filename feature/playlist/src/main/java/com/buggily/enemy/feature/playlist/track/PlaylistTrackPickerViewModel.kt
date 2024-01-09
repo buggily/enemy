@@ -8,8 +8,8 @@ import com.buggily.enemy.core.ui.ui.picker.PickerViewModel
 import com.buggily.enemy.core.ui.ui.picker.Pickerable
 import com.buggily.enemy.data.track.TrackWithIndex
 import com.buggily.enemy.domain.navigation.NavigateBackFromPlaylistTrackPicker
-import com.buggily.enemy.domain.track.GetTrackByPlaylistIdAndIndex
-import com.buggily.enemy.domain.track.RemoveTrackByPlaylistId
+import com.buggily.enemy.domain.track.playlist.DeleteTrackByPlaylistId
+import com.buggily.enemy.domain.track.playlist.GetTrackByPlaylistIdAndIndex
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class PlaylistTrackPickerViewModel @Inject constructor(
     private val getTrackByPlaylistIdAndIndex: GetTrackByPlaylistIdAndIndex,
-    private val removeTrackByPlaylistId: RemoveTrackByPlaylistId,
+    private val deleteTrackByPlaylistId: DeleteTrackByPlaylistId,
     private val navigateBackFromPlaylistTrackPicker: NavigateBackFromPlaylistTrackPicker,
     savedStateHandle: SavedStateHandle,
 ) : PickerViewModel() {
@@ -31,8 +31,8 @@ class PlaylistTrackPickerViewModel @Inject constructor(
     override val uiState: StateFlow<PickerUiState> get() = _uiState
 
     init {
-        val playlistIdKey: String = NavigationDestination.Playlist.TrackPicker.playlistId
-        val trackIndexKey: String = NavigationDestination.Playlist.TrackPicker.trackIndex
+        val playlistIdKey: String = NavigationDestination.Playlist.TrackPicker.PLAYLIST_ID
+        val trackIndexKey: String = NavigationDestination.Playlist.TrackPicker.TRACK_INDEX
 
         playlistId = checkNotNull(savedStateHandle[playlistIdKey])
         trackIndex = checkNotNull(savedStateHandle[trackIndexKey])
@@ -51,7 +51,7 @@ class PlaylistTrackPickerViewModel @Inject constructor(
                     index = trackIndex,
                 ) ?: return@launch
 
-                removeTrackByPlaylistId(
+                deleteTrackByPlaylistId(
                     playlistId = playlistId,
                     track = track,
                 )
@@ -61,6 +61,7 @@ class PlaylistTrackPickerViewModel @Inject constructor(
                     trackIndex = trackIndex,
                 )
             }
+
             else -> Unit
         }
     }

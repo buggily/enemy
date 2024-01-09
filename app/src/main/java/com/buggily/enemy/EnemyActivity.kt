@@ -41,6 +41,7 @@ import com.buggily.enemy.core.ext.readPermission
 import com.buggily.enemy.core.navigation.NavigationArgs
 import com.buggily.enemy.core.navigation.NavigationDestination
 import com.buggily.enemy.core.navigation.NavigationOrchestratable
+import com.buggily.enemy.core.ui.GlobalUiViewModel
 import com.buggily.enemy.data.theme.Theme
 import com.buggily.enemy.di.DirectExecutorQualifier
 import com.buggily.enemy.ui.EnemyApp
@@ -66,6 +67,7 @@ import kotlin.coroutines.suspendCoroutine
 class EnemyActivity : ComponentActivity() {
 
     private val viewModel: EnemyViewModel by viewModels()
+    private val globalUiViewModel: GlobalUiViewModel by viewModels()
     private val controllerViewModel: ControllerViewModel by viewModels()
 
     private var setPosition: Job? = null
@@ -187,7 +189,6 @@ class EnemyActivity : ComponentActivity() {
                 EnemyApp(
                     appState = appState,
                     viewModel = hiltViewModel(this),
-                    globalUiViewModel = hiltViewModel(this),
                     modifier = Modifier.fillMaxSize(),
                 )
             }
@@ -322,7 +323,7 @@ class EnemyActivity : ComponentActivity() {
 
     private val onDestinationChangedListener: NavController.OnDestinationChangedListener =
         NavController.OnDestinationChangedListener { _, it: NavDestination, _ ->
-            viewModel.onDestinationChange(it)
+            globalUiViewModel.onDestinationChange(it)
         }
 
     private val controllerListener: Player.Listener = object : Player.Listener {
@@ -340,11 +341,9 @@ class EnemyActivity : ComponentActivity() {
         override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
             super.onMediaMetadataChanged(mediaMetadata)
 
-            val mediaItem: MediaItem = MediaItem.Builder()
+            MediaItem.Builder()
                 .setMediaMetadata(mediaMetadata)
-                .build()
-
-            controllerViewModel.setMediaItem(mediaItem)
+                .build().let { controllerViewModel.setMediaItem(it) }
         }
 
         override fun onRepeatModeChanged(repeatMode: Int) {

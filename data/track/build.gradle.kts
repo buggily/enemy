@@ -8,7 +8,10 @@ android {
 
 dependencies {
     implementation(project(":local:track"))
+    implementation(project(":local:playlist:track"))
+
     implementation(project(":external:track"))
 
+    implementation(libs.kotlinx.dateTime)
     implementation(libs.androidx.paging.core)
 }

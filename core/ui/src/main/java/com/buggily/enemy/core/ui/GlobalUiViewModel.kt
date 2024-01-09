@@ -2,6 +2,7 @@ package com.buggily.enemy.core.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavDestination
 import com.buggily.enemy.domain.navigation.NavigateToController
 import com.buggily.enemy.domain.navigation.NavigateToCreatePlaylist
 import com.buggily.enemy.domain.navigation.NavigateToPreferences
@@ -33,6 +34,7 @@ class GlobalUiViewModel @Inject constructor(
             searchState = GlobalUiState.SearchState(
                 value = String(),
                 isVisible = false,
+                isSearchable = false,
 
                 onClick = ::onSearchClick,
                 onChange = ::onSearchChange,
@@ -47,6 +49,9 @@ class GlobalUiViewModel @Inject constructor(
             controllerState = GlobalUiState.ControllerState(
                 to = ::toController,
             ),
+            destinationState = GlobalUiState.DestinationState(
+                destination = null,
+            ),
         ).let { _uiState = MutableStateFlow(it) }
 
         val searchState: Flow<GlobalUiState.SearchState> = uiState.map {
@@ -58,6 +63,14 @@ class GlobalUiViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(),
             initialValue = String(),
         )
+    }
+
+    fun onDestinationChange(destination: NavDestination) = _uiState.update {
+        it.copy(destinationState = it.destinationState.copy(destination = destination))
+    }
+
+    fun onIsSearchableChange(isSearchable: Boolean) = _uiState.update {
+        it.copy(searchState = it.searchState.copy(isSearchable = isSearchable))
     }
 
     private fun onSearchClick() = _uiState.update {

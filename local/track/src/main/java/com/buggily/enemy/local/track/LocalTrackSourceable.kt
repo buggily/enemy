@@ -5,16 +5,9 @@ import kotlinx.coroutines.flow.Flow
 
 interface LocalTrackSourceable {
 
-    fun getPagingByPlaylistId(playlistId: Long): Flow<PagingData<LocalTrack>>
-    suspend fun getByPlaylistId(playlistId: Long): List<LocalTrack>
-    suspend fun getMaxIndexByPlaylistId(playlistId: Long): Int?
-
-    suspend fun getByPlaylistIdAndIndex(
-        playlistId: Long,
-        index: Int,
-    ): LocalTrack?
+    fun getPagingByRecency(): Flow<PagingData<LocalTrack>>
+    suspend fun getById(id: Long): LocalTrack?
 
     suspend fun insert(track: LocalTrack)
-    suspend fun delete(track: LocalTrack)
-    suspend fun deleteByPlaylistId(playlistId: Long)
+    suspend fun update(track: LocalTrack)
 }

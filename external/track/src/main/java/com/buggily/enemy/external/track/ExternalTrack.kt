@@ -15,7 +15,7 @@ data class ExternalTrack(
     ) {
 
         companion object {
-            const val defaultDisc = 1
+            const val DEFAULT_DISC = 1
         }
     }
 
@@ -31,6 +31,7 @@ data class ExternalTrack(
     ) {
 
         data class Artist(
+            val id: Long,
             val name: String,
         )
     }

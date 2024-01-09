@@ -11,5 +11,4 @@ interface LocalPlaylistSourceable {
     suspend fun deleteById(id: Long)
 
     suspend fun insert(playlist: LocalPlaylist)
-    suspend fun update(playlist: LocalPlaylist)
 }

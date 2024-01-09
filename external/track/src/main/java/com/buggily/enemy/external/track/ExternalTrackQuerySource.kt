@@ -60,7 +60,7 @@ internal class ExternalTrackQuerySource(
             val name: String = cursor.getStringOrNull(nameIndex) ?: continue
 
             val trackPosition: Int = cursor.getIntOrNull(trackPositionIndex) ?: continue
-            val discPosition: Int = cursor.getIntOrNull(discPositionIndex) ?: ExternalTrack.Position.defaultDisc
+            val discPosition: Int = cursor.getIntOrNull(discPositionIndex) ?: ExternalTrack.Position.DEFAULT_DISC
 
             val duration: Long = cursor.getLongOrNull(durationIndex) ?: continue
 
@@ -82,6 +82,7 @@ internal class ExternalTrackQuerySource(
             val albumArtistName: String = cursor.getStringOrNull(albumArtistNameIndex) ?: continue
 
             val albumArtist = ExternalTrack.Album.Artist(
+                id = artistId,
                 name = albumArtistName,
             )
 

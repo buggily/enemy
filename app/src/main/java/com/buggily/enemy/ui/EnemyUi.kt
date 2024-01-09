@@ -79,20 +79,17 @@ import com.buggily.enemy.core.ui.R as CR
 @Composable
 fun EnemyApp(
     appState: EnemyAppState,
-    viewModel: EnemyViewModel,
-    globalUiViewModel: GlobalUiViewModel,
+    viewModel: GlobalUiViewModel,
     modifier: Modifier = Modifier,
 ) {
     val hostState: SnackbarHostState = remember { SnackbarHostState() }
-    val uiState: EnemyUiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val globalUiState: GlobalUiState by globalUiViewModel.uiState.collectAsStateWithLifecycle()
+    val uiState: GlobalUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     CompositionLocalProvider(LocalWindowSizeClass provides appState.windowSizeClass) {
         EnemyApp(
             appState = appState,
             hostState = hostState,
             uiState = uiState,
-            globalUiState = globalUiState,
             modifier = modifier,
         )
     }
@@ -102,18 +99,17 @@ fun EnemyApp(
 private fun EnemyApp(
     appState: EnemyAppState,
     hostState: SnackbarHostState,
-    uiState: EnemyUiState,
-    globalUiState: GlobalUiState,
+    uiState: GlobalUiState,
     modifier: Modifier = Modifier,
 ) {
     EnemyApp(
         appState = appState,
         hostState = hostState,
-        searchState = globalUiState.searchState,
+        searchState = uiState.searchState,
         destinationState = uiState.destinationState,
-        preferencesState = globalUiState.preferencesState,
-        createPlaylistState = globalUiState.createPlaylistState,
-        controllerState = globalUiState.controllerState,
+        preferencesState = uiState.preferencesState,
+        createPlaylistState = uiState.createPlaylistState,
+        controllerState = uiState.controllerState,
         modifier = modifier,
     )
 }
@@ -124,7 +120,7 @@ private fun EnemyApp(
     appState: EnemyAppState,
     hostState: SnackbarHostState,
     searchState: GlobalUiState.SearchState,
-    destinationState: EnemyUiState.DestinationState,
+    destinationState: GlobalUiState.DestinationState,
     preferencesState: GlobalUiState.PreferencesState,
     createPlaylistState: GlobalUiState.CreatePlaylistState,
     controllerState: GlobalUiState.ControllerState,
@@ -280,7 +276,7 @@ private fun EnemyApp(
 @Composable
 private fun EnemyBottomAppBar(
     searchState: GlobalUiState.SearchState,
-    destinationState: EnemyUiState.DestinationState,
+    destinationState: GlobalUiState.DestinationState,
     preferencesState: GlobalUiState.PreferencesState,
     createPlaylistState: GlobalUiState.CreatePlaylistState,
     controllerState: GlobalUiState.ControllerState,
@@ -345,7 +341,7 @@ private fun EnemyController(
 @Composable
 private fun EnemyBottomBar(
     searchState: GlobalUiState.SearchState,
-    destinationState: EnemyUiState.DestinationState,
+    destinationState: GlobalUiState.DestinationState,
     preferencesState: GlobalUiState.PreferencesState,
     createPlaylistState: GlobalUiState.CreatePlaylistState,
     modifier: Modifier = Modifier,
@@ -364,30 +360,34 @@ private fun EnemyBottomBar(
                 .navigationBarsPadding()
                 .padding(dimensionResource(CR.dimen.padding_large)),
         ) {
-            AnimatedVisibility(
-                visible = searchState.isVisible,
-                enter = expandHorizontally(),
-                exit = ExitTransition.None,
-                modifier = Modifier.weight(1f),
-            ) {
-                EnemyBottomBarSearch(
-                    searchState = searchState,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
-
-            if (!searchState.isVisible) {
+            if (searchState.isSearchButtonVisible) {
                 EnemyBottomBarSearchIconButton(
                     searchState = searchState,
                     modifier = iconButtonModifier,
                 )
+            }
 
+            if (searchState.isPreferencesButtonVisible) {
                 EnemyBottomBarPreferencesIconButton(
                     preferencesState = preferencesState,
                     destinationState = destinationState,
                     modifier = iconButtonModifier,
                 )
+            }
 
+            AnimatedVisibility(
+                visible = searchState.isSearchTextVisible,
+                enter = expandHorizontally(),
+                exit = ExitTransition.None,
+                modifier = Modifier.weight(1f),
+            ) {
+                EnemySearchTextField(
+                    searchState = searchState,
+                    modifier = modifier
+                )
+            }
+
+            if (!searchState.isSearchTextVisible) {
                 Spacer(Modifier.weight(1f))
             }
 
@@ -404,13 +404,13 @@ private fun EnemyBottomBarSearchIconButton(
     searchState: GlobalUiState.SearchState,
     modifier: Modifier = Modifier,
 ) {
-    val painterResId: Int = if (searchState.isEnabled) {
+    val painterResId: Int = if (searchState.isVisible) {
         CR.drawable.search_disable
     } else {
         CR.drawable.search_enable
     }
 
-    val stringResId: Int = if (searchState.isEnabled) {
+    val stringResId: Int = if (searchState.isVisible) {
         CR.string.search_disable
     } else {
         CR.string.search_enable
@@ -427,7 +427,7 @@ private fun EnemyBottomBarSearchIconButton(
 @Composable
 private fun RowScope.EnemyBottomBarPreferencesIconButton(
     preferencesState: GlobalUiState.PreferencesState,
-    destinationState: EnemyUiState.DestinationState,
+    destinationState: GlobalUiState.DestinationState,
     modifier: Modifier = Modifier,
 ) {
     AnimatedVisibility(
@@ -442,17 +442,6 @@ private fun RowScope.EnemyBottomBarPreferencesIconButton(
             contentModifier = modifier,
         )
     }
-}
-
-@Composable
-private fun EnemyBottomBarSearch(
-    searchState: GlobalUiState.SearchState,
-    modifier: Modifier = Modifier,
-) {
-    EnemySearchTextField(
-        searchState = searchState,
-        modifier = modifier
-    )
 }
 
 @Composable

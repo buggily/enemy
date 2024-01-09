@@ -79,17 +79,18 @@ dependencies {
     implementation(project(":feature:playlists"))
     implementation(project(":feature:playlist"))
 
+    implementation(project(":domain:theme"))
     implementation(project(":domain:album"))
     implementation(project(":domain:track"))
     implementation(project(":domain:playlist"))
+
     implementation(project(":domain:navigation"))
     implementation(project(":domain:controller"))
-    implementation(project(":domain:theme"))
 
+    implementation(project(":data:theme"))
     implementation(project(":data:album"))
     implementation(project(":data:track"))
     implementation(project(":data:playlist"))
-    implementation(project(":data:theme"))
 
     with(libs) {
         implementation(kotlin)

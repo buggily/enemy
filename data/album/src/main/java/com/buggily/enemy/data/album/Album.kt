@@ -1,17 +1,18 @@
 package com.buggily.enemy.data.album
 
 import com.buggily.enemy.core.data.Albumable
+import com.buggily.enemy.core.data.Artistable
 
 data class Album(
-    val id: Long,
-    val name: String,
-    val artist: Artist,
+    override val id: Long,
+    override val name: String,
+    override val artist: Artist,
 ) : Albumable {
 
     data class Artist(
-        val id: Long,
-        val name: String,
-    )
+        override val id: Long,
+        override val name: String,
+    ): Artistable
 
     override val artUriId: Long
         get() = id

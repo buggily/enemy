@@ -35,7 +35,7 @@ class CreatePlaylistViewModel @Inject constructor(
     val uiState: StateFlow<CreatePlaylistUiState> get() = _uiState
 
     init {
-        val playlistNameKey: String = NavigationDestination.Playlist.Create.name
+        val playlistNameKey: String = NavigationDestination.Playlist.Create.NAME
         playlistName = checkNotNull(savedStateHandle[playlistNameKey])
 
         CreatePlaylistUiState(

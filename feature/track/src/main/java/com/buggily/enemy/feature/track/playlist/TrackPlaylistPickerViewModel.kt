@@ -10,7 +10,7 @@ import com.buggily.enemy.data.track.Track
 import com.buggily.enemy.domain.navigation.NavigateBackFromTrackPlaylistPicker
 import com.buggily.enemy.domain.playlist.GetPlaylistPaging
 import com.buggily.enemy.domain.track.GetTrackById
-import com.buggily.enemy.domain.track.InsertTrackByPlaylistId
+import com.buggily.enemy.domain.track.playlist.InsertTrackByPlaylistId
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,7 +35,7 @@ class TrackPlaylistPickerViewModel @Inject constructor(
     val playlists: Flow<PagingData<Playlist>> = getPlaylistPaging(String())
 
     init {
-        val trackIdKey: String = NavigationDestination.Track.PlaylistPicker.trackId
+        val trackIdKey: String = NavigationDestination.Track.PlaylistPicker.TRACK_ID
         trackId = checkNotNull(savedStateHandle[trackIdKey])
 
         TrackPlaylistPickerUiState(

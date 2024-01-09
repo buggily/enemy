@@ -11,5 +11,4 @@ interface PlaylistRepositable {
     suspend fun deleteById(id: Long)
 
     suspend fun insert(playlist: Playlist)
-    suspend fun update(playlist: Playlist)
 }

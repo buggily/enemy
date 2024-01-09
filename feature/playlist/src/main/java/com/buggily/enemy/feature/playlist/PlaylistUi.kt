@@ -37,7 +37,7 @@ import com.buggily.enemy.core.ui.ext.floatResource
 import com.buggily.enemy.core.ui.ext.nameText
 import com.buggily.enemy.core.ui.ext.peekFirst
 import com.buggily.enemy.core.ui.ui.ArtImage
-import com.buggily.enemy.core.ui.ui.track.PlaylistTrackItem
+import com.buggily.enemy.core.ui.ui.track.TrackItem
 import com.buggily.enemy.data.playlist.Playlist
 import com.buggily.enemy.data.track.Track
 import com.buggily.enemy.data.track.TrackWithIndex
@@ -133,7 +133,7 @@ private fun PlaylistScreenCompact(
         ) {
             items(tracks.itemCount) {
                 when (val trackWithIndex: TrackWithIndex? = tracks[it]) {
-                    is TrackWithIndex -> PlaylistTrackItem(
+                    is TrackWithIndex -> TrackItem(
                         track = trackWithIndex.track,
                         onClick = { trackState.onClick(trackWithIndex) },
                         onLongClick = { trackState.onLongClick(trackWithIndex) },
@@ -176,7 +176,7 @@ private fun PlaylistScreenMedium(
 
             items(tracks.itemCount) {
                 when (val trackWithIndex: TrackWithIndex? = tracks[it]) {
-                    is TrackWithIndex -> PlaylistTrackItem(
+                    is TrackWithIndex -> TrackItem(
                         track = trackWithIndex.track,
                         onClick = { trackState.onClick(trackWithIndex) },
                         onLongClick = { trackState.onLongClick(trackWithIndex) },

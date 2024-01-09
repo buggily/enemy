@@ -10,6 +10,7 @@ android {
 dependencies {
     implementation(project(":local:track"))
     implementation(project(":local:playlist"))
+    implementation(project(":local:playlist:track"))
     implementation(project(":local:preferences"))
 
     implementation(libs.kotlinx.dateTime)

@@ -5,36 +5,20 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 
-internal class LocalTrackSource(
+class LocalTrackSource(
     private val config: PagingConfig,
     private val localTrackDao: LocalTrackDao,
 ) : LocalTrackSourceable {
 
-    override fun getPagingByPlaylistId(
-        playlistId: Long,
-    ): Flow<PagingData<LocalTrack>> = Pager(
+    override fun getPagingByRecency(): Flow<PagingData<LocalTrack>> = Pager(
         config = config,
-        pagingSourceFactory = { localTrackDao.getPagingByPlaylistId(playlistId) },
+        pagingSourceFactory = { localTrackDao.getPagingByRecency() },
     ).flow
 
-    override suspend fun getByPlaylistId(
-        playlistId: Long,
-    ): List<LocalTrack> = localTrackDao.getByPlaylistId(
-        playlistId = playlistId,
-    )
-
-    override suspend fun getMaxIndexByPlaylistId(
-        playlistId: Long,
-    ): Int? = localTrackDao.getMaxIndexByPlaylistId(
-        playlistId = playlistId,
-    )
-
-    override suspend fun getByPlaylistIdAndIndex(
-        playlistId: Long,
-        index: Int,
-    ): LocalTrack? = localTrackDao.getByPlaylistIdAndIndex(
-        playlistId = playlistId,
-        index = index,
+    override suspend fun getById(
+        id: Long,
+    ): LocalTrack? = localTrackDao.getById(
+        id = id,
     )
 
     override suspend fun insert(
@@ -43,15 +27,9 @@ internal class LocalTrackSource(
         track = track,
     )
 
-    override suspend fun delete(
+    override suspend fun update(
         track: LocalTrack,
-    ) = localTrackDao.delete(
+    ) = localTrackDao.update(
         track = track,
-    )
-
-    override suspend fun deleteByPlaylistId(
-        playlistId: Long,
-    ) = localTrackDao.deleteByPlaylistId(
-        playlistId = playlistId,
     )
 }
