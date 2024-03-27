@@ -315,9 +315,7 @@ private fun EnemyBottomAppBar(
                 destinationState = destinationState,
                 preferencesState = preferencesState,
                 createPlaylistState = createPlaylistState,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(dimensionResource(R.dimen.bottom_bar)),
+                modifier = Modifier.fillMaxWidth(),
             )
         }
     }
@@ -381,7 +379,7 @@ private fun EnemyBottomBar(
             ) {
                 EnemySearchTextField(
                     searchState = searchState,
-                    modifier = modifier
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
 
