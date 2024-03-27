@@ -12,10 +12,10 @@ abstract class PositionalPagingSource<Value : Any> : PagingSource<PositionalPagi
     ) {
 
         private val positionOrDefault: Int
-            get() = position ?: defaultPosition
+            get() = position ?: DEFAULT_POSITION
 
         private val isPositionDefault: Boolean
-            get() = positionOrDefault == defaultPosition
+            get() = positionOrDefault == DEFAULT_POSITION
 
         val limit: Int
             get() = with(config) { if (isPositionDefault) initialLoadSize else pageSize }
@@ -54,7 +54,7 @@ abstract class PositionalPagingSource<Value : Any> : PagingSource<PositionalPagi
                 config = config,
             )
 
-            private const val defaultPosition = 0
+            private const val DEFAULT_POSITION = 0
         }
     }
 

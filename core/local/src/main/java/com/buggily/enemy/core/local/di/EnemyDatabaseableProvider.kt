@@ -23,8 +23,8 @@ internal object EnemyDatabaseableProvider {
     ): EnemyDatabaseable = Room.databaseBuilder(
         context = context,
         klass = EnemyDatabase::class.java,
-        name = name,
+        name = NAME,
     ).build()
 
-    private const val name = "enemy.db"
+    private const val NAME = "enemy.db"
 }

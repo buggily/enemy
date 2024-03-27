@@ -16,11 +16,11 @@ abstract class QuerySource<Value>(
         uri,
         projection,
         query.bundle,
-        null
+        null,
     )?.use { load(it) } ?: emptyList()
 
     fun loadFirstOrNull(query: Query): Value? = query.apply {
-        limit = Query.Limit(1)
-        offset = Query.Offset(0)
+        limit = Query.Limit(identity = 1)
+        offset = Query.Offset(identity = 0)
     }.let { load(it) }.firstOrNull()
 }

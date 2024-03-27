@@ -19,8 +19,6 @@ internal object PreferencesDataStoreProvider {
         @ApplicationContext context: Context,
     ): DataStore<Preferences> = context.preferencesDataStore
 
-    private const val name = "preferences"
-    private val Context.preferencesDataStore: DataStore<Preferences> by preferencesDataStore(
-        name
-    )
+    private const val NAME = "preferences"
+    private val Context.preferencesDataStore: DataStore<Preferences> by preferencesDataStore(NAME)
 }
