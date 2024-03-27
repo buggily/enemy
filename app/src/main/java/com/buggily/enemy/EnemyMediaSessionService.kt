@@ -23,8 +23,8 @@ class EnemyMediaSessionService : MediaSessionService() {
     @Inject
     lateinit var incrementTrackPlaysById: IncrementTrackPlaysById
 
-    private val job = SupervisorJob()
-    private val scope = CoroutineScope(Dispatchers.IO.plus(job))
+    private val service = SupervisorJob()
+    private val serviceScope = CoroutineScope(Dispatchers.IO.plus(service))
 
     private val playerListener: Player.Listener = object : Player.Listener {
 
@@ -38,7 +38,7 @@ class EnemyMediaSessionService : MediaSessionService() {
             )
 
             mediaItem?.mediaId?.toLongOrNull()?.let {
-                scope.launch { incrementTrackPlaysById(it) }
+                serviceScope.launch { incrementTrackPlaysById(it) }
             }
         }
     }
@@ -65,7 +65,7 @@ class EnemyMediaSessionService : MediaSessionService() {
 
     override fun onDestroy() {
         super.onDestroy()
-        job.cancel()
+        service.cancel()
 
         with(mediaSession) {
             player.removeListener(playerListener)

@@ -21,7 +21,7 @@ internal class LocalSchemeSource(
     }
 
     private companion object {
-        private const val identity = "scheme"
-        private val key: Preferences.Key<String> = stringPreferencesKey(identity)
+        private const val NAME = "scheme"
+        private val key: Preferences.Key<String> = stringPreferencesKey(NAME)
     }
 }

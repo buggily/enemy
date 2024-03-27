@@ -21,7 +21,7 @@ internal class LocalDynamicSource(
     }
 
     private companion object {
-        private const val identity = "dynamic"
-        private val key: Preferences.Key<String> = stringPreferencesKey(identity)
+        private const val NAME = "dynamic"
+        private val key: Preferences.Key<String> = stringPreferencesKey(NAME)
     }
 }
