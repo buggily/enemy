@@ -8,7 +8,7 @@ import com.buggily.enemy.core.ui.ui.picker.PickerViewModel
 import com.buggily.enemy.core.ui.ui.picker.Pickerable
 import com.buggily.enemy.domain.navigation.NavigateBackFromPlaylistPicker
 import com.buggily.enemy.domain.playlist.DeletePlaylistById
-import com.buggily.enemy.domain.track.DeleteTracksByPlaylistId
+import com.buggily.enemy.domain.track.playlist.DeleteTracksByPlaylistId
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,7 +29,7 @@ class PlaylistPickerViewModel @Inject constructor(
     override val uiState: StateFlow<PickerUiState> get() = _uiState
 
     init {
-        val playlistIdKey: String = NavigationDestination.Playlist.Picker.playlistId
+        val playlistIdKey: String = NavigationDestination.Playlist.Picker.PLAYLIST_ID
         playlistId = checkNotNull(savedStateHandle[playlistIdKey])
 
         PickerUiState(

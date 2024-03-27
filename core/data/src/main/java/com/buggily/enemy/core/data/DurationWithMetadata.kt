@@ -3,9 +3,9 @@ package com.buggily.enemy.core.data
 import kotlin.time.Duration
 
 data class DurationWithMetadata(
-    val value: Duration,
-    val text: String,
-) {
+    override val value: Duration,
+    override val text: String,
+): Durationable {
 
     val inWholeMilliseconds: Long
         get() = value.inWholeMilliseconds

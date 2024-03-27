@@ -24,7 +24,7 @@ class TrackPickerViewModel @Inject constructor(
     override val uiState: StateFlow<PickerUiState> get() = _uiState
 
     init {
-        val trackIdKey: String = NavigationDestination.Track.Picker.trackId
+        val trackIdKey: String = NavigationDestination.Track.Picker.TRACK_ID
         trackId = checkNotNull(savedStateHandle[trackIdKey])
 
         PickerUiState(

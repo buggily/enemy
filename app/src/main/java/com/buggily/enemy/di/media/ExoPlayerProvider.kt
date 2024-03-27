@@ -17,5 +17,7 @@ object ExoPlayerProvider {
     @ExoPlayerQualifier
     fun provides(
         @ApplicationContext context: Context,
-    ): Player = ExoPlayer.Builder(context).build()
+    ): Player = ExoPlayer.Builder(context)
+        .setHandleAudioBecomingNoisy(true)
+        .build()
 }

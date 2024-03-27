@@ -5,6 +5,9 @@ import android.net.Uri
 
 interface Albumable : Artable {
 
+    val id: Long
+    val name: String
+    val artist: Artistable
     val artUriId: Long
 
     override val artUri: Uri

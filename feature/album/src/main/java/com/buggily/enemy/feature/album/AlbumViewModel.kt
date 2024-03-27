@@ -45,7 +45,7 @@ class AlbumViewModel @Inject constructor(
     val tracks: Flow<PagingData<TrackUi>>
 
     init {
-        val albumIdKey: String = NavigationDestination.Album.albumId
+        val albumIdKey: String = NavigationDestination.Album.ALBUM_ID
         albumId = checkNotNull(savedStateHandle[albumIdKey])
 
         AlbumUiState(

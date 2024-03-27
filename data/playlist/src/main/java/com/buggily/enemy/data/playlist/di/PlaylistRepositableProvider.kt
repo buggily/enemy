@@ -15,10 +15,10 @@ internal object PlaylistRepositableProvider {
 
     @Provides
     fun provides(
-        getInstantWithMetadataFromInstant: GetInstantWithMetadataFromInstant,
         localPlaylistSource: LocalPlaylistSourceable,
+        getInstantWithMetadataFromInstant: GetInstantWithMetadataFromInstant,
     ): PlaylistRepositable = PlaylistRepository(
-        getInstantWithMetadataFromInstant = getInstantWithMetadataFromInstant,
         localPlaylistSource = localPlaylistSource,
+        getInstantWithMetadataFromInstant = getInstantWithMetadataFromInstant,
     )
 }

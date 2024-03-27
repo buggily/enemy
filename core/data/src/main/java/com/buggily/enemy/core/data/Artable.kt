@@ -8,9 +8,9 @@ interface Artable {
     val contentDescription: String
 
     val artContentUri: Uri
-        get() = Uri.parse(uri)
+        get() = Uri.parse(URI)
 
     private companion object {
-        private const val uri = "content://media/external/audio/albumart"
+        private const val URI = "content://media/external/audio/albumart"
     }
 }

@@ -13,7 +13,7 @@ class BrowseViewModel : ViewModel() {
     init {
         BrowseUiState(
             tabState = BrowseUiState.TabState(
-                tab = BrowseUiState.TabState.Tab.Albums,
+                tab = BrowseUiState.TabState.Tab.Recent,
                 tabs = BrowseUiState.TabState.Tab.values,
                 onClick = ::onTabClick,
             ),

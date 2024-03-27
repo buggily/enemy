@@ -12,8 +12,8 @@ import com.buggily.enemy.data.track.TrackWithIndex
 import com.buggily.enemy.domain.controller.PlayItems
 import com.buggily.enemy.domain.navigation.NavigateToPlaylistTrackPicker
 import com.buggily.enemy.domain.playlist.GetPlaylistById
-import com.buggily.enemy.domain.track.GetTrackPagingByPlaylistId
-import com.buggily.enemy.domain.track.GetTracksByPlaylistId
+import com.buggily.enemy.domain.track.playlist.GetTrackPagingByPlaylistId
+import com.buggily.enemy.domain.track.playlist.GetTracksByPlaylistId
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,7 +40,7 @@ class PlaylistViewModel @Inject constructor(
     val tracks: Flow<PagingData<TrackWithIndex>>
 
     init {
-        val playlistIdKey: String = NavigationDestination.Playlist.playlistId
+        val playlistIdKey: String = NavigationDestination.Playlist.PLAYLIST_ID
         playlistId = checkNotNull(savedStateHandle[playlistIdKey])
         tracks = getTrackPagingByPlaylistId(playlistId)
 

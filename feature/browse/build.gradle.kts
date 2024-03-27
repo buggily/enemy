@@ -8,6 +8,8 @@ android {
 }
 
 dependencies {
+    implementation(project(":feature:recent"))
+
     implementation(project(":feature:albums"))
     implementation(project(":data:album"))
 

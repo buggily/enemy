@@ -23,6 +23,7 @@ data class LocalPlaylist(
 ) {
 
     companion object {
+
         const val TABLE_NAME = "playlist"
 
         const val ID = "${TABLE_NAME}_id"

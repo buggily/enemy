@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 internal class PlaylistRepository(
-    private val getInstantWithMetadataFromInstant: GetInstantWithMetadataFromInstant,
     private val localPlaylistSource: LocalPlaylistSourceable,
+    private val getInstantWithMetadataFromInstant: GetInstantWithMetadataFromInstant,
 ) : PlaylistRepositable {
 
     override fun getPaging(
@@ -31,12 +31,6 @@ internal class PlaylistRepository(
         playlist: Playlist,
     ) = playlist.toLocal().let {
         localPlaylistSource.insert(it)
-    }
-
-    override suspend fun update(
-        playlist: Playlist,
-    ) = playlist.toLocal().let {
-        localPlaylistSource.update(it)
     }
 
     override suspend fun deleteById(
