@@ -6,7 +6,7 @@ import com.buggily.enemy.ext.getVersion
 import org.gradle.api.Project
 
 internal fun Project.configureAndroidCompose(
-    commonExtension: CommonExtension<*, *, *, *, *>,
+    commonExtension: CommonExtension<*, *, *, *, *, *>,
 ) = with(commonExtension) {
 
     compileSdk = 34
