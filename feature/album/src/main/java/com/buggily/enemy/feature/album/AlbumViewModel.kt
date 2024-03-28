@@ -8,6 +8,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.insertSeparators
 import androidx.paging.map
+import com.buggily.enemy.core.ext.firstIndex
 import com.buggily.enemy.core.ext.indexOfOrNull
 import com.buggily.enemy.core.navigation.NavigationDestination
 import com.buggily.enemy.core.ui.ext.toMediaItem
@@ -50,6 +51,9 @@ class AlbumViewModel @Inject constructor(
 
         AlbumUiState(
             album = null,
+            albumState = AlbumUiState.AlbumState(
+                onStartClick = ::onStartClick,
+            ),
             trackState = AlbumUiState.TrackState(
                 onClick = ::onTrackClick,
                 onLongClick = ::onTrackLongClick,
@@ -71,6 +75,16 @@ class AlbumViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(album = getAlbumById(albumId)) }
         }
+    }
+
+    private fun onStartClick() = viewModelScope.launch {
+        val tracks: List<Track> = getTracksByAlbumId(albumId)
+        val items: List<MediaItem> = tracks.map { it.toMediaItem() }
+
+        playItems(
+            index = tracks.firstIndex,
+            items = items,
+        )
     }
 
     private fun onTrackClick(track: Track) = viewModelScope.launch {

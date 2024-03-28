@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -45,6 +46,7 @@ import com.buggily.enemy.core.ui.model.PagingPlaceholderKey
 import com.buggily.enemy.core.ui.model.TrackUi
 import com.buggily.enemy.core.ui.ui.ArtImage
 import com.buggily.enemy.core.ui.ui.SingleLineText
+import com.buggily.enemy.core.ui.ui.SmallPlayButton
 import com.buggily.enemy.core.ui.ui.track.AlbumTrackItem
 import com.buggily.enemy.data.album.Album
 import com.buggily.enemy.core.ui.R as CR
@@ -74,6 +76,7 @@ private fun AlbumScreen(
 ) {
     AlbumScreen(
         album = uiState.album,
+        albumState = uiState.albumState,
         trackState = uiState.trackState,
         tracks = tracks,
         modifier = modifier,
@@ -83,6 +86,7 @@ private fun AlbumScreen(
 @Composable
 private fun AlbumScreen(
     album: Album?,
+    albumState: AlbumUiState.AlbumState,
     trackState: AlbumUiState.TrackState,
     tracks: LazyPagingItems<TrackUi>,
     modifier: Modifier = Modifier,
@@ -97,6 +101,7 @@ private fun AlbumScreen(
 
         else -> AlbumScreenMedium(
             album = album,
+            albumState = albumState,
             trackState = trackState,
             tracks = tracks,
             modifier = modifier,
@@ -166,6 +171,7 @@ private fun AlbumScreenCompact(
 @OptIn(ExperimentalFoundationApi::class)
 private fun AlbumScreenMedium(
     album: Album?,
+    albumState: AlbumUiState.AlbumState,
     trackState: AlbumUiState.TrackState,
     tracks: LazyPagingItems<TrackUi>,
     modifier: Modifier = Modifier,
@@ -182,6 +188,7 @@ private fun AlbumScreenMedium(
             is Album -> stickyHeader {
                 AlbumHeaderMedium(
                     album = album,
+                    albumState = albumState,
                     modifier = itemModifier.height(IntrinsicSize.Min),
                 )
             }
@@ -243,6 +250,7 @@ private fun AlbumHeaderCompact(
 @Composable
 private fun AlbumHeaderMedium(
     album: Album,
+    albumState: AlbumUiState.AlbumState,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -258,6 +266,7 @@ private fun AlbumHeaderMedium(
 
         AlbumHeaderMediumForeground(
             album = album,
+            albumState = albumState,
             modifier = itemModifier
                 .statusBarsPadding()
                 .padding(dimensionResource(CR.dimen.padding_large)),
@@ -281,6 +290,7 @@ private fun AlbumHeaderCompactForeground(
 @Composable
 private fun AlbumHeaderMediumForeground(
     album: Album,
+    albumState: AlbumUiState.AlbumState,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -293,9 +303,9 @@ private fun AlbumHeaderMediumForeground(
     ) {
         AlbumHeaderImage(
             album = album,
+            albumState = albumState,
             modifier = Modifier
                 .weight(1f)
-                .aspectRatio(1f)
                 .clip(MaterialTheme.shapes.medium),
         )
 
@@ -321,13 +331,24 @@ private fun AlbumHeaderBackground(
 @Composable
 private fun AlbumHeaderImage(
     album: Album,
+    albumState: AlbumUiState.AlbumState,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier) {
         ArtImage(
             artable = album,
             contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(1f),
+        )
+
+        SmallPlayButton(
+            onClick = albumState.onStartClick,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(dimensionResource(CR.dimen.padding_small)),
+            contentModifier = Modifier.size(dimensionResource(CR.dimen.icon_medium)),
         )
     }
 }
