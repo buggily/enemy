@@ -7,12 +7,12 @@ data class TracksUiState(
     val searchState: SearchState,
 ) {
 
-    data class SearchState(
-        val value: String,
-    )
-
     data class TrackState(
         val onClick: (Track) -> Unit,
         val onLongClick: (Track) -> Unit,
+    )
+
+    data class SearchState(
+        val value: String,
     )
 }

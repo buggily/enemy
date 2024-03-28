@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
@@ -37,6 +39,7 @@ import com.buggily.enemy.core.ui.ext.floatResource
 import com.buggily.enemy.core.ui.ext.nameText
 import com.buggily.enemy.core.ui.ext.peekFirst
 import com.buggily.enemy.core.ui.ui.ArtImage
+import com.buggily.enemy.core.ui.ui.PlayButton
 import com.buggily.enemy.core.ui.ui.track.TrackItem
 import com.buggily.enemy.data.playlist.Playlist
 import com.buggily.enemy.data.track.Track
@@ -68,6 +71,7 @@ private fun PlaylistScreen(
 ) {
     PlaylistScreen(
         playlist = uiState.playlist,
+        playlistState = uiState.playlistState,
         trackState = uiState.trackState,
         tracks = tracks,
         modifier = modifier,
@@ -77,6 +81,7 @@ private fun PlaylistScreen(
 @Composable
 private fun PlaylistScreen(
     playlist: Playlist?,
+    playlistState: PlaylistUiState.PlaylistState,
     trackState: PlaylistUiState.TrackState,
     tracks: LazyPagingItems<TrackWithIndex>,
     modifier: Modifier = Modifier,
@@ -88,6 +93,7 @@ private fun PlaylistScreen(
             track = track,
             playlist = playlist,
             trackState = trackState,
+            playlistState = playlistState,
             tracks = tracks,
             modifier = modifier,
         )
@@ -96,6 +102,7 @@ private fun PlaylistScreen(
             track = track,
             playlist = playlist,
             trackState = trackState,
+            playlistState = playlistState,
             tracks = tracks,
             modifier = modifier,
         )
@@ -107,6 +114,7 @@ private fun PlaylistScreenCompact(
     track: Track?,
     playlist: Playlist?,
     trackState: PlaylistUiState.TrackState,
+    playlistState: PlaylistUiState.PlaylistState,
     tracks: LazyPagingItems<TrackWithIndex>,
     modifier: Modifier = Modifier,
 ) {
@@ -121,6 +129,7 @@ private fun PlaylistScreenCompact(
             is Playlist -> PlaylistHeader(
                 track = track,
                 playlist = playlist,
+                playlistState = playlistState,
                 modifier = itemModifier.weight(1f),
             )
         }
@@ -152,6 +161,7 @@ private fun PlaylistScreenMedium(
     track: Track?,
     playlist: Playlist?,
     trackState: PlaylistUiState.TrackState,
+    playlistState: PlaylistUiState.PlaylistState,
     tracks: LazyPagingItems<TrackWithIndex>,
     modifier: Modifier = Modifier,
 ) {
@@ -167,6 +177,7 @@ private fun PlaylistScreenMedium(
                     PlaylistHeader(
                         track = track,
                         playlist = playlist,
+                        playlistState = playlistState,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(IntrinsicSize.Min),
@@ -193,6 +204,7 @@ private fun PlaylistScreenMedium(
 private fun PlaylistHeader(
     track: Track?,
     playlist: Playlist,
+    playlistState: PlaylistUiState.PlaylistState,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -210,6 +222,7 @@ private fun PlaylistHeader(
 
         PlaylistHeaderForeground(
             playlist = playlist,
+            playlistState = playlistState,
             modifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding()
@@ -233,14 +246,25 @@ private fun PlaylistHeaderBackground(
 @Composable
 private fun PlaylistHeaderForeground(
     playlist: Playlist,
+    playlistState: PlaylistUiState.PlaylistState,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier) {
+    Row(
+        horizontalArrangement = Arrangement.Start,
+        verticalAlignment = Alignment.Bottom,
+        modifier = modifier,
+    ) {
         Text(
             text = playlist.nameText,
-            textAlign = TextAlign.End,
+            textAlign = TextAlign.Start,
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.align(Alignment.BottomEnd),
+        )
+
+        Spacer(Modifier.weight(1f))
+
+        PlayButton(
+            onClick = playlistState.onStartClick,
+            contentModifier = Modifier.size(dimensionResource(CR.dimen.icon_medium)),
         )
     }
 }

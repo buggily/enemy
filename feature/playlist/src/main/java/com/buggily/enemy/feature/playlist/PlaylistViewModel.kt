@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.paging.PagingData
+import com.buggily.enemy.core.ext.firstIndex
 import com.buggily.enemy.core.ext.indexOfOrNull
 import com.buggily.enemy.core.navigation.NavigationDestination
 import com.buggily.enemy.core.ui.ext.toMediaItem
@@ -46,6 +47,9 @@ class PlaylistViewModel @Inject constructor(
 
         PlaylistUiState(
             playlist = null,
+            playlistState = PlaylistUiState.PlaylistState(
+                onStartClick = ::onStartClick,
+            ),
             trackState = PlaylistUiState.TrackState(
                 onClick = ::onTrackClick,
                 onLongClick = ::onTrackLongClick,
@@ -55,6 +59,16 @@ class PlaylistViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(playlist = getPlaylistById(playlistId)) }
         }
+    }
+
+    private fun onStartClick() = viewModelScope.launch {
+        val tracks: List<TrackWithIndex> = getTracksByPlaylistId(playlistId)
+        val items: List<MediaItem> = tracks.map { it.track.toMediaItem() }
+
+        playItems(
+            index = tracks.firstIndex,
+            items = items,
+        )
     }
 
     private fun onTrackClick(track: TrackWithIndex) = viewModelScope.launch {
