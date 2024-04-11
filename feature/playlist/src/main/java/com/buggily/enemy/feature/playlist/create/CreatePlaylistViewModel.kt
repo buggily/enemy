@@ -3,12 +3,10 @@ package com.buggily.enemy.feature.playlist.create
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.buggily.enemy.core.data.InstantWithMetadata
 import com.buggily.enemy.core.domain.GetInstantWithMetadata
 import com.buggily.enemy.core.navigation.NavigationDestination
-import com.buggily.enemy.data.playlist.Playlist
 import com.buggily.enemy.domain.navigation.NavigateBackFromCreatePlaylist
-import com.buggily.enemy.domain.playlist.InsertPlaylist
+import com.buggily.enemy.domain.playlist.CreatePlaylist
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,7 +21,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CreatePlaylistViewModel @Inject constructor(
-    private val insertPlaylist: InsertPlaylist,
+    private val createPlaylist: CreatePlaylist,
     private val getInstantWithMetadata: GetInstantWithMetadata,
     private val navigateBackFromCreatePlaylist: NavigateBackFromCreatePlaylist,
     savedStateHandle: SavedStateHandle,
@@ -71,17 +69,8 @@ class CreatePlaylistViewModel @Inject constructor(
     }
 
     private fun onConfirmClick() = uiState.value.let {
-        val name: String = it.nameState.value
-        val instant: InstantWithMetadata = getInstantWithMetadata()
-
-        val playlist = Playlist(
-            name = name,
-            creationInstant = instant,
-            modificationInstant = instant,
-        )
-
         viewModelScope.launch {
-            insertPlaylist(playlist)
+            createPlaylist(it.nameState.value)
             navigateBackFromCreatePlaylist(playlistName)
         }
     }

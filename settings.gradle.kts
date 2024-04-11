@@ -59,6 +59,7 @@ include(":data:theme")
 include(":data:album")
 include(":data:track")
 include(":data:playlist")
+include(":data:playlistWithTracks")
 
 include(":local:track")
 include(":local:preferences")
@@ -67,3 +68,4 @@ include(":local:playlist:track")
 
 include(":external:album")
 include(":external:track")
+include(":domain:playlistWithTracks")

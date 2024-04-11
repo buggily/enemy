@@ -1,5 +1,6 @@
 package com.buggily.enemy.data.playlist.di
 
+import com.buggily.enemy.core.domain.GetInstantWithMetadata
 import com.buggily.enemy.core.domain.GetInstantWithMetadataFromInstant
 import com.buggily.enemy.data.playlist.PlaylistRepositable
 import com.buggily.enemy.data.playlist.PlaylistRepository
@@ -16,9 +17,11 @@ internal object PlaylistRepositableProvider {
     @Provides
     fun provides(
         localPlaylistSource: LocalPlaylistSourceable,
+        getInstantWithMetadata: GetInstantWithMetadata,
         getInstantWithMetadataFromInstant: GetInstantWithMetadataFromInstant,
     ): PlaylistRepositable = PlaylistRepository(
         localPlaylistSource = localPlaylistSource,
+        getInstantWithMetadata = getInstantWithMetadata,
         getInstantWithMetadataFromInstant = getInstantWithMetadataFromInstant,
     )
 }

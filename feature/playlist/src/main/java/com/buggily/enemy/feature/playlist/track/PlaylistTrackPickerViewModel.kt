@@ -8,7 +8,7 @@ import com.buggily.enemy.core.ui.ui.picker.PickerViewModel
 import com.buggily.enemy.core.ui.ui.picker.Pickerable
 import com.buggily.enemy.data.track.TrackWithIndex
 import com.buggily.enemy.domain.navigation.NavigateBackFromPlaylistTrackPicker
-import com.buggily.enemy.domain.track.playlist.DeleteTrackByPlaylistId
+import com.buggily.enemy.domain.playlistWithTracks.DeleteTrackByPlaylistId
 import com.buggily.enemy.domain.track.playlist.GetTrackByPlaylistIdAndIndex
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

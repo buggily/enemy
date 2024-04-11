@@ -34,4 +34,10 @@ internal class LocalPlaylistSource(
     ) = localPlaylistDao.insert(
         playlist = playlist,
     )
+
+    override suspend fun update(
+        playlist: LocalPlaylist,
+    ) = localPlaylistDao.update(
+        playlist = playlist,
+    )
 }

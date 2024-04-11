@@ -2,6 +2,8 @@ package com.buggily.enemy.data.playlist
 
 import androidx.paging.PagingData
 import androidx.paging.map
+import com.buggily.enemy.core.data.InstantWithMetadata
+import com.buggily.enemy.core.domain.GetInstantWithMetadata
 import com.buggily.enemy.core.domain.GetInstantWithMetadataFromInstant
 import com.buggily.enemy.local.playlist.LocalPlaylist
 import com.buggily.enemy.local.playlist.LocalPlaylistSourceable
@@ -10,6 +12,7 @@ import kotlinx.coroutines.flow.map
 
 internal class PlaylistRepository(
     private val localPlaylistSource: LocalPlaylistSourceable,
+    private val getInstantWithMetadata: GetInstantWithMetadata,
     private val getInstantWithMetadataFromInstant: GetInstantWithMetadataFromInstant,
 ) : PlaylistRepositable {
 
@@ -27,15 +30,29 @@ internal class PlaylistRepository(
         id = id,
     )?.to(getInstantWithMetadataFromInstant)
 
-    override suspend fun insert(
-        playlist: Playlist,
-    ) = playlist.toLocal().let {
-        localPlaylistSource.insert(it)
-    }
-
     override suspend fun deleteById(
         id: Long,
     ) = localPlaylistSource.deleteById(
         id = id,
+    )
+
+    override suspend fun create(
+        name: String,
+    ) {
+        val instant: InstantWithMetadata = getInstantWithMetadata()
+
+        val playlist: LocalPlaylist = Playlist(
+            name = name,
+            creationInstant = instant,
+            modificationInstant = instant,
+        ).toLocal()
+
+        localPlaylistSource.insert(playlist)
+    }
+
+    override suspend fun update(
+        playlist: Playlist,
+    ) = localPlaylistSource.update(
+        playlist = playlist.toLocal(),
     )
 }

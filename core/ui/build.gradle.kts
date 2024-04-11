@@ -27,6 +27,9 @@ dependencies {
     implementation(project(":data:playlist"))
     implementation(project(":domain:playlist"))
 
+    implementation(project(":data:playlistWithTracks"))
+    implementation(project(":domain:playlistWithTracks"))
+
     implementation(libs.androidx.paging)
     implementation(libs.androidx.paging.compose)
 
