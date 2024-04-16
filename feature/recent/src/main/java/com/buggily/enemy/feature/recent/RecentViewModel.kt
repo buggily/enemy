@@ -7,6 +7,7 @@ import androidx.paging.cachedIn
 import com.buggily.enemy.data.track.Track
 import com.buggily.enemy.data.track.TrackWithMetadata
 import com.buggily.enemy.domain.navigation.NavigateToAlbum
+import com.buggily.enemy.domain.track.GetTrackPagingByPopularity
 import com.buggily.enemy.domain.track.GetTrackPagingByRecency
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -17,11 +18,15 @@ import javax.inject.Inject
 @HiltViewModel
 class RecentViewModel @Inject constructor(
     getTrackPagingByRecency: GetTrackPagingByRecency,
+    getTrackPagingByPopularity: GetTrackPagingByPopularity,
     private val navigateToAlbum: NavigateToAlbum,
 ) : ViewModel() {
 
-    val tracks: Flow<PagingData<TrackWithMetadata>> =
+    val recentTracks: Flow<PagingData<TrackWithMetadata>> =
         getTrackPagingByRecency().cachedIn(viewModelScope)
+
+    val popularTracks: Flow<PagingData<TrackWithMetadata>> =
+        getTrackPagingByPopularity().cachedIn(viewModelScope)
 
     private val _uiState: MutableStateFlow<RecentUiState>
     val uiState: StateFlow<RecentUiState> get() = _uiState

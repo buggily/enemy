@@ -22,6 +22,15 @@ interface LocalTrackDao {
     @Query(
         """
             SELECT * FROM ${LocalTrack.TABLE_NAME}
+            ORDER BY ${LocalTrack.PLAYS} DESC
+        """
+    )
+
+    fun getPagingByPopularity(): PagingSource<Int, LocalTrack>
+
+    @Query(
+        """
+            SELECT * FROM ${LocalTrack.TABLE_NAME}
             WHERE ${LocalTrack.ID} = :id
         """
     )

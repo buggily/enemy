@@ -39,6 +39,19 @@ internal class TrackRepository(
             }
         }
 
+    override fun getPagingByPopularity(): Flow<PagingData<TrackWithMetadata>> =
+        localTrackSource.getPagingByPopularity().map { pagingData: PagingData<LocalTrack> ->
+            pagingData.map {
+                checkNotNull(externalTrackSource.getById(it.id)).toWithMetadata(
+                    plays = it.plays,
+                    firstPlayInstant = it.firstPlayInstant,
+                    lastPlayInstant = it.lastPlayInstant,
+                    getDurationWithMetadata = getDurationWithMetadata,
+                )
+            }
+
+        }
+
     override fun getPagingByAlbumId(
         albumId: Long,
     ): Flow<PagingData<Track>> = externalTrackSource.getPagingByAlbumId(

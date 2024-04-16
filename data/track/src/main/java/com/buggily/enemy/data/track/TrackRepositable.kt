@@ -7,6 +7,7 @@ interface TrackRepositable {
 
     fun getPaging(search: String): Flow<PagingData<Track>>
     fun getPagingByRecency(): Flow<PagingData<TrackWithMetadata>>
+    fun getPagingByPopularity(): Flow<PagingData<TrackWithMetadata>>
     fun getPagingByAlbumId(albumId: Long): Flow<PagingData<Track>>
 
     suspend fun getById(id: Long): Track?

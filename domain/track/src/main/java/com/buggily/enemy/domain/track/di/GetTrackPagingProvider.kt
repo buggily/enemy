@@ -13,8 +13,8 @@ internal object GetTrackPagingProvider {
 
     @Provides
     fun provides(
-        repository: TrackRepositable,
+        trackRepository: TrackRepositable,
     ): GetTrackPaging = GetTrackPaging(
-        repository = repository,
+        trackRepository = trackRepository,
     )
 }

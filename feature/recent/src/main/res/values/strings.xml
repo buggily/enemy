@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="recent_tracks">recent tracks</string>
+    <string name="recent_tracks_popularity">popular tracks</string>
+
+    <string name="recent_tracks_popularity_name">name</string>
+    <string name="recent_tracks_popularity_artist">artist</string>
+    <string name="recent_tracks_popularity_plays">plays</string>
 </resources>

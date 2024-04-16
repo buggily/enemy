@@ -15,6 +15,11 @@ class LocalTrackSource(
         pagingSourceFactory = { localTrackDao.getPagingByRecency() },
     ).flow
 
+    override fun getPagingByPopularity(): Flow<PagingData<LocalTrack>> = Pager(
+        config = config,
+        pagingSourceFactory = { localTrackDao.getPagingByPopularity() },
+    ).flow
+
     override suspend fun getById(
         id: Long,
     ): LocalTrack? = localTrackDao.getById(

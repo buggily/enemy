@@ -4,12 +4,12 @@ import com.buggily.enemy.data.track.Track
 import com.buggily.enemy.data.track.TrackRepositable
 
 class GetTracksByAlbumId(
-    private val repository: TrackRepositable,
+    private val trackRepository: TrackRepositable,
 ) {
 
     suspend operator fun invoke(
         albumId: Long,
-    ): List<Track> =  repository.getByAlbumId(
+    ): List<Track> =  trackRepository.getByAlbumId(
         albumId = albumId,
     )
 }
