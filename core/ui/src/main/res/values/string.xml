@@ -23,6 +23,7 @@
     <string name="search_enable">enable search</string>
 
     <string name="add_playlist">add to playlist</string>
+    <string name="edit_playlist">edit playlist</string>
     <string name="delete_playlist">delete playlist</string>
     <string name="remove_playlist_track">remove track</string>
 </resources>

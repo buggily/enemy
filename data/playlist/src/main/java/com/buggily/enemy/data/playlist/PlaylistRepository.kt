@@ -52,7 +52,9 @@ internal class PlaylistRepository(
 
     override suspend fun update(
         playlist: Playlist,
-    ) = localPlaylistSource.update(
-        playlist = playlist.toLocal(),
-    )
+    ) {
+        playlist.copy(
+            modificationInstant = getInstantWithMetadata(),
+        ).let { localPlaylistSource.update(it.toLocal()) }
+    }
 }

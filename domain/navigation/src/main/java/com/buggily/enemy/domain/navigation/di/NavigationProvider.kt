@@ -5,6 +5,7 @@ import com.buggily.enemy.domain.navigation.Navigate
 import com.buggily.enemy.domain.navigation.NavigateBack
 import com.buggily.enemy.domain.navigation.NavigateBackFromController
 import com.buggily.enemy.domain.navigation.NavigateBackFromCreatePlaylist
+import com.buggily.enemy.domain.navigation.NavigateBackFromEditPlaylist
 import com.buggily.enemy.domain.navigation.NavigateBackFromPlaylistPicker
 import com.buggily.enemy.domain.navigation.NavigateBackFromPlaylistTrackPicker
 import com.buggily.enemy.domain.navigation.NavigateBackFromTrackPlaylistPicker
@@ -12,6 +13,7 @@ import com.buggily.enemy.domain.navigation.NavigateFromOrientationToBrowse
 import com.buggily.enemy.domain.navigation.NavigateToAlbum
 import com.buggily.enemy.domain.navigation.NavigateToController
 import com.buggily.enemy.domain.navigation.NavigateToCreatePlaylist
+import com.buggily.enemy.domain.navigation.NavigateToEditPlaylist
 import com.buggily.enemy.domain.navigation.NavigateToOrientation
 import com.buggily.enemy.domain.navigation.NavigateToPlaylist
 import com.buggily.enemy.domain.navigation.NavigateToPlaylistPicker
@@ -53,6 +55,13 @@ internal object NavigationProvider {
     fun providesNavigateBackFromCreatePlaylist(
         navigate: Navigate,
     ): NavigateBackFromCreatePlaylist = NavigateBackFromCreatePlaylist(
+        navigate = navigate,
+    )
+
+    @Provides
+    fun providesNavigateBackFromEditPlaylist(
+        navigate: Navigate,
+    ): NavigateBackFromEditPlaylist = NavigateBackFromEditPlaylist(
         navigate = navigate,
     )
 
@@ -102,6 +111,13 @@ internal object NavigationProvider {
     fun providesNavigateToCreatePlaylist(
         navigate: Navigate,
     ): NavigateToCreatePlaylist = NavigateToCreatePlaylist(
+        navigate = navigate,
+    )
+
+    @Provides
+    fun providesNavigateToEditPlaylist(
+         navigate: Navigate,
+    ): NavigateToEditPlaylist = NavigateToEditPlaylist(
         navigate = navigate,
     )
 

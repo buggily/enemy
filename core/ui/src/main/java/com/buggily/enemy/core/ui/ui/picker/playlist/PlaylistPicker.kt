@@ -8,6 +8,19 @@ import kotlinx.parcelize.Parcelize
 sealed interface PlaylistPicker : Pickerable {
 
     @Parcelize
+    data object Edit : PlaylistPicker {
+
+        override val stringResId: Int
+            get() = R.string.edit_playlist
+
+        override val painterResId: Int
+            get() = R.drawable.edit
+
+        override val contentDescriptionResId: Int
+            get() = R.string.edit_playlist
+    }
+
+    @Parcelize
     data object Delete : PlaylistPicker {
 
         override val stringResId: Int
@@ -21,6 +34,9 @@ sealed interface PlaylistPicker : Pickerable {
     }
 
     companion object {
-        val values: List<PlaylistPicker> = listOf(Delete)
+        val values: List<PlaylistPicker> = listOf(
+            Edit,
+            Delete,
+        )
     }
 }
