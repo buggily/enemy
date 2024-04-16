@@ -13,8 +13,8 @@ object IncrementTrackPlaysByIdProvider {
 
     @Provides
     fun provides(
-        repository: TrackRepositable,
+        trackRepository: TrackRepositable,
     ): IncrementTrackPlaysById = IncrementTrackPlaysById(
-        repository = repository,
+        trackRepository = trackRepository,
     )
 }

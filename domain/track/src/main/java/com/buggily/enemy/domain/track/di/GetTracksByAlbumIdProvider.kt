@@ -13,8 +13,8 @@ internal object GetTracksByAlbumIdProvider {
 
     @Provides
     fun provides(
-        repository: TrackRepositable,
+        trackRepository: TrackRepositable,
     ): GetTracksByAlbumId = GetTracksByAlbumId(
-        repository = repository,
+        trackRepository = trackRepository,
     )
 }

@@ -1,9 +1,11 @@
 package com.buggily.enemy.feature.recent
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
@@ -14,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,8 +31,11 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.buggily.enemy.core.ui.LocalWindowSizeClass
 import com.buggily.enemy.core.ui.ext.nameText
+import com.buggily.enemy.core.ui.ext.playsText
 import com.buggily.enemy.core.ui.ui.SingleLineText
 import com.buggily.enemy.core.ui.ui.album.AlbumItem
+import com.buggily.enemy.core.ui.ui.track.TrackItem
+import com.buggily.enemy.core.ui.ui.track.TrackItemWithEndText
 import com.buggily.enemy.data.track.TrackWithMetadata
 import com.buggily.enemy.core.ui.R as CR
 
@@ -39,11 +45,17 @@ fun RecentScreen(
     modifier: Modifier = Modifier,
 ) {
     val uiState: RecentUiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val tracks: LazyPagingItems<TrackWithMetadata> = viewModel.tracks.collectAsLazyPagingItems()
+
+    val recentTracks: LazyPagingItems<TrackWithMetadata> =
+        viewModel.recentTracks.collectAsLazyPagingItems()
+
+    val popularTracks: LazyPagingItems<TrackWithMetadata> =
+        viewModel.popularTracks.collectAsLazyPagingItems()
 
     Box(modifier) {
         RecentScreen(
-            tracks = tracks,
+            recentTracks = recentTracks,
+            popularTracks = popularTracks,
             uiState = uiState,
             modifier = Modifier.fillMaxSize(),
         )
@@ -53,11 +65,13 @@ fun RecentScreen(
 @Composable
 fun RecentScreen(
     uiState: RecentUiState,
-    tracks: LazyPagingItems<TrackWithMetadata>,
+    recentTracks: LazyPagingItems<TrackWithMetadata>,
+    popularTracks: LazyPagingItems<TrackWithMetadata>,
     modifier: Modifier = Modifier,
 ) {
     RecentScreen(
-        tracks = tracks,
+        recentTracks = recentTracks,
+        popularTracks = popularTracks,
         trackState = uiState.trackState,
         modifier = modifier,
     )
@@ -65,19 +79,22 @@ fun RecentScreen(
 
 @Composable
 private fun RecentScreen(
-    tracks: LazyPagingItems<TrackWithMetadata>,
+    recentTracks: LazyPagingItems<TrackWithMetadata>,
+    popularTracks: LazyPagingItems<TrackWithMetadata>,
     trackState: RecentUiState.TrackState,
     modifier: Modifier = Modifier,
 ) {
     when (LocalWindowSizeClass.current.heightSizeClass) {
         WindowHeightSizeClass.Compact -> RecentScreenCompact(
-            tracks = tracks,
+            recentTracks = recentTracks,
+            popularTracks = popularTracks,
             trackState = trackState,
             modifier = modifier,
         )
 
         else -> RecentScreenMedium(
-            tracks = tracks,
+            recentTracks = recentTracks,
+            popularTracks = popularTracks,
             trackState = trackState,
             modifier = modifier,
         )
@@ -85,8 +102,10 @@ private fun RecentScreen(
 }
 
 @Composable
+@OptIn(ExperimentalFoundationApi::class)
 private fun RecentScreenCompact(
-    tracks: LazyPagingItems<TrackWithMetadata>,
+    recentTracks: LazyPagingItems<TrackWithMetadata>,
+    popularTracks: LazyPagingItems<TrackWithMetadata>,
     trackState: RecentUiState.TrackState,
     modifier: Modifier = Modifier,
 ) {
@@ -102,20 +121,54 @@ private fun RecentScreenCompact(
         }
 
         item {
-            TracksRow(
-                tracks = tracks,
+            RecentTracksRow(
+                tracks = recentTracks,
                 trackState = trackState,
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(5f),
             )
         }
+
+        item {
+            Spacer(
+                modifier = Modifier.padding(dimensionResource(CR.dimen.padding_large)),
+            )
+        }
+
+        item {
+            PopularTracksHeader(
+                modifier = Modifier.padding(dimensionResource(CR.dimen.padding_large)),
+            )
+        }
+
+        stickyHeader {
+            PopularTracksStickyHeader(
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+
+        items(
+            count = popularTracks.itemCount,
+            key = popularTracks.itemKey { it.track.id },
+        ) {
+            when (val track: TrackWithMetadata? = popularTracks[it]) {
+                is TrackWithMetadata -> TrackItem(
+                    track = track,
+                    trackState = trackState,
+                )
+
+                else -> Unit
+            }
+        }
     }
 }
 
 @Composable
+@OptIn(ExperimentalFoundationApi::class)
 private fun RecentScreenMedium(
-    tracks: LazyPagingItems<TrackWithMetadata>,
+    recentTracks: LazyPagingItems<TrackWithMetadata>,
+    popularTracks: LazyPagingItems<TrackWithMetadata>,
     trackState: RecentUiState.TrackState,
     modifier: Modifier = Modifier,
 ) {
@@ -131,13 +184,45 @@ private fun RecentScreenMedium(
         }
 
         item {
-            TracksRow(
-                tracks = tracks,
+            RecentTracksRow(
+                tracks = recentTracks,
                 trackState = trackState,
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(2f),
             )
+        }
+
+        item {
+            Spacer(
+                modifier = Modifier.padding(dimensionResource(CR.dimen.padding_large)),
+            )
+        }
+
+        item {
+            PopularTracksHeader(
+                modifier = Modifier.padding(dimensionResource(CR.dimen.padding_large)),
+            )
+        }
+
+        stickyHeader {
+            PopularTracksStickyHeader(
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+
+        items(
+            count = popularTracks.itemCount,
+            key = popularTracks.itemKey { it.track.id },
+        ) {
+            when (val track: TrackWithMetadata? = popularTracks[it]) {
+                is TrackWithMetadata -> TrackItem(
+                    track = track,
+                    trackState = trackState,
+                )
+
+                else -> Unit
+            }
         }
     }
 }
@@ -155,7 +240,7 @@ private fun RecentTracksHeader(
 }
 
 @Composable
-private fun TracksRow(
+private fun RecentTracksRow(
     tracks: LazyPagingItems<TrackWithMetadata>,
     trackState: RecentUiState.TrackState,
     modifier: Modifier = Modifier,
@@ -177,7 +262,7 @@ private fun TracksRow(
             key = tracks.itemKey { it.track.id },
         ) {
             when (val track: TrackWithMetadata? = tracks[it]) {
-                is TrackWithMetadata -> TrackItem(
+                is TrackWithMetadata -> TrackAlbumItem(
                     track = track,
                     modifier = Modifier
                         .fillMaxHeight()
@@ -192,7 +277,35 @@ private fun TracksRow(
 }
 
 @Composable
-private fun TrackItem(
+private fun PopularTracksHeader(
+    modifier: Modifier = Modifier,
+) {
+    SingleLineText(
+        text = stringResource(R.string.recent_tracks_popularity),
+        textAlign = TextAlign.Start,
+        style = MaterialTheme.typography.headlineSmall,
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun PopularTracksStickyHeader(
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        modifier = modifier,
+    ) {
+        TrackItem(
+            nameText = stringResource(R.string.recent_tracks_popularity_name),
+            artistText = stringResource(R.string.recent_tracks_popularity_artist),
+            durationText = stringResource(R.string.recent_tracks_popularity_plays),
+        )
+    }
+}
+
+@Composable
+private fun TrackAlbumItem(
     track: TrackWithMetadata,
     modifier: Modifier = Modifier,
 ) {
@@ -217,4 +330,16 @@ private fun TrackItem(
             style = MaterialTheme.typography.bodyLarge,
         )
     }
+}
+
+@Composable
+private fun TrackItem(
+    track: TrackWithMetadata,
+    trackState: RecentUiState.TrackState,
+) {
+    TrackItemWithEndText(
+        track = track.track,
+        onClick = { trackState.onClick(track.track) },
+        endText = track.playsText,
+    )
 }

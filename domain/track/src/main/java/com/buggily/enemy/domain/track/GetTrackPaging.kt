@@ -6,12 +6,12 @@ import com.buggily.enemy.data.track.TrackRepositable
 import kotlinx.coroutines.flow.Flow
 
 class GetTrackPaging(
-    private val repository: TrackRepositable,
+    private val trackRepository: TrackRepositable,
 ) {
 
     operator fun invoke(
         search: String,
-    ): Flow<PagingData<Track>> = repository.getPaging(
+    ): Flow<PagingData<Track>> = trackRepository.getPaging(
         search = search,
     )
 }

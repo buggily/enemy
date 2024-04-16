@@ -1,7 +1,7 @@
 package com.buggily.enemy.domain.track.di
 
 import com.buggily.enemy.data.track.TrackRepositable
-import com.buggily.enemy.domain.track.GetTrackPagingByRecency
+import com.buggily.enemy.domain.track.GetTrackPagingByPopularity
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -9,12 +9,12 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-object GetTrackPagingByRecencyProvider {
+internal object GetTrackPagingByPopularityProvider {
 
     @Provides
     fun provides(
         trackRepository: TrackRepositable,
-    ): GetTrackPagingByRecency = GetTrackPagingByRecency(
+    ): GetTrackPagingByPopularity = GetTrackPagingByPopularity(
         trackRepository = trackRepository,
     )
 }

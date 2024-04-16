@@ -5,10 +5,10 @@ import com.buggily.enemy.data.track.TrackRepositable
 import com.buggily.enemy.data.track.TrackWithMetadata
 import kotlinx.coroutines.flow.Flow
 
-class GetTrackPagingByRecency(
+class GetTrackPagingByPopularity(
     private val trackRepository: TrackRepositable,
 ) {
 
     operator fun invoke(): Flow<PagingData<TrackWithMetadata>> =
-        trackRepository.getPagingByRecency()
+        trackRepository.getPagingByPopularity()
 }
