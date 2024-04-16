@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="edit_playlist">edit playlist</string>
+    <string name="edit_playlist_name">name</string>
+    <string name="edit_playlist_confirm">confirm</string>
+
     <string name="create_playlist">create playlist</string>
     <string name="create_playlist_name">name</string>
     <string name="create_playlist_confirm">confirm</string>

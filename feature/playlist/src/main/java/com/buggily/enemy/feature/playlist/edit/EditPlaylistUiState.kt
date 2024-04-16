@@ -1,6 +1,6 @@
-package com.buggily.enemy.feature.playlist.create
+package com.buggily.enemy.feature.playlist.edit
 
-data class CreatePlaylistUiState(
+data class EditPlaylistUiState(
     val nameState: NameState,
     val confirmState: ConfirmState,
 ) {

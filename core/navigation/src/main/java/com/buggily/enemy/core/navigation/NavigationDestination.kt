@@ -179,6 +179,24 @@ sealed interface NavigationDestination {
             const val NAME = "name"
         }
 
+        data object Edit : NavigationDestination {
+
+            override val paths: List<NavigationComponent.Path>
+                get() = Playlist.paths + NavigationComponent.Path.Static(EDIT)
+
+            override val queries: List<NavigationComponent.Query>
+                get() = emptyList()
+
+            fun getRoute(
+                playlistId: Long,
+            ): String = getRoute(
+                PLAYLIST_ID to playlistId,
+            )
+
+            private const val EDIT = "edit"
+            const val PLAYLIST_ID = Playlist.PLAYLIST_ID
+        }
+
         data object Picker : NavigationDestination {
 
             override val paths: List<NavigationComponent.Path>
@@ -264,6 +282,7 @@ sealed interface NavigationDestination {
             Track.PlaylistPicker,
             Playlist,
             Playlist.Create,
+            Playlist.Edit,
             Playlist.Picker,
             Playlist.TrackPicker,
             Preferences,

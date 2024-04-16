@@ -1,11 +1,12 @@
-package com.buggily.enemy.feature.playlist.create
+package com.buggily.enemy.feature.playlist.edit
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.buggily.enemy.core.navigation.NavigationDestination
-import com.buggily.enemy.domain.navigation.NavigateBackFromCreatePlaylist
-import com.buggily.enemy.domain.playlist.CreatePlaylist
+import com.buggily.enemy.domain.navigation.NavigateBackFromEditPlaylist
+import com.buggily.enemy.domain.playlist.GetPlaylistById
+import com.buggily.enemy.domain.playlist.UpdatePlaylist
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,34 +20,39 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class CreatePlaylistViewModel @Inject constructor(
-    private val createPlaylist: CreatePlaylist,
-    private val navigateBackFromCreatePlaylist: NavigateBackFromCreatePlaylist,
+class EditPlaylistViewModel @Inject constructor(
+    private val getPlaylistById: GetPlaylistById,
+    private val updatePlaylist: UpdatePlaylist,
+    private val navigateBackFromEditPlaylist: NavigateBackFromEditPlaylist,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private val playlistName: String
+    private val playlistId: Long
 
-    private val _uiState: MutableStateFlow<CreatePlaylistUiState>
-    val uiState: StateFlow<CreatePlaylistUiState> get() = _uiState
+    private val _uiState: MutableStateFlow<EditPlaylistUiState>
+    val uiState: StateFlow<EditPlaylistUiState> get() = _uiState
 
     init {
-        val playlistNameKey: String = NavigationDestination.Playlist.Create.NAME
-        playlistName = checkNotNull(savedStateHandle[playlistNameKey])
+        val playlistIdKey: String = NavigationDestination.Playlist.Edit.PLAYLIST_ID
+        playlistId = checkNotNull(savedStateHandle[playlistIdKey])
 
-        CreatePlaylistUiState(
-            nameState = CreatePlaylistUiState.NameState(
-                value = playlistName,
+        EditPlaylistUiState(
+            nameState = EditPlaylistUiState.NameState(
+                value = String(),
                 onChange = ::onNameChange,
             ),
-            confirmState = CreatePlaylistUiState.ConfirmState(
+            confirmState = EditPlaylistUiState.ConfirmState(
                 isEnabled = false,
                 onClick = ::onConfirmClick,
-            ),
+            )
         ).let { _uiState = MutableStateFlow(it) }
 
-        val nameState: Flow<CreatePlaylistUiState.NameState> = uiState.map {
+        val nameState: Flow<EditPlaylistUiState.NameState> = uiState.map {
             it.nameState
+        }
+
+        viewModelScope.launch {
+            getPlaylistById(playlistId)?.name?.let { onNameChange(it) }
         }
 
         viewModelScope.launch {
@@ -58,14 +64,17 @@ class CreatePlaylistViewModel @Inject constructor(
         }
     }
 
-    private fun onNameChange(value: String) = _uiState.update {
-        it.copy(nameState = it.nameState.copy(value = value))
+    private fun onNameChange(name: String) = _uiState.update {
+        it.copy(nameState = it.nameState.copy(value = name))
     }
 
     private fun onConfirmClick() = uiState.value.let {
         viewModelScope.launch {
-            createPlaylist(it.nameState.value)
-            navigateBackFromCreatePlaylist(playlistName)
+            getPlaylistById(playlistId)?.copy(
+                name = it.nameState.value,
+            )?.let { updatePlaylist(it) }
+
+            navigateBackFromEditPlaylist(playlistId)
         }
     }
 

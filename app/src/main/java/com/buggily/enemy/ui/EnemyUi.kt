@@ -70,9 +70,13 @@ import com.buggily.enemy.feature.browse.BrowseScreen
 import com.buggily.enemy.feature.orientation.OrientationScreen
 import com.buggily.enemy.feature.playlist.PlaylistScreen
 import com.buggily.enemy.feature.playlist.create.CreatePlaylistDialog
+import com.buggily.enemy.feature.playlist.create.CreatePlaylistViewModel
+import com.buggily.enemy.feature.playlist.edit.EditPlaylistDialog
+import com.buggily.enemy.feature.playlist.edit.EditPlaylistViewModel
 import com.buggily.enemy.feature.playlist.track.PlaylistTrackPickerViewModel
 import com.buggily.enemy.feature.preferences.PreferencesScreen
 import com.buggily.enemy.feature.track.playlist.TrackPlaylistPickerDialog
+import com.buggily.enemy.feature.track.playlist.TrackPlaylistPickerViewModel
 import com.buggily.enemy.core.ui.R as CR
 
 @Composable
@@ -217,8 +221,22 @@ private fun EnemyApp(
                 arguments = NavigationDestination.Playlist.Create.arguments,
                 dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
             ) {
+                val viewModel: CreatePlaylistViewModel = hiltViewModel()
+
                 Box(Modifier.fillMaxWidth(3 / 4f)) {
-                    CreatePlaylistDialog(hiltViewModel())
+                    CreatePlaylistDialog(viewModel)
+                }
+            }
+
+            dialog(
+                route = NavigationDestination.Playlist.Edit.route,
+                arguments = NavigationDestination.Playlist.Edit.arguments,
+                dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
+            ) {
+                val viewModel: EditPlaylistViewModel = hiltViewModel()
+
+                Box(Modifier.fillMaxWidth(3 / 4f)) {
+                    EditPlaylistDialog(viewModel)
                 }
             }
 
@@ -263,8 +281,10 @@ private fun EnemyApp(
                 arguments = NavigationDestination.Track.PlaylistPicker.arguments,
                 dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
             ) {
+                val viewModel: TrackPlaylistPickerViewModel = hiltViewModel()
+
                 Box(Modifier.fillMaxWidth(3 / 4f)) {
-                    TrackPlaylistPickerDialog(hiltViewModel())
+                    TrackPlaylistPickerDialog(viewModel)
                 }
             }
         }
