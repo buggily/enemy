@@ -1,10 +1,9 @@
 package com.buggily.enemy.data.track
 
-import com.buggily.enemy.core.domain.GetDurationWithMetadata
 import com.buggily.enemy.external.track.ExternalTrack
 import kotlinx.datetime.Instant
 
-fun ExternalTrack.to(getDurationWithMetadata: GetDurationWithMetadata): Track = Track(
+fun ExternalTrack.to(): Track = Track(
     id = id,
     name = name,
 
@@ -27,17 +26,16 @@ fun ExternalTrack.to(getDurationWithMetadata: GetDurationWithMetadata): Track = 
         disc = position.disc,
     ),
 
-    duration = getDurationWithMetadata(duration),
+    duration = duration,
 )
 
 fun ExternalTrack.toWithMetadata(
     plays: Int,
     firstPlayInstant: Instant,
     lastPlayInstant: Instant,
-    getDurationWithMetadata: GetDurationWithMetadata,
 ): TrackWithMetadata = TrackWithMetadata(
-        track = to(getDurationWithMetadata),
-        plays = plays,
-        firstPlayInstant = firstPlayInstant,
-        lastPlayInstant = lastPlayInstant,
-    )
+    track = to(),
+    plays = plays,
+    firstPlayInstant = firstPlayInstant,
+    lastPlayInstant = lastPlayInstant,
+)

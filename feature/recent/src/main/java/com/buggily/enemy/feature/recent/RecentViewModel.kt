@@ -4,11 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.buggily.enemy.data.track.Track
-import com.buggily.enemy.data.track.TrackWithMetadata
 import com.buggily.enemy.domain.navigation.NavigateToAlbum
 import com.buggily.enemy.domain.track.GetTrackPagingByPopularity
 import com.buggily.enemy.domain.track.GetTrackPagingByRecency
+import com.buggily.enemy.domain.track.TrackUi
+import com.buggily.enemy.domain.track.TrackWithMetadataUi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,10 +22,10 @@ class RecentViewModel @Inject constructor(
     private val navigateToAlbum: NavigateToAlbum,
 ) : ViewModel() {
 
-    val recentTracks: Flow<PagingData<TrackWithMetadata>> =
+    val recentTracks: Flow<PagingData<TrackWithMetadataUi>> =
         getTrackPagingByRecency().cachedIn(viewModelScope)
 
-    val popularTracks: Flow<PagingData<TrackWithMetadata>> =
+    val popularTracks: Flow<PagingData<TrackWithMetadataUi>> =
         getTrackPagingByPopularity().cachedIn(viewModelScope)
 
     private val _uiState: MutableStateFlow<RecentUiState>
@@ -40,7 +40,7 @@ class RecentViewModel @Inject constructor(
     }
 
     private fun onTrackClick(
-        track: Track,
+        track: TrackUi,
     ) = navigateToAlbum(
         albumId = track.album.id,
     )

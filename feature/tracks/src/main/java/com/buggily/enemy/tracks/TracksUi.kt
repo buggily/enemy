@@ -18,7 +18,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.buggily.enemy.core.ui.ui.track.TrackItem
-import com.buggily.enemy.data.track.Track
+import com.buggily.enemy.domain.track.TrackUi
 import com.buggily.enemy.feature.tracks.R
 
 @Composable
@@ -27,7 +27,7 @@ fun TracksScreen(
     modifier: Modifier = Modifier,
 ) {
     val uiState: TracksUiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val tracks: LazyPagingItems<Track> = viewModel.tracks.collectAsLazyPagingItems()
+    val tracks: LazyPagingItems<TrackUi> = viewModel.tracks.collectAsLazyPagingItems()
 
     Box(modifier) {
         TracksScreen(
@@ -41,7 +41,7 @@ fun TracksScreen(
 @Composable
 private fun TracksScreen(
     uiState: TracksUiState,
-    tracks: LazyPagingItems<Track>,
+    tracks: LazyPagingItems<TrackUi>,
     modifier: Modifier,
 ) {
     TracksScreen(
@@ -54,7 +54,7 @@ private fun TracksScreen(
 @Composable
 private fun TracksScreen(
     trackState: TracksUiState.TrackState,
-    tracks: LazyPagingItems<Track>,
+    tracks: LazyPagingItems<TrackUi>,
     modifier: Modifier = Modifier,
 ) {
     TracksColumn(
@@ -68,7 +68,7 @@ private fun TracksScreen(
 @OptIn(ExperimentalFoundationApi::class)
 private fun TracksColumn(
     trackState: TracksUiState.TrackState,
-    tracks: LazyPagingItems<Track>,
+    tracks: LazyPagingItems<TrackUi>,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -82,8 +82,8 @@ private fun TracksColumn(
             count = tracks.itemCount,
             key = tracks.itemKey { it.id },
         ) {
-            when (val track: Track? = tracks[it]) {
-                is Track -> TrackItem(
+            when (val track: TrackUi? = tracks[it]) {
+                is TrackUi -> TrackItem(
                     track = track,
                     onClick = { trackState.onClick(track) },
                     onLongClick = { trackState.onLongClick(track) },
@@ -105,7 +105,7 @@ private fun TracksHeader(
     ) {
         TrackItem(
             nameText = stringResource(R.string.tracks_name),
-            artistText = stringResource(R.string.tracks_artist),
+            artistNameText = stringResource(R.string.tracks_artist),
             durationText = stringResource(R.string.tracks_duration),
         )
     }

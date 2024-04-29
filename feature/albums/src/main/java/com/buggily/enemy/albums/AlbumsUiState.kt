@@ -1,6 +1,6 @@
 package com.buggily.enemy.albums
 
-import com.buggily.enemy.data.album.Album
+import com.buggily.enemy.domain.album.AlbumUi
 
 data class AlbumsUiState(
     val albumState: AlbumState,
@@ -8,7 +8,7 @@ data class AlbumsUiState(
 ) {
 
     data class AlbumState(
-        val onClick: (Album) -> Unit,
+        val onClick: (AlbumUi) -> Unit,
     )
 
     data class SearchState(

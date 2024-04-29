@@ -1,15 +1,11 @@
 package com.buggily.enemy.data.playlistWithTracks
 
-import com.buggily.enemy.core.domain.GetInstantWithMetadata
 import com.buggily.enemy.data.playlist.PlaylistRepositable
-import com.buggily.enemy.data.track.Track
-import com.buggily.enemy.data.track.TrackWithIndex
 import com.buggily.enemy.data.track.playlist.PlaylistTrackRepositable
 
 class PlaylistWithTracksRepository(
     private val playlistRepository: PlaylistRepositable,
     private val playlistTrackRepository: PlaylistTrackRepositable,
-    private val getInstantWithMetadata: GetInstantWithMetadata,
 ) : PlaylistWithTracksRepositable {
 
     override suspend fun deletePlaylistByPlaylistId(
@@ -19,31 +15,29 @@ class PlaylistWithTracksRepository(
         playlistTrackRepository.deleteByPlaylistId(playlistId)
     }
 
-    override suspend fun deleteTrackByPlaylistId(
+    override suspend fun deleteTrackByIdAndPlaylistIdAndIndex(
+        trackId: Long,
         playlistId: Long,
-        track: TrackWithIndex,
+        index: Int,
     ) {
-        playlistTrackRepository.deleteByPlaylistId(
+        playlistTrackRepository.deleteByIdAndPlaylistIdAndIndex(
+            id = trackId,
             playlistId = playlistId,
-            track = track,
+            index = index,
         )
 
-        playlistRepository.getById(playlistId)?.copy(
-            modificationInstant = getInstantWithMetadata(),
-        )?.let { playlistRepository.update(it) }
+        playlistRepository.updateById(playlistId)
     }
 
-    override suspend fun insertTrackByPlaylistId(
+    override suspend fun insertTrackByIdAndPlaylistId(
+        trackId: Long,
         playlistId: Long,
-        track: Track,
     ) {
-        playlistTrackRepository.insertByPlaylistId(
+        playlistTrackRepository.insertByIdAndPlaylistId(
+            id = trackId,
             playlistId = playlistId,
-            track = track,
         )
 
-        playlistRepository.getById(playlistId)?.copy(
-            modificationInstant = getInstantWithMetadata(),
-        )?.let { playlistRepository.update(it) }
+        playlistRepository.updateById(playlistId)
     }
 }

@@ -18,7 +18,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.buggily.enemy.core.ui.ui.playlist.PlaylistItem
-import com.buggily.enemy.data.playlist.Playlist
+import com.buggily.enemy.domain.playlist.PlaylistUi
 
 @Composable
 fun PlaylistsScreen(
@@ -26,7 +26,7 @@ fun PlaylistsScreen(
     modifier: Modifier = Modifier,
 ) {
     val uiState: PlaylistsUiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val playlists: LazyPagingItems<Playlist> = viewModel.playlists.collectAsLazyPagingItems()
+    val playlists: LazyPagingItems<PlaylistUi> = viewModel.playlists.collectAsLazyPagingItems()
 
     Box(modifier) {
         PlaylistsScreen(
@@ -40,7 +40,7 @@ fun PlaylistsScreen(
 @Composable
 private fun PlaylistsScreen(
     uiState: PlaylistsUiState,
-    playlists: LazyPagingItems<Playlist>,
+    playlists: LazyPagingItems<PlaylistUi>,
     modifier: Modifier = Modifier,
 ) {
     PlaylistsScreen(
@@ -53,7 +53,7 @@ private fun PlaylistsScreen(
 @Composable
 private fun PlaylistsScreen(
     playlistState: PlaylistsUiState.PlaylistState,
-    playlists: LazyPagingItems<Playlist>,
+    playlists: LazyPagingItems<PlaylistUi>,
     modifier: Modifier = Modifier,
 ) {
     PlaylistsColumn(
@@ -67,7 +67,7 @@ private fun PlaylistsScreen(
 @OptIn(ExperimentalFoundationApi::class)
 private fun PlaylistsColumn(
     playlistState: PlaylistsUiState.PlaylistState,
-    playlists: LazyPagingItems<Playlist>,
+    playlists: LazyPagingItems<PlaylistUi>,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -81,8 +81,8 @@ private fun PlaylistsColumn(
             count = playlists.itemCount,
             key = playlists.itemKey { it.id },
         ) {
-            when (val playlist: Playlist? = playlists[it]) {
-                is Playlist -> PlaylistItem(
+            when (val playlist: PlaylistUi? = playlists[it]) {
+                is PlaylistUi -> PlaylistItem(
                     playlist = playlist,
                     onClick = { playlistState.onClick(playlist) },
                     onLongClick = { playlistState.onLongClick(playlist) },

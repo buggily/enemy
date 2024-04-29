@@ -87,11 +87,6 @@ dependencies {
     implementation(project(":domain:navigation"))
     implementation(project(":domain:controller"))
 
-    implementation(project(":data:theme"))
-    implementation(project(":data:album"))
-    implementation(project(":data:track"))
-    implementation(project(":data:playlist"))
-
     with(libs) {
         implementation(kotlin)
         implementation(kotlinx.dateTime)

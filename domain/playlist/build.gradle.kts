@@ -8,5 +8,7 @@ android {
 
 dependencies {
     implementation(project(":data:playlist"))
+
+    implementation(libs.kotlinx.dateTime)
     implementation(libs.androidx.paging.core)
 }

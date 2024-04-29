@@ -1,6 +1,6 @@
 package com.buggily.enemy.feature.preferences
 
-import com.buggily.enemy.data.theme.Theme
+import com.buggily.enemy.domain.theme.ThemeUi
 
 data class PreferencesUiState(
     val themeState: ThemeState,
@@ -13,13 +13,13 @@ data class PreferencesUiState(
     ) {
 
         data class SchemeState(
-            val scheme: Theme.Scheme,
-            val schemes: List<Theme.Scheme>,
-            val onClick: (Theme.Scheme) -> Unit,
+            val scheme: ThemeUi.Scheme,
+            val schemes: List<ThemeUi.Scheme>,
+            val onClick: (ThemeUi.Scheme) -> Unit,
         )
 
         data class DynamicState(
-            val dynamic: Theme.Dynamic,
+            val dynamic: ThemeUi.Dynamic,
             val onCheck: (Boolean) -> Unit,
         )
 

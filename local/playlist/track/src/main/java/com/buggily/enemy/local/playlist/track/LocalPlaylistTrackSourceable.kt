@@ -15,6 +15,12 @@ interface LocalPlaylistTrackSourceable {
     ): LocalPlaylistTrack?
 
     suspend fun insert(track: LocalPlaylistTrack)
-    suspend fun delete(track: LocalPlaylistTrack)
+
+    suspend fun deleteByIdAndPlaylistIdAndIndex(
+        id: Long,
+        playlistId: Long,
+        index: Int,
+    )
+
     suspend fun deleteByPlaylistId(playlistId: Long)
 }

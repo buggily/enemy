@@ -2,8 +2,8 @@ package com.buggily.enemy.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.buggily.enemy.data.theme.Theme
 import com.buggily.enemy.domain.theme.GetTheme
+import com.buggily.enemy.domain.theme.ThemeUi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -13,12 +13,12 @@ import javax.inject.Inject
 @HiltViewModel
 class EnemyViewModel @Inject constructor(getTheme: GetTheme) : ViewModel() {
 
-    val theme: StateFlow<Theme> = getTheme().stateIn(
+    val theme: StateFlow<ThemeUi> = getTheme().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(),
-        initialValue = Theme(
-            scheme = Theme.Scheme.Default,
-            dynamic = Theme.Dynamic.On,
+        initialValue = ThemeUi(
+            scheme = ThemeUi.Scheme.Default,
+            dynamic = ThemeUi.Dynamic.On,
         ),
     )
 }

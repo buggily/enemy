@@ -1,7 +1,6 @@
 package com.buggily.enemy.data.track.playlist
 
 import androidx.paging.PagingData
-import com.buggily.enemy.data.track.Track
 import com.buggily.enemy.data.track.TrackWithIndex
 import kotlinx.coroutines.flow.Flow
 
@@ -20,14 +19,15 @@ interface PlaylistTrackRepositable {
         index: Int,
     ): TrackWithIndex?
 
-    suspend fun insertByPlaylistId(
+    suspend fun insertByIdAndPlaylistId(
+        id: Long,
         playlistId: Long,
-        track: Track,
     )
 
-    suspend fun deleteByPlaylistId(
+    suspend fun deleteByIdAndPlaylistIdAndIndex(
+        id: Long,
         playlistId: Long,
-        track: TrackWithIndex,
+        index: Int,
     )
 
     suspend fun deleteByPlaylistId(

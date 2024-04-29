@@ -2,7 +2,6 @@ package com.buggily.enemy.local.playlist.track
 
 import androidx.paging.PagingSource
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -33,8 +32,8 @@ interface LocalPlaylistTrackDao {
     @Query(
         """
             SELECT * FROM ${LocalPlaylistTrack.TABLE_NAME}
-            WHERE ${LocalPlaylistTrack.PLAYLIST_ID} = :playlistId AND
-            ${LocalPlaylistTrack.INDEX} = :index
+            WHERE ${LocalPlaylistTrack.PLAYLIST_ID} = :playlistId
+                AND ${LocalPlaylistTrack.INDEX} = :index
         """
     )
 
@@ -55,8 +54,20 @@ interface LocalPlaylistTrackDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(track: LocalPlaylistTrack)
 
-    @Delete
-    suspend fun delete(track: LocalPlaylistTrack)
+    @Query(
+        """
+            DELETE FROM ${LocalPlaylistTrack.TABLE_NAME}
+            WHERE ${LocalPlaylistTrack.ID} = :id 
+                AND ${LocalPlaylistTrack.PLAYLIST_ID} = :playlistId
+                AND ${LocalPlaylistTrack.INDEX} = :index
+        """
+    )
+
+    suspend fun deleteByIdAndPlaylistIdAndIndex(
+        id: Long,
+        playlistId: Long,
+        index: Int,
+    )
 
     @Query(
         """

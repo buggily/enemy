@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.session.MediaController
-import com.buggily.enemy.core.data.DurationWithMetadata
-import com.buggily.enemy.core.domain.GetDurationWithMetadata
+import com.buggily.enemy.core.domain.GetDuration
+import com.buggily.enemy.core.domain.GetDurationText
 import com.buggily.enemy.domain.controller.Next
 import com.buggily.enemy.domain.controller.Pause
 import com.buggily.enemy.domain.controller.Play
@@ -36,8 +36,9 @@ class ControllerViewModel @Inject constructor(
     private val repeat: Repeat,
     private val shuffle: Shuffle,
     private val seek: Seek,
-    private val getDurationWithMetadata: GetDurationWithMetadata,
     private val navigateBackFromController: NavigateBackFromController,
+    private val getDurationText: GetDurationText,
+    private val getDuration: GetDuration,
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<ControllerUiState>
@@ -48,6 +49,11 @@ class ControllerViewModel @Inject constructor(
     private var isSeeking = false
 
     init {
+        val duration = ControllerUiState.SeekState.Duration(
+            duration = Duration.ZERO,
+            text = getDurationText(Duration.ZERO),
+        )
+
         ControllerUiState(
             mediaItem = null,
             playState = ControllerUiState.PlayState(
@@ -72,8 +78,8 @@ class ControllerViewModel @Inject constructor(
                 onClick = ::onShuffleClick,
             ),
             seekState = ControllerUiState.SeekState(
-                current = DurationWithMetadata.ZERO,
-                duration = DurationWithMetadata.ZERO,
+                current = duration,
+                duration = duration,
                 onChange = ::onSeekChange,
                 onChangeFinish = ::onSeekChangeFinish,
             ),
@@ -153,18 +159,32 @@ class ControllerViewModel @Inject constructor(
         val range: LongRange = start until endExclusive
         if (milliseconds !in range) return@update it
 
-        it.copy(seekState = it.seekState.copy(duration = getDurationWithMetadata(milliseconds)))
+        val duration = ControllerUiState.SeekState.Duration(
+            text = getDurationText(milliseconds),
+            duration = getDuration(milliseconds),
+        )
+
+        it.copy(seekState = it.seekState.copy(duration = duration))
     }
 
     fun onEmpty() = navigateBackFromController()
 
     private fun onSeekChange(seconds: Float) {
         isSeeking = true
-        onSeekChange(duration = seconds.toLong().toDuration(DurationUnit.SECONDS))
+
+        getDuration(
+            duration = seconds.toLong(),
+            unit = DurationUnit.SECONDS,
+        ).let { onSeekChange(it) }
     }
 
     private fun onSeekChange(duration: Duration) = _uiState.update {
-        it.copy(seekState = it.seekState.copy(current = getDurationWithMetadata(duration)))
+        val current = ControllerUiState.SeekState.Duration(
+            duration = duration,
+            text = getDurationText(duration),
+        )
+
+        it.copy(seekState = it.seekState.copy(current = current))
     }
 
     private fun onPlayClick() {
@@ -185,7 +205,7 @@ class ControllerViewModel @Inject constructor(
     }
 
     private fun onShuffleClick() {
-        val shuffleMode = when (uiState.value.shuffleState.mode) {
+        val shuffleMode: Boolean = when (uiState.value.shuffleState.mode) {
             ControllerUiState.ShuffleState.Mode.Off -> true
             ControllerUiState.ShuffleState.Mode.On -> false
         }

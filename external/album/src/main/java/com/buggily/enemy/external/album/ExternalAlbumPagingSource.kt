@@ -5,11 +5,11 @@ import com.buggily.enemy.core.paging.QueryPagingSource
 import com.buggily.enemy.core.query.Query
 
 internal class ExternalAlbumPagingSource(
-    override val config: PagingConfig,
     override val query: Query,
+    override val config: PagingConfig,
     override val source: ExternalAlbumQuerySource,
 ) : QueryPagingSource<ExternalAlbum, ExternalAlbumQuerySource>(
-    config = config,
     query = query,
+    config = config,
     source = source,
 )

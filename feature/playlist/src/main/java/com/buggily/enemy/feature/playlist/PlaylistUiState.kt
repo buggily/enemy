@@ -1,10 +1,10 @@
 package com.buggily.enemy.feature.playlist
 
-import com.buggily.enemy.data.playlist.Playlist
-import com.buggily.enemy.data.track.TrackWithIndex
+import com.buggily.enemy.domain.playlist.PlaylistUi
+import com.buggily.enemy.domain.track.TrackWithIndexUi
 
 data class PlaylistUiState(
-    val playlist: Playlist?,
+    val playlist: PlaylistUi?,
     val playlistState: PlaylistState,
     val trackState: TrackState,
 ) {
@@ -14,7 +14,7 @@ data class PlaylistUiState(
     )
 
     data class TrackState(
-        val onClick: (TrackWithIndex) -> Unit,
-        val onLongClick: (TrackWithIndex) -> Unit,
+        val onClick: (TrackWithIndexUi) -> Unit,
+        val onLongClick: (TrackWithIndexUi) -> Unit,
     )
 }

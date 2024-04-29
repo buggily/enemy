@@ -5,8 +5,8 @@ import com.buggily.enemy.core.query.Query
 import com.buggily.enemy.core.query.QuerySource
 
 abstract class QueryPagingSource<Value : Any, Source : QuerySource<Value>>(
-    open val config: PagingConfig,
     open val query: Query,
+    open val config: PagingConfig,
     open val source: Source,
 ) : PositionalPagingSource<Value>() {
 

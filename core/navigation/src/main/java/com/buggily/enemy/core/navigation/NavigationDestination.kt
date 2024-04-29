@@ -116,7 +116,7 @@ sealed interface NavigationDestination {
             )
 
             private const val PICKER = "picker"
-            const val TRACK_ID = Track.TRACK_ID
+            const val TRACK_ID = "trackId"
         }
 
         data object PlaylistPicker : NavigationDestination {
@@ -194,7 +194,7 @@ sealed interface NavigationDestination {
             )
 
             private const val EDIT = "edit"
-            const val PLAYLIST_ID = Playlist.PLAYLIST_ID
+            const val PLAYLIST_ID = "playlistId"
         }
 
         data object Picker : NavigationDestination {
@@ -227,15 +227,19 @@ sealed interface NavigationDestination {
                 get() = emptyList()
 
             fun getRoute(
+                trackId: Long,
                 playlistId: Long,
                 trackIndex: Int,
             ): String = getRoute(
+                TRACK_ID to trackId,
                 PLAYLIST_ID to playlistId,
                 TRACK_INDEX to trackIndex,
             )
 
             private const val TRACK = Track.TRACK
-            const val PLAYLIST_ID = Playlist.PLAYLIST_ID
+
+            const val TRACK_ID = "trackId"
+            const val PLAYLIST_ID = "playlistId"
             const val TRACK_INDEX = "trackIndex"
         }
 

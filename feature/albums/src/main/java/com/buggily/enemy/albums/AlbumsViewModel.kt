@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.buggily.enemy.core.ui.SearchableViewModel
-import com.buggily.enemy.data.album.Album
+import com.buggily.enemy.domain.album.AlbumUi
 import com.buggily.enemy.domain.album.GetAlbumPaging
 import com.buggily.enemy.domain.navigation.NavigateToAlbum
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,7 +27,7 @@ class AlbumsViewModel @Inject constructor(
     private val _uiState: MutableStateFlow<AlbumsUiState>
     val uiState: StateFlow<AlbumsUiState> get() = _uiState
 
-    val albums: Flow<PagingData<Album>>
+    val albums: Flow<PagingData<AlbumUi>>
 
     init {
         AlbumsUiState(
@@ -55,7 +55,7 @@ class AlbumsViewModel @Inject constructor(
     }
 
     private fun onAlbumClick(
-        album: Album,
+        album: AlbumUi,
     ) = navigateToAlbum(
         albumId = album.id,
     )

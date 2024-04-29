@@ -9,5 +9,4 @@ android {
 
 dependencies {
     implementation(project(":domain:theme"))
-    implementation(project(":data:theme"))
 }

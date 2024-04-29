@@ -5,11 +5,11 @@ import com.buggily.enemy.core.paging.QueryPagingSource
 import com.buggily.enemy.core.query.Query
 
 internal class ExternalTrackPagingSource(
-    override val config: PagingConfig,
     override val query: Query,
+    override val config: PagingConfig,
     override val source: ExternalTrackQuerySource,
 ) : QueryPagingSource<ExternalTrack, ExternalTrackQuerySource>(
-    config = config,
     query = query,
+    config = config,
     source = source,
 )

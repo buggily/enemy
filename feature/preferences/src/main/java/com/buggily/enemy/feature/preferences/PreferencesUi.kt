@@ -29,7 +29,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.buggily.enemy.core.ui.ui.SingleLineText
-import com.buggily.enemy.data.theme.Theme
+import com.buggily.enemy.domain.theme.ThemeUi
 import com.buggily.enemy.core.ui.R as CR
 
 @Composable
@@ -171,7 +171,7 @@ private fun PreferencesThemeScheme(
         modifier = modifier,
     ) {
         schemeState.schemes.forEach {
-            val scheme: Theme.Scheme = schemeState.scheme
+            val scheme: ThemeUi.Scheme = schemeState.scheme
             val isSelected: Boolean = it == scheme
 
             PreferencesThemeSchemeRadioButton(
@@ -186,14 +186,14 @@ private fun PreferencesThemeScheme(
 @Composable
 private fun PreferencesThemeSchemeRadioButton(
     isSelected: Boolean,
-    scheme: Theme.Scheme,
-    onSchemeClick: (Theme.Scheme) -> Unit,
+    scheme: ThemeUi.Scheme,
+    onSchemeClick: (ThemeUi.Scheme) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val text: String = when (scheme) {
-        is Theme.Scheme.Default -> R.string.preferences_theme_scheme_default
-        is Theme.Scheme.Dark -> R.string.preferences_theme_scheme_dark
-        is Theme.Scheme.Light -> R.string.preferences_theme_scheme_light
+        is ThemeUi.Scheme.Default -> R.string.preferences_theme_scheme_default
+        is ThemeUi.Scheme.Dark -> R.string.preferences_theme_scheme_dark
+        is ThemeUi.Scheme.Light -> R.string.preferences_theme_scheme_light
     }.let { stringResource(it) }
 
     Row(
@@ -238,7 +238,7 @@ private fun PreferencesThemeDynamic(
         )
 
         Switch(
-            checked = dynamicState.dynamic is Theme.Dynamic.On,
+            checked = dynamicState.dynamic is ThemeUi.Dynamic.On,
             onCheckedChange = dynamicState.onCheck,
         )
     }

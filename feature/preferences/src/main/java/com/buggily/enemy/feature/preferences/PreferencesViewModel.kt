@@ -2,11 +2,11 @@ package com.buggily.enemy.feature.preferences
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.buggily.enemy.data.theme.Theme
 import com.buggily.enemy.domain.theme.GetTheme
 import com.buggily.enemy.domain.theme.SetTheme
 import com.buggily.enemy.domain.theme.SetThemeDynamic
 import com.buggily.enemy.domain.theme.SetThemeScheme
+import com.buggily.enemy.domain.theme.ThemeUi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -32,12 +32,12 @@ class PreferencesViewModel @Inject constructor(
         PreferencesUiState(
             themeState = PreferencesUiState.ThemeState(
                 schemeState = PreferencesUiState.ThemeState.SchemeState(
-                    scheme = Theme.Scheme.Default,
+                    scheme = ThemeUi.Scheme.Default,
                     schemes = schemes,
                     onClick = ::onThemeSchemeClick,
                 ),
                 dynamicState = PreferencesUiState.ThemeState.DynamicState(
-                    dynamic = Theme.Dynamic.On,
+                    dynamic = ThemeUi.Dynamic.On,
                     onCheck = ::onThemeDynamicCheck,
                 ),
                 resetState = PreferencesUiState.ThemeState.ResetState(
@@ -50,52 +50,52 @@ class PreferencesViewModel @Inject constructor(
             getTheme().stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(),
-                initialValue = Theme(
-                    scheme = Theme.Scheme.Default,
-                    dynamic = Theme.Dynamic.On,
+                initialValue = ThemeUi(
+                    scheme = ThemeUi.Scheme.Default,
+                    dynamic = ThemeUi.Dynamic.On,
                 ),
             ).collectLatest { setThemeState(it) }
         }
     }
 
-    private fun onThemeSchemeClick(scheme: Theme.Scheme) = viewModelScope.launch {
+    private fun onThemeSchemeClick(scheme: ThemeUi.Scheme) = viewModelScope.launch {
         setThemeScheme(scheme)
     }
 
     private fun onThemeDynamicCheck(isChecked: Boolean) = viewModelScope.launch {
-        setThemeDynamic(if (isChecked) Theme.Dynamic.On else Theme.Dynamic.Off)
+        setThemeDynamic(if (isChecked) ThemeUi.Dynamic.On else ThemeUi.Dynamic.Off)
     }
 
     private fun onThemeResetClick() = viewModelScope.launch {
-        Theme(
-            scheme = Theme.Scheme.Default,
-            dynamic = Theme.Dynamic.On,
+        ThemeUi(
+            scheme = ThemeUi.Scheme.Default,
+            dynamic = ThemeUi.Dynamic.On,
         ).let { setTheme(it) }
     }
 
-    private fun setThemeState(theme: Theme) = with(theme) {
+    private fun setThemeState(theme: ThemeUi) = with(theme) {
         setSchemeState(scheme)
         setDynamicState(dynamic)
     }
 
-    private fun setSchemeState(scheme: Theme.Scheme) = _uiState.update {
+    private fun setSchemeState(scheme: ThemeUi.Scheme) = _uiState.update {
         val schemeState: PreferencesUiState.ThemeState.SchemeState =
             it.themeState.schemeState.copy(scheme = scheme)
 
         it.copy(themeState = it.themeState.copy(schemeState = schemeState))
     }
 
-    private fun setDynamicState(dynamic: Theme.Dynamic) = _uiState.update {
+    private fun setDynamicState(dynamic: ThemeUi.Dynamic) = _uiState.update {
         val dynamicState: PreferencesUiState.ThemeState.DynamicState =
             it.themeState.dynamicState.copy(dynamic = dynamic)
 
         it.copy(themeState = it.themeState.copy(dynamicState = dynamicState))
     }
 
-    private val schemes: List<Theme.Scheme>
+    private val schemes: List<ThemeUi.Scheme>
         get() = listOf(
-            Theme.Scheme.Default,
-            Theme.Scheme.Light,
-            Theme.Scheme.Dark,
+            ThemeUi.Scheme.Default,
+            ThemeUi.Scheme.Light,
+            ThemeUi.Scheme.Dark,
         )
 }

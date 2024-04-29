@@ -1,21 +1,19 @@
 package com.buggily.enemy.data.playlistWithTracks
 
-import com.buggily.enemy.data.track.Track
-import com.buggily.enemy.data.track.TrackWithIndex
-
 interface PlaylistWithTracksRepositable {
 
     suspend fun deletePlaylistByPlaylistId(
         playlistId: Long,
     )
 
-    suspend fun deleteTrackByPlaylistId(
+    suspend fun deleteTrackByIdAndPlaylistIdAndIndex(
+        trackId: Long,
         playlistId: Long,
-        track: TrackWithIndex,
+        index: Int,
     )
 
-    suspend fun insertTrackByPlaylistId(
+    suspend fun insertTrackByIdAndPlaylistId(
+        trackId: Long,
         playlistId: Long,
-        track: Track,
     )
 }
