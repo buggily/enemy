@@ -11,12 +11,12 @@ dependencies {
     implementation(project(":feature:recent"))
 
     implementation(project(":feature:albums"))
-    implementation(project(":data:album"))
+    implementation(project(":domain:album"))
 
     implementation(project(":feature:tracks"))
-    implementation(project(":data:track"))
+    implementation(project(":domain:track"))
 
     implementation(project(":feature:playlists"))
-    implementation(project(":data:playlist"))
+    implementation(project(":domain:playlist"))
 }
 

@@ -43,10 +43,14 @@ internal class LocalPlaylistTrackSource(
         track = track,
     )
 
-    override suspend fun delete(
-        track: LocalPlaylistTrack,
-    ) = localPlaylistTrackDao.delete(
-        track = track,
+    override suspend fun deleteByIdAndPlaylistIdAndIndex(
+        id: Long,
+        playlistId: Long,
+        index: Int,
+    ) = localPlaylistTrackDao.deleteByIdAndPlaylistIdAndIndex(
+        id = id,
+        playlistId = playlistId,
+        index = index,
     )
 
     override suspend fun deleteByPlaylistId(

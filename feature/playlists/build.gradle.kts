@@ -9,8 +9,6 @@ android {
 
 dependencies {
     implementation(project(":domain:playlist"))
-    implementation(project(":data:playlist"))
-
     implementation(project(":domain:navigation"))
 
     implementation(libs.androidx.paging)

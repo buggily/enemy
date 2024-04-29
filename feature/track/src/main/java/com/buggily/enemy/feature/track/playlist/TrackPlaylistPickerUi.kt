@@ -19,7 +19,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.buggily.enemy.core.ui.ui.playlist.PlaylistItem
-import com.buggily.enemy.data.playlist.Playlist
+import com.buggily.enemy.domain.playlist.PlaylistUi
 import com.buggily.enemy.feature.track.R
 import com.buggily.enemy.core.ui.R as CR
 
@@ -29,7 +29,7 @@ fun TrackPlaylistPickerDialog(
     modifier: Modifier = Modifier,
 ) {
     val uiState: TrackPlaylistPickerUiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val playlists: LazyPagingItems<Playlist> = viewModel.playlists.collectAsLazyPagingItems()
+    val playlists: LazyPagingItems<PlaylistUi> = viewModel.playlists.collectAsLazyPagingItems()
 
     TrackPlaylistPickerDialog(
         uiState = uiState,
@@ -41,7 +41,7 @@ fun TrackPlaylistPickerDialog(
 @Composable
 private fun TrackPlaylistPickerDialog(
     uiState: TrackPlaylistPickerUiState,
-    playlists: LazyPagingItems<Playlist>,
+    playlists: LazyPagingItems<PlaylistUi>,
     modifier: Modifier = Modifier,
 ) {
     TrackPlaylistPickerDialog(
@@ -55,7 +55,7 @@ private fun TrackPlaylistPickerDialog(
 @OptIn(ExperimentalFoundationApi::class)
 private fun TrackPlaylistPickerDialog(
     playlistState: TrackPlaylistPickerUiState.PlaylistState,
-    playlists: LazyPagingItems<Playlist>,
+    playlists: LazyPagingItems<PlaylistUi>,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -77,8 +77,8 @@ private fun TrackPlaylistPickerDialog(
                 count = playlists.itemCount,
                 key = playlists.itemKey { it.id },
             ) {
-                when (val playlist: Playlist? = playlists[it]) {
-                    is Playlist -> PlaylistItem(
+                when (val playlist: PlaylistUi? = playlists[it]) {
+                    is PlaylistUi -> PlaylistItem(
                         playlist = playlist,
                         onClick = { playlistState.onClick(playlist) },
                     )

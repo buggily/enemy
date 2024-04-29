@@ -9,7 +9,6 @@ android {
 
 dependencies {
     implementation(project(":domain:album"))
-    implementation(project(":data:album"))
     
     implementation(project(":domain:track"))
     implementation(project(":data:track"))

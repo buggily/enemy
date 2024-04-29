@@ -20,7 +20,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.buggily.enemy.core.ui.ui.album.AlbumItem
-import com.buggily.enemy.data.album.Album
+import com.buggily.enemy.domain.album.AlbumUi
 import com.buggily.enemy.core.ui.R as CR
 
 @Composable
@@ -29,7 +29,7 @@ fun AlbumsScreen(
     modifier: Modifier = Modifier,
 ) {
     val uiState: AlbumsUiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val albums: LazyPagingItems<Album> = viewModel.albums.collectAsLazyPagingItems()
+    val albums: LazyPagingItems<AlbumUi> = viewModel.albums.collectAsLazyPagingItems()
 
     Box(modifier) {
         AlbumsScreen(
@@ -44,7 +44,7 @@ fun AlbumsScreen(
 @Composable
 private fun AlbumsScreen(
     uiState: AlbumsUiState,
-    albums: LazyPagingItems<Album>,
+    albums: LazyPagingItems<AlbumUi>,
     modifier: Modifier = Modifier,
 ) {
     AlbumsGrid(
@@ -57,7 +57,7 @@ private fun AlbumsScreen(
 @Composable
 private fun AlbumsGrid(
     albumState: AlbumsUiState.AlbumState,
-    albums: LazyPagingItems<Album>,
+    albums: LazyPagingItems<AlbumUi>,
     modifier: Modifier = Modifier,
 ) {
     LazyVerticalGrid(
@@ -82,8 +82,8 @@ private fun AlbumsGrid(
             count = albums.itemCount,
             key = albums.itemKey { it.id },
         ) {
-            when (val album: Album? = albums[it]) {
-                is Album -> AlbumItem(
+            when (val album: AlbumUi? = albums[it]) {
+                is AlbumUi -> AlbumItem(
                     album = album,
                     modifier = Modifier
                         .defaultMinSize(

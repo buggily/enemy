@@ -1,14 +1,13 @@
 package com.buggily.enemy.data.playlist
 
-import com.buggily.enemy.core.data.InstantWithMetadata
-import com.buggily.enemy.core.data.Playlistable
+import kotlinx.datetime.Instant
 
 data class Playlist(
-    override val id: Long = DEFAULT_ID,
-    override val name: String,
-    override val creationInstant: InstantWithMetadata,
-    override val modificationInstant: InstantWithMetadata,
-): Playlistable {
+    val id: Long = DEFAULT_ID,
+    val name: String,
+    val creationInstant: Instant,
+    val modificationInstant: Instant,
+) {
 
     private companion object {
         private const val DEFAULT_ID  = 0L

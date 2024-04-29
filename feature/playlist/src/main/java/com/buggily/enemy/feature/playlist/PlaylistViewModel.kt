@@ -8,11 +8,10 @@ import androidx.paging.PagingData
 import com.buggily.enemy.core.ext.firstIndex
 import com.buggily.enemy.core.ext.indexOfOrNull
 import com.buggily.enemy.core.navigation.NavigationDestination
-import com.buggily.enemy.core.ui.ext.toMediaItem
-import com.buggily.enemy.data.track.TrackWithIndex
 import com.buggily.enemy.domain.controller.PlayItems
 import com.buggily.enemy.domain.navigation.NavigateToPlaylistTrackPicker
 import com.buggily.enemy.domain.playlist.GetPlaylistById
+import com.buggily.enemy.domain.track.TrackWithIndexUi
 import com.buggily.enemy.domain.track.playlist.GetTrackPagingByPlaylistId
 import com.buggily.enemy.domain.track.playlist.GetTracksByPlaylistId
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -38,7 +37,7 @@ class PlaylistViewModel @Inject constructor(
     private val _uiState: MutableStateFlow<PlaylistUiState>
     val uiState: StateFlow<PlaylistUiState> get() = _uiState
 
-    val tracks: Flow<PagingData<TrackWithIndex>>
+    val tracks: Flow<PagingData<TrackWithIndexUi>>
 
     init {
         val playlistIdKey: String = NavigationDestination.Playlist.PLAYLIST_ID
@@ -62,7 +61,7 @@ class PlaylistViewModel @Inject constructor(
     }
 
     private fun onStartClick() = viewModelScope.launch {
-        val tracks: List<TrackWithIndex> = getTracksByPlaylistId(playlistId)
+        val tracks: List<TrackWithIndexUi> = getTracksByPlaylistId(playlistId)
         val items: List<MediaItem> = tracks.map { it.track.toMediaItem() }
 
         playItems(
@@ -71,8 +70,10 @@ class PlaylistViewModel @Inject constructor(
         )
     }
 
-    private fun onTrackClick(track: TrackWithIndex) = viewModelScope.launch {
-        val tracks: List<TrackWithIndex> = getTracksByPlaylistId(playlistId)
+    private fun onTrackClick(
+        track: TrackWithIndexUi,
+    ) = viewModelScope.launch {
+        val tracks: List<TrackWithIndexUi> = getTracksByPlaylistId(playlistId)
         val index: Int = checkNotNull(tracks.indexOfOrNull(track))
         val items: List<MediaItem> = tracks.map { it.track.toMediaItem() }
 
@@ -82,7 +83,10 @@ class PlaylistViewModel @Inject constructor(
         )
     }
 
-    private fun onTrackLongClick(track: TrackWithIndex) = navigateToPlaylistTrackPicker(
+    private fun onTrackLongClick(
+        track: TrackWithIndexUi,
+    ) = navigateToPlaylistTrackPicker(
+        trackId = track.track.id,
         playlistId = playlistId,
         trackIndex = track.index,
     )

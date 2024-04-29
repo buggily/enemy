@@ -8,12 +8,8 @@ android {
 }
 
 dependencies {
-    implementation(project(":data:album"))
     implementation(project(":domain:album"))
-
-    implementation(project(":data:track"))
     implementation(project(":domain:track"))
-
     implementation(project(":domain:navigation"))
 
     implementation(libs.androidx.paging)

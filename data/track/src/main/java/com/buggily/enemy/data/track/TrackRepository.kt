@@ -2,7 +2,6 @@ package com.buggily.enemy.data.track
 
 import androidx.paging.PagingData
 import androidx.paging.map
-import com.buggily.enemy.core.domain.GetDurationWithMetadata
 import com.buggily.enemy.core.domain.GetInstant
 import com.buggily.enemy.external.track.ExternalTrack
 import com.buggily.enemy.external.track.ExternalTrackSourceable
@@ -16,7 +15,6 @@ internal class TrackRepository(
     private val localTrackSource: LocalTrackSourceable,
     private val externalTrackSource: ExternalTrackSourceable,
     private val getInstant: GetInstant,
-    private val getDurationWithMetadata: GetDurationWithMetadata,
 ) : TrackRepositable {
 
     override fun getPaging(
@@ -24,7 +22,7 @@ internal class TrackRepository(
     ): Flow<PagingData<Track>> = externalTrackSource.getPaging(
         search = search,
     ).map { pagingData: PagingData<ExternalTrack> ->
-        pagingData.map { it.to(getDurationWithMetadata) }
+        pagingData.map { it.to() }
     }
 
     override fun getPagingByRecency(): Flow<PagingData<TrackWithMetadata>> =
@@ -34,7 +32,6 @@ internal class TrackRepository(
                     plays = it.plays,
                     firstPlayInstant = it.firstPlayInstant,
                     lastPlayInstant = it.lastPlayInstant,
-                    getDurationWithMetadata = getDurationWithMetadata,
                 )
             }
         }
@@ -46,7 +43,6 @@ internal class TrackRepository(
                     plays = it.plays,
                     firstPlayInstant = it.firstPlayInstant,
                     lastPlayInstant = it.lastPlayInstant,
-                    getDurationWithMetadata = getDurationWithMetadata,
                 )
             }
 
@@ -57,20 +53,20 @@ internal class TrackRepository(
     ): Flow<PagingData<Track>> = externalTrackSource.getPagingByAlbumId(
         albumId = albumId,
     ).map { pagingData: PagingData<ExternalTrack> ->
-        pagingData.map { it.to(getDurationWithMetadata) }
+        pagingData.map { it.to() }
     }
 
     override suspend fun getById(
         id: Long,
     ): Track? = externalTrackSource.getById(
         id = id,
-    )?.to(getDurationWithMetadata)
+    )?.to()
 
     override suspend fun getByAlbumId(
         albumId: Long,
-    ): List<Track> = externalTrackSource.getByAlbumId(albumId).map {
-        it.to(getDurationWithMetadata)
-    }
+    ): List<Track> = externalTrackSource.getByAlbumId(
+        albumId = albumId,
+    ).map { it.to() }
 
     override suspend fun incrementPlaysById(id: Long) {
         val track: LocalTrack? = localTrackSource.getById(id)

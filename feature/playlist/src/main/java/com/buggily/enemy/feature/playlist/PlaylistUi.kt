@@ -36,14 +36,13 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.buggily.enemy.core.ui.LocalWindowSizeClass
 import com.buggily.enemy.core.ui.ext.floatResource
-import com.buggily.enemy.core.ui.ext.nameText
 import com.buggily.enemy.core.ui.ext.peekFirst
 import com.buggily.enemy.core.ui.ui.ArtImage
 import com.buggily.enemy.core.ui.ui.PlayButton
 import com.buggily.enemy.core.ui.ui.track.TrackItem
-import com.buggily.enemy.data.playlist.Playlist
-import com.buggily.enemy.data.track.Track
-import com.buggily.enemy.data.track.TrackWithIndex
+import com.buggily.enemy.domain.playlist.PlaylistUi
+import com.buggily.enemy.domain.track.TrackUi
+import com.buggily.enemy.domain.track.TrackWithIndexUi
 import com.buggily.enemy.core.ui.R as CR
 
 @Composable
@@ -52,7 +51,7 @@ fun PlaylistScreen(
     modifier: Modifier = Modifier,
 ) {
     val uiState: PlaylistUiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val tracks: LazyPagingItems<TrackWithIndex> = viewModel.tracks.collectAsLazyPagingItems()
+    val tracks: LazyPagingItems<TrackWithIndexUi> = viewModel.tracks.collectAsLazyPagingItems()
 
     Box(modifier) {
         PlaylistScreen(
@@ -66,7 +65,7 @@ fun PlaylistScreen(
 @Composable
 private fun PlaylistScreen(
     uiState: PlaylistUiState,
-    tracks: LazyPagingItems<TrackWithIndex>,
+    tracks: LazyPagingItems<TrackWithIndexUi>,
     modifier: Modifier = Modifier,
 ) {
     PlaylistScreen(
@@ -80,13 +79,13 @@ private fun PlaylistScreen(
 
 @Composable
 private fun PlaylistScreen(
-    playlist: Playlist?,
+    playlist: PlaylistUi?,
     playlistState: PlaylistUiState.PlaylistState,
     trackState: PlaylistUiState.TrackState,
-    tracks: LazyPagingItems<TrackWithIndex>,
+    tracks: LazyPagingItems<TrackWithIndexUi>,
     modifier: Modifier = Modifier,
 ) {
-    val track: Track? = remember(tracks.itemSnapshotList) { tracks.peekFirst()?.track }
+    val track: TrackUi? = remember(tracks.itemSnapshotList) { tracks.peekFirst()?.track }
 
     when (LocalWindowSizeClass.current.heightSizeClass) {
         WindowHeightSizeClass.Compact -> PlaylistScreenCompact(
@@ -111,11 +110,11 @@ private fun PlaylistScreen(
 
 @Composable
 private fun PlaylistScreenCompact(
-    track: Track?,
-    playlist: Playlist?,
+    track: TrackUi?,
+    playlist: PlaylistUi?,
     trackState: PlaylistUiState.TrackState,
     playlistState: PlaylistUiState.PlaylistState,
-    tracks: LazyPagingItems<TrackWithIndex>,
+    tracks: LazyPagingItems<TrackWithIndexUi>,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -126,7 +125,7 @@ private fun PlaylistScreenCompact(
         val itemModifier: Modifier = Modifier.fillMaxHeight()
 
         when (playlist) {
-            is Playlist -> PlaylistHeader(
+            is PlaylistUi -> PlaylistHeader(
                 track = track,
                 playlist = playlist,
                 playlistState = playlistState,
@@ -141,8 +140,8 @@ private fun PlaylistScreenCompact(
             modifier = itemModifier.weight(2f),
         ) {
             items(tracks.itemCount) {
-                when (val trackWithIndex: TrackWithIndex? = tracks[it]) {
-                    is TrackWithIndex -> TrackItem(
+                when (val trackWithIndex: TrackWithIndexUi? = tracks[it]) {
+                    is TrackWithIndexUi -> TrackItem(
                         track = trackWithIndex.track,
                         onClick = { trackState.onClick(trackWithIndex) },
                         onLongClick = { trackState.onLongClick(trackWithIndex) },
@@ -158,11 +157,11 @@ private fun PlaylistScreenCompact(
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
 private fun PlaylistScreenMedium(
-    track: Track?,
-    playlist: Playlist?,
+    track: TrackUi?,
+    playlist: PlaylistUi?,
     trackState: PlaylistUiState.TrackState,
     playlistState: PlaylistUiState.PlaylistState,
-    tracks: LazyPagingItems<TrackWithIndex>,
+    tracks: LazyPagingItems<TrackWithIndexUi>,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier) {
@@ -173,7 +172,7 @@ private fun PlaylistScreenMedium(
             modifier = modifier,
         ) {
             when (playlist) {
-                is Playlist -> stickyHeader {
+                is PlaylistUi -> stickyHeader {
                     PlaylistHeader(
                         track = track,
                         playlist = playlist,
@@ -186,8 +185,8 @@ private fun PlaylistScreenMedium(
             }
 
             items(tracks.itemCount) {
-                when (val trackWithIndex: TrackWithIndex? = tracks[it]) {
-                    is TrackWithIndex -> TrackItem(
+                when (val trackWithIndex: TrackWithIndexUi? = tracks[it]) {
+                    is TrackWithIndexUi -> TrackItem(
                         track = trackWithIndex.track,
                         onClick = { trackState.onClick(trackWithIndex) },
                         onLongClick = { trackState.onLongClick(trackWithIndex) },
@@ -202,8 +201,8 @@ private fun PlaylistScreenMedium(
 
 @Composable
 private fun PlaylistHeader(
-    track: Track?,
-    playlist: Playlist,
+    track: TrackUi?,
+    playlist: PlaylistUi,
     playlistState: PlaylistUiState.PlaylistState,
     modifier: Modifier = Modifier,
 ) {
@@ -212,7 +211,7 @@ private fun PlaylistHeader(
         modifier = modifier,
     ) {
         when (track) {
-            is Track -> PlaylistHeaderBackground(
+            is TrackUi -> PlaylistHeaderBackground(
                 track = track,
                 modifier = Modifier
                     .fillMaxSize()
@@ -233,7 +232,7 @@ private fun PlaylistHeader(
 
 @Composable
 private fun PlaylistHeaderBackground(
-    track: Track,
+    track: TrackUi,
     modifier: Modifier,
 ) {
     ArtImage(
@@ -245,7 +244,7 @@ private fun PlaylistHeaderBackground(
 
 @Composable
 private fun PlaylistHeaderForeground(
-    playlist: Playlist,
+    playlist: PlaylistUi,
     playlistState: PlaylistUiState.PlaylistState,
     modifier: Modifier = Modifier,
 ) {

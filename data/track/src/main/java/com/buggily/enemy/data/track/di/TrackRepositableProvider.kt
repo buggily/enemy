@@ -1,6 +1,5 @@
 package com.buggily.enemy.data.track.di
 
-import com.buggily.enemy.core.domain.GetDurationWithMetadata
 import com.buggily.enemy.core.domain.GetInstant
 import com.buggily.enemy.data.track.TrackRepositable
 import com.buggily.enemy.data.track.TrackRepository
@@ -20,11 +19,9 @@ internal object TrackRepositableProvider {
         localTrackSource: LocalTrackSourceable,
         externalTrackSource: ExternalTrackSourceable,
         getInstant: GetInstant,
-        getDurationWithMetadata: GetDurationWithMetadata,
     ): TrackRepositable = TrackRepository(
         localTrackSource = localTrackSource,
         externalTrackSource = externalTrackSource,
         getInstant = getInstant,
-        getDurationWithMetadata = getDurationWithMetadata,
     )
 }

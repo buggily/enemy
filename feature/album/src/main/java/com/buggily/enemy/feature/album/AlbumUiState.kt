@@ -1,10 +1,10 @@
 package com.buggily.enemy.feature.album
 
-import com.buggily.enemy.data.album.Album
-import com.buggily.enemy.data.track.Track
+import com.buggily.enemy.domain.album.AlbumUi
+import com.buggily.enemy.domain.track.TrackUi
 
 data class AlbumUiState(
-    val album: Album?,
+    val album: AlbumUi?,
     val albumState: AlbumState,
     val trackState: TrackState,
 ) {
@@ -14,7 +14,7 @@ data class AlbumUiState(
     )
 
     data class TrackState(
-        val onClick: (Track) -> Unit,
-        val onLongClick: (Track) -> Unit,
+        val onClick: (TrackUi) -> Unit,
+        val onLongClick: (TrackUi) -> Unit,
     )
 }

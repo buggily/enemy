@@ -11,24 +11,18 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:domain"))
     implementation(project(":core:data"))
+    implementation(project(":core:domain"))
+
     implementation(project(":core:ext"))
-
     implementation(project(":core:navigation"))
-    implementation(project(":domain:navigation"))
 
-    implementation(project(":data:album"))
     implementation(project(":domain:album"))
-
-    implementation(project(":data:track"))
     implementation(project(":domain:track"))
-
-    implementation(project(":data:playlist"))
     implementation(project(":domain:playlist"))
-
-    implementation(project(":data:playlistWithTracks"))
     implementation(project(":domain:playlistWithTracks"))
+
+    implementation(project(":domain:navigation"))
 
     implementation(libs.androidx.paging)
     implementation(libs.androidx.paging.compose)

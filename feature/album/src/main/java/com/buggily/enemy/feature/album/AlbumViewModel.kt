@@ -11,14 +11,12 @@ import androidx.paging.map
 import com.buggily.enemy.core.ext.firstIndex
 import com.buggily.enemy.core.ext.indexOfOrNull
 import com.buggily.enemy.core.navigation.NavigationDestination
-import com.buggily.enemy.core.ui.ext.toMediaItem
-import com.buggily.enemy.core.ui.model.TrackUi
-import com.buggily.enemy.data.track.Track
 import com.buggily.enemy.domain.album.GetAlbumById
 import com.buggily.enemy.domain.controller.PlayItems
 import com.buggily.enemy.domain.navigation.NavigateToTrackPicker
 import com.buggily.enemy.domain.track.GetTrackPagingByAlbumId
 import com.buggily.enemy.domain.track.GetTracksByAlbumId
+import com.buggily.enemy.domain.track.TrackUi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,7 +41,7 @@ class AlbumViewModel @Inject constructor(
     private val _uiState: MutableStateFlow<AlbumUiState>
     val uiState: StateFlow<AlbumUiState> get() = _uiState
 
-    val tracks: Flow<PagingData<TrackUi>>
+    val tracks: Flow<PagingData<TrackAlbumUi>>
 
     init {
         val albumIdKey: String = NavigationDestination.Album.ALBUM_ID
@@ -60,15 +58,15 @@ class AlbumViewModel @Inject constructor(
             ),
         ).let { _uiState = MutableStateFlow(it) }
 
-        tracks = getTrackPagingByAlbumId(albumId).map { pagingData: PagingData<Track> ->
-            pagingData.map { TrackUi.Item(it) }
+        tracks = getTrackPagingByAlbumId(albumId).map { pagingData: PagingData<TrackUi> ->
+            pagingData.map { TrackAlbumUi.Item(it) }
         }.map {
-            it.insertSeparators { before: TrackUi.Item?, after: TrackUi.Item? ->
+            it.insertSeparators { before: TrackAlbumUi.Item?, after: TrackAlbumUi.Item? ->
                 val beforeDisc: Int = before?.track?.position?.disc ?: return@insertSeparators null
                 val afterDisc: Int = after?.track?.position?.disc ?: return@insertSeparators null
                 if (beforeDisc >= afterDisc) return@insertSeparators null
 
-                TrackUi.Separator.Disc(afterDisc)
+                TrackAlbumUi.Separator.Disc(afterDisc)
             }
         }.cachedIn(viewModelScope)
 
@@ -78,7 +76,7 @@ class AlbumViewModel @Inject constructor(
     }
 
     private fun onStartClick() = viewModelScope.launch {
-        val tracks: List<Track> = getTracksByAlbumId(albumId)
+        val tracks: List<TrackUi> = getTracksByAlbumId(albumId)
         val items: List<MediaItem> = tracks.map { it.toMediaItem() }
 
         playItems(
@@ -87,8 +85,8 @@ class AlbumViewModel @Inject constructor(
         )
     }
 
-    private fun onTrackClick(track: Track) = viewModelScope.launch {
-        val tracks: List<Track> = getTracksByAlbumId(albumId)
+    private fun onTrackClick(track: TrackUi) = viewModelScope.launch {
+        val tracks: List<TrackUi> = getTracksByAlbumId(albumId)
         val index: Int = checkNotNull(tracks.indexOfOrNull(track))
         val items: List<MediaItem> = tracks.map { it.toMediaItem() }
 
@@ -98,7 +96,7 @@ class AlbumViewModel @Inject constructor(
         )
     }
 
-    private fun onTrackLongClick(track: Track) = navigateToTrackPicker(
+    private fun onTrackLongClick(track: TrackUi) = navigateToTrackPicker(
         trackId = track.id,
     )
 }

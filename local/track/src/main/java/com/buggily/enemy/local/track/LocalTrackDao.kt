@@ -22,7 +22,8 @@ interface LocalTrackDao {
     @Query(
         """
             SELECT * FROM ${LocalTrack.TABLE_NAME}
-            ORDER BY ${LocalTrack.PLAYS} DESC
+            ORDER BY ${LocalTrack.PLAYS} DESC,
+                ${LocalTrack.LAST_PLAY_INSTANT} DESC
         """
     )
 

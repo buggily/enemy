@@ -32,14 +32,6 @@ include(":core:controller")
 
 include(":core:test")
 
-include(":domain:album")
-include(":domain:track")
-include(":domain:theme")
-include(":domain:playlist")
-
-include(":domain:navigation")
-include(":domain:controller")
-
 include(":feature:orientation")
 include(":feature:preferences")
 include(":feature:controller")
@@ -55,6 +47,15 @@ include(":feature:track")
 include(":feature:playlists")
 include(":feature:playlist")
 
+include(":domain:album")
+include(":domain:track")
+include(":domain:theme")
+include(":domain:playlist")
+include(":domain:playlistWithTracks")
+
+include(":domain:navigation")
+include(":domain:controller")
+
 include(":data:theme")
 include(":data:album")
 include(":data:track")
@@ -68,4 +69,3 @@ include(":local:playlist:track")
 
 include(":external:album")
 include(":external:track")
-include(":domain:playlistWithTracks")

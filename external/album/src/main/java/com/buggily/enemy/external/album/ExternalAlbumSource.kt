@@ -38,7 +38,7 @@ internal class ExternalAlbumSource(
 
     override suspend fun getById(
         id: Long,
-    ): ExternalAlbum = Query(
+    ): ExternalAlbum? = Query(
         selections = Query.Selections(
             Query.Selection.Expression.Equals(
                 argumentIdentity = MediaStore.Audio.Albums._ID,
@@ -49,5 +49,5 @@ internal class ExternalAlbumSource(
             columns = mapOf(MediaStore.Audio.Albums._ID to Query.Sort.Type.Number),
             direction = Query.Sort.Direction.Ascending
         ),
-    ).let { checkNotNull(externalAlbumQuerySource.loadFirstOrNull(it)) }
+    ).let { externalAlbumQuerySource.loadFirstOrNull(it) }
 }

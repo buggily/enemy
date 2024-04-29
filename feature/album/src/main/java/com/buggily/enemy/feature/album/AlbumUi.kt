@@ -38,17 +38,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.buggily.enemy.core.ui.LocalWindowSizeClass
-import com.buggily.enemy.core.ui.ext.artistText
-import com.buggily.enemy.core.ui.ext.discText
 import com.buggily.enemy.core.ui.ext.floatResource
-import com.buggily.enemy.core.ui.ext.nameText
-import com.buggily.enemy.core.ui.model.PagingPlaceholderKey
-import com.buggily.enemy.core.ui.model.TrackUi
+import com.buggily.enemy.core.ui.PagingPlaceholderKey
 import com.buggily.enemy.core.ui.ui.ArtImage
 import com.buggily.enemy.core.ui.ui.SingleLineText
 import com.buggily.enemy.core.ui.ui.SmallPlayButton
 import com.buggily.enemy.core.ui.ui.track.AlbumTrackItem
-import com.buggily.enemy.data.album.Album
+import com.buggily.enemy.domain.album.AlbumUi
 import com.buggily.enemy.core.ui.R as CR
 
 @Composable
@@ -57,7 +53,7 @@ fun AlbumScreen(
     modifier: Modifier = Modifier,
 ) {
     val uiState: AlbumUiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val tracks: LazyPagingItems<TrackUi> = viewModel.tracks.collectAsLazyPagingItems()
+    val tracks: LazyPagingItems<TrackAlbumUi> = viewModel.tracks.collectAsLazyPagingItems()
 
     Box(modifier) {
         AlbumScreen(
@@ -71,7 +67,7 @@ fun AlbumScreen(
 @Composable
 private fun AlbumScreen(
     uiState: AlbumUiState,
-    tracks: LazyPagingItems<TrackUi>,
+    tracks: LazyPagingItems<TrackAlbumUi>,
     modifier: Modifier = Modifier,
 ) {
     AlbumScreen(
@@ -85,10 +81,10 @@ private fun AlbumScreen(
 
 @Composable
 private fun AlbumScreen(
-    album: Album?,
+    album: AlbumUi?,
     albumState: AlbumUiState.AlbumState,
     trackState: AlbumUiState.TrackState,
-    tracks: LazyPagingItems<TrackUi>,
+    tracks: LazyPagingItems<TrackAlbumUi>,
     modifier: Modifier = Modifier,
 ) {
     when (LocalWindowSizeClass.current.heightSizeClass) {
@@ -111,9 +107,9 @@ private fun AlbumScreen(
 
 @Composable
 private fun AlbumScreenCompact(
-    album: Album?,
+    album: AlbumUi?,
     trackState: AlbumUiState.TrackState,
-    tracks: LazyPagingItems<TrackUi>,
+    tracks: LazyPagingItems<TrackAlbumUi>,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -124,7 +120,7 @@ private fun AlbumScreenCompact(
         val itemModifier: Modifier = Modifier.fillMaxHeight()
 
         when (album) {
-            is Album -> {
+            is AlbumUi -> {
                 AlbumHeaderCompact(
                     album = album,
                     modifier = itemModifier.weight(1f),
@@ -141,21 +137,21 @@ private fun AlbumScreenCompact(
             items(
                 count = tracks.itemCount,
                 key = {
-                    when (val track: TrackUi? = tracks[it]) {
-                        is TrackUi.Item -> track.track.id
-                        is TrackUi.Separator.Disc -> track.disc
+                    when (val track: TrackAlbumUi? = tracks[it]) {
+                        is TrackAlbumUi.Item -> track.track.id
+                        is TrackAlbumUi.Separator.Disc -> track.disc
                         else -> PagingPlaceholderKey(it)
                     }
                 },
             ) {
-                when (val track: TrackUi? = tracks[it]) {
-                    is TrackUi.Item -> AlbumTrackItem(
+                when (val track: TrackAlbumUi? = tracks[it]) {
+                    is TrackAlbumUi.Item -> AlbumTrackItem(
                         track = track.track,
                         onClick = { trackState.onClick(track.track) },
                         onLongClick = { trackState.onLongClick(track.track) },
                     )
 
-                    is TrackUi.Separator.Disc -> AlbumDiscItem(
+                    is TrackAlbumUi.Separator.Disc -> AlbumDiscItem(
                         trackSeparator = track,
                         modifier = Modifier.fillMaxWidth(),
                     )
@@ -170,10 +166,10 @@ private fun AlbumScreenCompact(
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
 private fun AlbumScreenMedium(
-    album: Album?,
+    album: AlbumUi?,
     albumState: AlbumUiState.AlbumState,
     trackState: AlbumUiState.TrackState,
-    tracks: LazyPagingItems<TrackUi>,
+    tracks: LazyPagingItems<TrackAlbumUi>,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -185,7 +181,7 @@ private fun AlbumScreenMedium(
         val itemModifier: Modifier = Modifier.fillMaxWidth()
 
         when (album) {
-            is Album -> stickyHeader {
+            is AlbumUi -> stickyHeader {
                 AlbumHeaderMedium(
                     album = album,
                     albumState = albumState,
@@ -197,21 +193,21 @@ private fun AlbumScreenMedium(
         items(
             count = tracks.itemCount,
             key = {
-                when (val track: TrackUi? = tracks[it]) {
-                    is TrackUi.Item -> track.track.id
-                    is TrackUi.Separator.Disc -> track.disc
+                when (val track: TrackAlbumUi? = tracks[it]) {
+                    is TrackAlbumUi.Item -> track.track.id
+                    is TrackAlbumUi.Separator.Disc -> track.disc
                     else -> PagingPlaceholderKey(it)
                 }
             },
         ) {
-            when (val track: TrackUi? = tracks[it]) {
-                is TrackUi.Item -> AlbumTrackItem(
+            when (val track: TrackAlbumUi? = tracks[it]) {
+                is TrackAlbumUi.Item -> AlbumTrackItem(
                     track = track.track,
                     onClick = { trackState.onClick(track.track) },
                     onLongClick = { trackState.onLongClick(track.track) },
                 )
 
-                is TrackUi.Separator.Disc -> AlbumDiscItem(
+                is TrackAlbumUi.Separator.Disc -> AlbumDiscItem(
                     trackSeparator = track,
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -224,7 +220,7 @@ private fun AlbumScreenMedium(
 
 @Composable
 private fun AlbumHeaderCompact(
-    album: Album,
+    album: AlbumUi,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -249,7 +245,7 @@ private fun AlbumHeaderCompact(
 
 @Composable
 private fun AlbumHeaderMedium(
-    album: Album,
+    album: AlbumUi,
     albumState: AlbumUiState.AlbumState,
     modifier: Modifier = Modifier,
 ) {
@@ -276,7 +272,7 @@ private fun AlbumHeaderMedium(
 
 @Composable
 private fun AlbumHeaderCompactForeground(
-    album: Album,
+    album: AlbumUi,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier) {
@@ -289,7 +285,7 @@ private fun AlbumHeaderCompactForeground(
 
 @Composable
 private fun AlbumHeaderMediumForeground(
-    album: Album,
+    album: AlbumUi,
     albumState: AlbumUiState.AlbumState,
     modifier: Modifier = Modifier,
 ) {
@@ -318,7 +314,7 @@ private fun AlbumHeaderMediumForeground(
 
 @Composable
 private fun AlbumHeaderBackground(
-    album: Album,
+    album: AlbumUi,
     modifier: Modifier = Modifier,
 ) {
     ArtImage(
@@ -330,7 +326,7 @@ private fun AlbumHeaderBackground(
 
 @Composable
 private fun AlbumHeaderImage(
-    album: Album,
+    album: AlbumUi,
     albumState: AlbumUiState.AlbumState,
     modifier: Modifier = Modifier,
 ) {
@@ -355,7 +351,7 @@ private fun AlbumHeaderImage(
 
 @Composable
 private fun AlbumHeaderText(
-    album: Album,
+    album: AlbumUi,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -373,7 +369,7 @@ private fun AlbumHeaderText(
         )
 
         Text(
-            text = album.artistText,
+            text = album.artist.nameText,
             textAlign = TextAlign.End,
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.alpha(floatResource(CR.dimen.alpha_medium)),
@@ -383,7 +379,7 @@ private fun AlbumHeaderText(
 
 @Composable
 private fun AlbumDiscItem(
-    trackSeparator: TrackUi.Separator.Disc,
+    trackSeparator: TrackAlbumUi.Separator.Disc,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -393,7 +389,7 @@ private fun AlbumDiscItem(
         SingleLineText(
             text = stringResource(
                 CR.string.disc,
-                trackSeparator.discText
+                trackSeparator.text,
             ),
             style = MaterialTheme.typography.titleSmall,
             modifier = Modifier

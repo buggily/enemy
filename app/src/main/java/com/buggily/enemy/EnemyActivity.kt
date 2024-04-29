@@ -42,8 +42,8 @@ import com.buggily.enemy.core.navigation.NavigationArgs
 import com.buggily.enemy.core.navigation.NavigationDestination
 import com.buggily.enemy.core.navigation.NavigationOrchestratable
 import com.buggily.enemy.core.ui.GlobalUiViewModel
-import com.buggily.enemy.data.theme.Theme
 import com.buggily.enemy.di.DirectExecutorQualifier
+import com.buggily.enemy.domain.theme.ThemeUi
 import com.buggily.enemy.ui.EnemyApp
 import com.buggily.enemy.ui.EnemyAppState
 import com.buggily.enemy.ui.EnemyViewModel
@@ -170,10 +170,10 @@ class EnemyActivity : ComponentActivity() {
             }
 
             val isSystemInDarkTheme: Boolean = isSystemInDarkTheme()
-            val theme: Theme by viewModel.theme.collectAsStateWithLifecycle()
+            val theme: ThemeUi by viewModel.theme.collectAsStateWithLifecycle()
 
             val paletteTheme: EnemyPalette.Theme = remember(isSystemInDarkTheme, theme) {
-                val isDynamic: Boolean = theme.dynamic is Theme.Dynamic.On
+                val isDynamic: Boolean = theme.dynamic is ThemeUi.Dynamic.On
 
                 theme.scheme.to(
                     isDynamic = isDynamic,

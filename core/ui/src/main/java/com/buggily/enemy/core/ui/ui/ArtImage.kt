@@ -2,6 +2,7 @@ package com.buggily.enemy.core.ui.ui
 
 import android.net.Uri
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -18,8 +19,8 @@ fun ArtImage(
     contentScale: ContentScale,
     modifier: Modifier = Modifier,
 ) {
-    AsyncImage(
-        model = artable.artUri,
+    ArtImage(
+        artUri = artable.artUri,
         contentScale = contentScale,
         contentDescription = artable.contentDescription,
         modifier = modifier,
@@ -32,17 +33,33 @@ fun ArtImage(
     contentScale: ContentScale,
     modifier: Modifier = Modifier,
 ) {
-    val name: String = mediaItem.mediaMetadata.title?.toString() ?: return
-    val artUri: Uri = mediaItem.mediaMetadata.artworkUri ?: return
+    val artUri: Uri = remember(mediaItem.mediaMetadata) {
+        mediaItem.mediaMetadata.artworkUri
+    } ?: return
 
-    val artable: Artable = object : Artable {
-        override val artUri: Uri = artUri
-        override val contentDescription: String = name
+    val contentDescription: String = remember(mediaItem.mediaMetadata) {
+        mediaItem.mediaMetadata.title.toString()
     }
 
     ArtImage(
-        artable = artable,
+        artUri = artUri,
         contentScale = contentScale,
+        contentDescription = contentDescription,
+        modifier = modifier,
+    )
+}
+
+@Composable
+fun ArtImage(
+    artUri: Uri,
+    contentScale: ContentScale,
+    contentDescription: String,
+    modifier: Modifier = Modifier,
+) {
+    AsyncImage(
+        model = artUri,
+        contentScale = contentScale,
+        contentDescription = contentDescription,
         modifier = modifier,
     )
 }

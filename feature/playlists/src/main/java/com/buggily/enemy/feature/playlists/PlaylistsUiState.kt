@@ -1,6 +1,6 @@
 package com.buggily.enemy.feature.playlists
 
-import com.buggily.enemy.data.playlist.Playlist
+import com.buggily.enemy.domain.playlist.PlaylistUi
 
 data class PlaylistsUiState(
     val playlistState: PlaylistState,
@@ -8,8 +8,8 @@ data class PlaylistsUiState(
 ) {
 
     data class PlaylistState(
-        val onClick: (Playlist) -> Unit,
-        val onLongClick: (Playlist) -> Unit,
+        val onClick: (PlaylistUi) -> Unit,
+        val onLongClick: (PlaylistUi) -> Unit,
     )
 
     data class SearchState(

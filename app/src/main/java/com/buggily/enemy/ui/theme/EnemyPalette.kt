@@ -7,9 +7,7 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 
-data class EnemyPalette(
-    private val theme: Theme,
-) {
+data class EnemyPalette(val theme: Theme) {
 
     sealed interface Theme {
 

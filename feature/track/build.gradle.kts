@@ -8,13 +8,8 @@ android {
 }
 
 dependencies {
-    implementation(project(":data:track"))
     implementation(project(":domain:track"))
-
-    implementation(project(":data:playlist"))
     implementation(project(":domain:playlist"))
-
-    implementation(project(":data:playlistWithTracks"))
     implementation(project(":domain:playlistWithTracks"))
 
     implementation(project(":domain:navigation"))

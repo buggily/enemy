@@ -1,50 +1,38 @@
 package com.buggily.enemy.data.track
 
-import com.buggily.enemy.core.data.Albumable
-import com.buggily.enemy.core.data.Artistable
-import com.buggily.enemy.core.data.DurationWithMetadata
-import com.buggily.enemy.core.data.Positionable
-import com.buggily.enemy.core.data.Trackable
-
 data class Track(
-    override val id: Long,
-    override val name: String,
+    val id: Long,
+    val name: String,
 
-    override val artist: Artist,
-    override val album: Album,
+    val artist: Artist,
+    val album: Album,
 
-    override val position: Position,
-    override val duration: DurationWithMetadata,
-) : Trackable {
+    val position: Position,
+    val duration: Long,
+) {
 
-    data class Position(
-        override val track: Int,
-        override val disc: Int,
-    ): Positionable
+    val nameText: String
+        get() = name
 
     data class Artist(
-        override val id: Long,
-        override val name: String,
-    ): Artistable
+        val id: Long,
+        val name: String,
+    )
 
     data class Album(
-        override val id: Long,
-        override val name: String,
-        override val artist: Artist,
-    ) : Albumable {
+        val id: Long,
+        val name: String,
+        val artist: Artist,
+    ) {
 
         data class Artist(
-            override val id: Long,
-            override val name: String,
-        ): Artistable
-
-        override val artUriId: Long
-            get() = id
-
-        override val contentDescription: String
-            get() = name
+            val id: Long,
+            val name: String,
+        )
     }
 
-    override val uriId: Long
-        get() = id
+    data class Position(
+        val track: Int,
+        val disc: Int,
+    )
 }

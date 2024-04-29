@@ -8,10 +8,12 @@ class NavigateBackFromPlaylistTrackPicker(
 ) {
 
     operator fun invoke(
+        trackId: Long,
         playlistId: Long,
         trackIndex: Int,
     ) {
         val route: String = NavigationDestination.Playlist.TrackPicker.getRoute(
+            trackId = trackId,
             playlistId = playlistId,
             trackIndex = trackIndex,
         )

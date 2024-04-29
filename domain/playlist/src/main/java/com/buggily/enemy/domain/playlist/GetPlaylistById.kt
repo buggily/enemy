@@ -1,15 +1,18 @@
 package com.buggily.enemy.domain.playlist
 
-import com.buggily.enemy.data.playlist.Playlist
+import com.buggily.enemy.core.domain.GetInstantText
 import com.buggily.enemy.data.playlist.PlaylistRepositable
 
 class GetPlaylistById(
-    private val repository: PlaylistRepositable,
+    private val playlistRepository: PlaylistRepositable,
+    private val getInstantText: GetInstantText,
 ) {
 
     suspend operator fun invoke(
         id: Long
-    ): Playlist? = repository.getById(
+    ): PlaylistUi? = playlistRepository.getById(
         id = id,
+    )?.toUi(
+        getInstantText = getInstantText,
     )
 }

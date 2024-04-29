@@ -11,8 +11,8 @@ class AndroidLibraryDomainConventionPlugin : Plugin<Project> {
         }
 
         dependencies {
-            add("implementation", project(":core:domain"))
             add("implementation", project(":core:data"))
+            add("implementation", project(":core:domain"))
         }
     }
 }

@@ -13,9 +13,9 @@ internal class AlbumRepository(
 
     override suspend fun getById(
         id: Long,
-    ): Album = albumExternalSource.getById(
+    ): Album? = albumExternalSource.getById(
         id = id,
-    ).to()
+    )?.to()
 
     override fun getPaging(
         search: String,

@@ -105,6 +105,8 @@ private fun ControllerScreenCompact(
                     .fillMaxSize()
                     .alpha(floatResource(CR.dimen.alpha_low)),
             )
+
+            else -> Unit
         }
 
         ControllerForegroundCompact(
@@ -133,6 +135,8 @@ private fun ControllerScreenMedium(
                     .fillMaxSize()
                     .alpha(floatResource(CR.dimen.alpha_low)),
             )
+
+            else -> Unit
         }
 
         ControllerForegroundMedium(
@@ -289,12 +293,12 @@ private fun ControllerText(
         modifier = modifier,
     ) {
         Text(
-            text = mediaItem?.nameText ?: String(),
+            text = mediaItem?.nameText.orEmpty(),
             style = MaterialTheme.typography.displaySmall,
         )
 
         Text(
-            text = mediaItem?.artistText ?: String(),
+            text = mediaItem?.artistText.orEmpty(),
             style = MaterialTheme.typography.displaySmall,
             modifier = Modifier.alpha(floatResource(CR.dimen.alpha_medium)),
         )
@@ -521,7 +525,7 @@ private fun ControllerProgressBar(
     modifier: Modifier = Modifier,
 ) {
     LinearProgressIndicator(
-        progress = seekState.progress,
+        progress = { seekState.progress },
         modifier = modifier,
     )
 }
@@ -614,12 +618,12 @@ private fun ControllerBottomSheetText(
         modifier = modifier,
     ) {
         SingleLineText(
-            text = mediaItem.nameText ?: String(),
+            text = mediaItem.nameText.orEmpty(),
             style = MaterialTheme.typography.titleMedium,
         )
 
         SingleLineText(
-            text = mediaItem.artistText ?: String(),
+            text = mediaItem.artistText.orEmpty(),
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.alpha(floatResource(CR.dimen.alpha_medium)),
         )

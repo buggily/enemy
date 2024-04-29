@@ -1,12 +1,12 @@
 package com.buggily.enemy.feature.track.playlist
 
-import com.buggily.enemy.data.playlist.Playlist
+import com.buggily.enemy.domain.playlist.PlaylistUi
 
 data class TrackPlaylistPickerUiState(
     val playlistState: PlaylistState,
 ) {
 
     data class PlaylistState(
-        val onClick: (Playlist) -> Unit,
+        val onClick: (PlaylistUi) -> Unit,
     )
 }

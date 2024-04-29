@@ -5,11 +5,10 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.buggily.enemy.core.ui.SearchableViewModel
-import com.buggily.enemy.core.ui.ext.toMediaItem
-import com.buggily.enemy.data.track.Track
 import com.buggily.enemy.domain.controller.PlayItem
 import com.buggily.enemy.domain.navigation.NavigateToTrackPicker
 import com.buggily.enemy.domain.track.GetTrackPaging
+import com.buggily.enemy.domain.track.TrackUi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,7 +29,7 @@ class TracksViewModel @Inject constructor(
     private val _uiState: MutableStateFlow<TracksUiState>
     val uiState: StateFlow<TracksUiState> get() = _uiState
 
-    val tracks: Flow<PagingData<Track>>
+    val tracks: Flow<PagingData<TrackUi>>
 
     init {
         TracksUiState(
@@ -58,11 +57,11 @@ class TracksViewModel @Inject constructor(
         it.copy(searchState = it.searchState.copy(value = value))
     }
 
-    private fun onTrackClick(track: Track) = playItem(
+    private fun onTrackClick(track: TrackUi) = playItem(
         item = track.toMediaItem(),
     )
 
-    private fun onTrackLongClick(track: Track) = navigateToTrackPicker(
+    private fun onTrackLongClick(track: TrackUi) = navigateToTrackPicker(
         trackId = track.id,
     )
 }

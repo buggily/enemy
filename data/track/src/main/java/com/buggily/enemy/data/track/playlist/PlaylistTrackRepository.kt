@@ -2,8 +2,6 @@ package com.buggily.enemy.data.track.playlist
 
 import androidx.paging.PagingData
 import androidx.paging.map
-import com.buggily.enemy.core.domain.GetDurationWithMetadata
-import com.buggily.enemy.data.track.Track
 import com.buggily.enemy.data.track.TrackWithIndex
 import com.buggily.enemy.external.track.ExternalTrackSourceable
 import com.buggily.enemy.local.playlist.track.LocalPlaylistTrack
@@ -14,7 +12,6 @@ import kotlinx.coroutines.flow.map
 internal class PlaylistTrackRepository(
     private val localPlaylistTrackSource: LocalPlaylistTrackSourceable,
     private val externalTrackSource: ExternalTrackSourceable,
-    private val getDurationWithMetadata: GetDurationWithMetadata,
 ) : PlaylistTrackRepositable {
 
     override fun getPagingByPlaylistId(
@@ -23,20 +20,14 @@ internal class PlaylistTrackRepository(
         playlistId = playlistId,
     ).map { pagingData: PagingData<LocalPlaylistTrack> ->
         pagingData.map {
-            checkNotNull(externalTrackSource.getById(it.id)).toWithIndex(
-                index = it.index,
-                getDurationWithMetadata = getDurationWithMetadata,
-            )
+            checkNotNull(externalTrackSource.getById(it.id)).toWithIndex(it.index)
         }
     }
 
     override suspend fun getByPlaylistId(
         playlistId: Long,
     ): List<TrackWithIndex> = localPlaylistTrackSource.getByPlaylistId(playlistId).map {
-        checkNotNull(externalTrackSource.getById(it.id)).toWithIndex(
-            index = it.index,
-            getDurationWithMetadata = getDurationWithMetadata,
-        )
+        checkNotNull(externalTrackSource.getById(it.id)).toWithIndex(it.index)
     }
 
     override suspend fun getByPlaylistIdAndIndex(
@@ -45,33 +36,31 @@ internal class PlaylistTrackRepository(
     ): TrackWithIndex? = localPlaylistTrackSource.getByPlaylistIdAndIndex(
         playlistId = playlistId,
         index = index,
-    )?.let {
-        externalTrackSource.getById(it.id)?.toWithIndex(
-            index = it.index,
-            getDurationWithMetadata = getDurationWithMetadata,
-        )
-    }
+    )?.let { externalTrackSource.getById(it.id)?.toWithIndex(it.index) }
 
-    override suspend fun insertByPlaylistId(
+    override suspend fun insertByIdAndPlaylistId(
+        id: Long,
         playlistId: Long,
-        track: Track,
     ) {
         val index: Int = localPlaylistTrackSource.getMaxIndexByPlaylistId(
             playlistId = playlistId,
         )?.inc() ?: 0
 
-        return track.toLocal(
+        externalTrackSource.getById(id)?.toLocal(
             playlistId = playlistId,
             index = index,
-        ).let { localPlaylistTrackSource.insert(it) }
+        )?.let { localPlaylistTrackSource.insert(it) }
     }
 
-    override suspend fun deleteByPlaylistId(
+    override suspend fun deleteByIdAndPlaylistIdAndIndex(
+        id: Long,
         playlistId: Long,
-        track: TrackWithIndex,
-    ) = track.toLocal(
+        index: Int,
+    ) = localPlaylistTrackSource.deleteByIdAndPlaylistIdAndIndex(
+        id = id,
         playlistId = playlistId,
-    ).let { localPlaylistTrackSource.delete(it) }
+        index = index,
+    )
 
     override suspend fun deleteByPlaylistId(
         playlistId: Long,

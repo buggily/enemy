@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.buggily.enemy.core.navigation.NavigationDestination
 import com.buggily.enemy.domain.navigation.NavigateBackFromEditPlaylist
 import com.buggily.enemy.domain.playlist.GetPlaylistById
-import com.buggily.enemy.domain.playlist.UpdatePlaylist
+import com.buggily.enemy.domain.playlist.UpdatePlaylistById
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class EditPlaylistViewModel @Inject constructor(
     private val getPlaylistById: GetPlaylistById,
-    private val updatePlaylist: UpdatePlaylist,
+    private val updatePlaylistById: UpdatePlaylistById,
     private val navigateBackFromEditPlaylist: NavigateBackFromEditPlaylist,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -70,9 +70,10 @@ class EditPlaylistViewModel @Inject constructor(
 
     private fun onConfirmClick() = uiState.value.let {
         viewModelScope.launch {
-            getPlaylistById(playlistId)?.copy(
+            updatePlaylistById(
+                id = playlistId,
                 name = it.nameState.value,
-            )?.let { updatePlaylist(it) }
+            )
 
             navigateBackFromEditPlaylist(playlistId)
         }

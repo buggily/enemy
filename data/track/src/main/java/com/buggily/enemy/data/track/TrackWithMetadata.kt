@@ -7,4 +7,8 @@ data class TrackWithMetadata(
     val plays: Int,
     val firstPlayInstant: Instant,
     val lastPlayInstant: Instant,
-)
+) {
+
+    val playsText: String
+        get() = plays.toString()
+}

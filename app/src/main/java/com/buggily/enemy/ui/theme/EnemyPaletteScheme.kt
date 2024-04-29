@@ -1,21 +1,21 @@
 package com.buggily.enemy.ui.theme
 
-import com.buggily.enemy.data.theme.Theme
+import com.buggily.enemy.domain.theme.ThemeUi
 
-fun Theme.Scheme.to(
+fun ThemeUi.Scheme.to(
     isDynamic: Boolean,
     isSystemInDarkTheme: Boolean,
 ): EnemyPalette.Theme = when (this) {
-    is Theme.Scheme.Default -> EnemyPalette.Theme.Default(
+    is ThemeUi.Scheme.Default -> EnemyPalette.Theme.Default(
         isDynamic = isDynamic,
         isSystemInDarkTheme = isSystemInDarkTheme,
     )
 
-    is Theme.Scheme.Light -> EnemyPalette.Theme.Light(
+    is ThemeUi.Scheme.Light -> EnemyPalette.Theme.Light(
         isDynamic = isDynamic,
     )
 
-    is Theme.Scheme.Dark -> EnemyPalette.Theme.Dark(
+    is ThemeUi.Scheme.Dark -> EnemyPalette.Theme.Dark(
         isDynamic = isDynamic,
     )
 }

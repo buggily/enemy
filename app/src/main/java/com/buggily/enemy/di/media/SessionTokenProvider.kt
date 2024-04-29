@@ -11,7 +11,7 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-object SessionTokenProvider {
+internal object SessionTokenProvider {
 
     @Provides
     fun provides(

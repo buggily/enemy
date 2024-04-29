@@ -11,7 +11,7 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-object ComponentNameProvider {
+internal object ComponentNameProvider {
 
     @Provides
     fun provides(

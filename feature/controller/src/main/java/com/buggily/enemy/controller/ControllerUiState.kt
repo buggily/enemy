@@ -1,8 +1,8 @@
 package com.buggily.enemy.controller
 
 import androidx.media3.common.MediaItem
-import com.buggily.enemy.core.data.DurationWithMetadata
 import com.buggily.enemy.core.ext.isPositive
+import kotlin.time.Duration as KDuration
 
 data class ControllerUiState(
     val mediaItem: MediaItem?,
@@ -77,28 +77,28 @@ data class ControllerUiState(
     }
 
     data class SeekState(
-        val current: DurationWithMetadata,
-        val duration: DurationWithMetadata,
+        val current: Duration,
+        val duration: Duration,
         val onChange: (Float) -> Unit,
         val onChangeFinish: () -> Unit,
     ) {
 
+        private val first: Float = KDuration.ZERO.inWholeSeconds.toFloat()
+        private val last: Float = duration.duration.inWholeSeconds.toFloat()
+        val range: ClosedFloatingPointRange<Float> = first..last
+
         val milliseconds: Long
-            get() = current.inWholeMilliseconds
+            get() = current.duration.inWholeMilliseconds
 
         val value: Float
-            get() = current.inWholeSeconds.toFloat()
+            get() = current.duration.inWholeSeconds.toFloat()
 
         val progress: Float
             get() = last.takeIf { it.isPositive }?.let { value / it } ?: first
 
-        private val first: Float
-            get() = DurationWithMetadata.ZERO.inWholeSeconds.toFloat()
-
-        private val last: Float
-            get() = duration.inWholeSeconds.toFloat()
-
-        val range: ClosedFloatingPointRange<Float>
-            get() = first..last
+        data class Duration(
+            val duration: KDuration,
+            val text: String,
+        )
     }
 }
