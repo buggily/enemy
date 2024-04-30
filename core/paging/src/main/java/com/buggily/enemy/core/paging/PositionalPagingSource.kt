@@ -3,8 +3,10 @@ package com.buggily.enemy.core.paging
 import androidx.paging.PagingConfig
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.buggily.enemy.core.ext.isNonPositive
 
-abstract class PositionalPagingSource<Value : Any> : PagingSource<PositionalPagingSource.Key, Value>() {
+abstract class PositionalPagingSource<Value : Any> :
+    PagingSource<PositionalPagingSource.Key, Value>() {
 
     data class Key(
         private val position: Int?,
@@ -28,22 +30,22 @@ abstract class PositionalPagingSource<Value : Any> : PagingSource<PositionalPagi
 
         fun getPrev(): Key? = get(
             isLiminal = isPositionDefault,
-            operator = Int::dec,
+            operation = Int::dec,
         )
 
-        fun getNext(data: List<*>): Key? = get(
-            isLiminal = data.isEmpty(),
-            operator = Int::inc,
+        fun getNext(size: Int): Key? = get(
+            isLiminal = size.isNonPositive,
+            operation = Int::inc,
         )
 
         private fun get(
             isLiminal: Boolean,
-            operator: (Int) -> Int,
+            operation: (Int) -> Int,
         ): Key? {
             if (isLiminal) return null
 
             return Key(
-                position = operator(positionOrDefault),
+                position = operation(positionOrDefault),
                 config = config,
             )
         }
@@ -60,10 +62,8 @@ abstract class PositionalPagingSource<Value : Any> : PagingSource<PositionalPagi
 
     override fun getRefreshKey(
         state: PagingState<Key, Value>,
-    ): Key = with(state) {
-        Key(
-            position = anchorPosition,
-            config = config,
-        )
-    }
+    ): Key = Key(
+        position = state.anchorPosition,
+        config = state.config,
+    )
 }

@@ -9,6 +9,7 @@ data class TrackWithMetadata(
     val lastPlayInstant: Instant,
 ) {
 
-    val playsText: String
-        get() = plays.toString()
+    companion object {
+        const val EMPTY_PLAYS = 0
+    }
 }

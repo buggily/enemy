@@ -87,7 +87,7 @@ class AlbumViewModel @Inject constructor(
 
     private fun onTrackClick(track: TrackUi) = viewModelScope.launch {
         val tracks: List<TrackUi> = getTracksByAlbumId(albumId)
-        val index: Int = checkNotNull(tracks.indexOfOrNull(track))
+        val index: Int = tracks.indexOfOrNull(track) ?: return@launch
         val items: List<MediaItem> = tracks.map { it.toMediaItem() }
 
         playItems(

@@ -13,28 +13,25 @@ fun ExternalTrack.toWithIndex(
     index = index,
 )
 
+fun ExternalTrack?.toWithIndex(
+    id: Long,
+    index: Int,
+): TrackWithIndex = when (this) {
+    is ExternalTrack -> toWithIndex(
+        index = index,
+    )
+
+    else -> TrackWithIndex(
+        track = Track.getDefault(id),
+        index = TrackWithIndex.EMPTY_INDEX,
+    )
+}
+
 fun ExternalTrack.toLocal(
     playlistId: Long,
     index: Int,
 ): LocalPlaylistTrack = LocalPlaylistTrack(
     id = id,
-    playlistId = playlistId,
-    index = index,
-)
-
-fun Track.toLocal(
-    playlistId: Long,
-    index: Int,
-): LocalPlaylistTrack = LocalPlaylistTrack(
-    id = id,
-    playlistId = playlistId,
-    index = index,
-)
-
-fun TrackWithIndex.toLocal(
-    playlistId: Long,
-): LocalPlaylistTrack = LocalPlaylistTrack(
-    id = track.id,
     playlistId = playlistId,
     index = index,
 )

@@ -37,9 +37,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import com.buggily.enemy.core.ui.LocalWindowSizeClass
 import com.buggily.enemy.core.ui.ext.floatResource
-import com.buggily.enemy.core.ui.PagingPlaceholderKey
 import com.buggily.enemy.core.ui.ui.ArtImage
 import com.buggily.enemy.core.ui.ui.SingleLineText
 import com.buggily.enemy.core.ui.ui.SmallPlayButton
@@ -136,11 +136,10 @@ private fun AlbumScreenCompact(
         ) {
             items(
                 count = tracks.itemCount,
-                key = {
-                    when (val track: TrackAlbumUi? = tracks[it]) {
-                        is TrackAlbumUi.Item -> track.track.id
-                        is TrackAlbumUi.Separator.Disc -> track.disc
-                        else -> PagingPlaceholderKey(it)
+                key = tracks.itemKey {
+                    when (it) {
+                        is TrackAlbumUi.Item -> it.track.id
+                        is TrackAlbumUi.Separator.Disc -> it.disc
                     }
                 },
             ) {
@@ -192,11 +191,10 @@ private fun AlbumScreenMedium(
 
         items(
             count = tracks.itemCount,
-            key = {
-                when (val track: TrackAlbumUi? = tracks[it]) {
-                    is TrackAlbumUi.Item -> track.track.id
-                    is TrackAlbumUi.Separator.Disc -> track.disc
-                    else -> PagingPlaceholderKey(it)
+            key = tracks.itemKey {
+                when (it) {
+                    is TrackAlbumUi.Item -> it.track.id
+                    is TrackAlbumUi.Separator.Disc -> it.disc
                 }
             },
         ) {

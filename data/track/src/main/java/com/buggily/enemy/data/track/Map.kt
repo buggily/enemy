@@ -39,3 +39,23 @@ fun ExternalTrack.toWithMetadata(
     firstPlayInstant = firstPlayInstant,
     lastPlayInstant = lastPlayInstant,
 )
+
+fun ExternalTrack?.toWithMetadata(
+    id: Long,
+    plays: Int,
+    firstPlayInstant: Instant,
+    lastPlayInstant: Instant,
+): TrackWithMetadata = when (this) {
+    is ExternalTrack -> toWithMetadata(
+        plays = plays,
+        firstPlayInstant = firstPlayInstant,
+        lastPlayInstant = lastPlayInstant,
+    )
+
+    else -> TrackWithMetadata(
+        track = Track.getDefault(id),
+        plays = TrackWithMetadata.EMPTY_PLAYS,
+        firstPlayInstant = Instant.DISTANT_PAST,
+        lastPlayInstant = Instant.DISTANT_PAST,
+    )
+}

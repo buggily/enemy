@@ -120,7 +120,7 @@ private fun BrowseContent(
     modifier: Modifier = Modifier,
 ) {
     val context: Context = LocalContext.current
-    val activity: ComponentActivity = checkNotNull(context as? ComponentActivity)
+    val activity: ComponentActivity = context as ComponentActivity
     val globalUiViewModel: GlobalUiViewModel = hiltViewModel(activity)
 
     Box(modifier) {

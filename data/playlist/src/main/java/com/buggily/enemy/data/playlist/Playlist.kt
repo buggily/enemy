@@ -10,6 +10,6 @@ data class Playlist(
 ) {
 
     private companion object {
-        private const val DEFAULT_ID  = 0L
+        private const val DEFAULT_ID = 0L
     }
 }

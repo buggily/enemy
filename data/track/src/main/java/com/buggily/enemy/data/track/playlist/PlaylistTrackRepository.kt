@@ -20,15 +20,18 @@ internal class PlaylistTrackRepository(
         playlistId = playlistId,
     ).map { pagingData: PagingData<LocalPlaylistTrack> ->
         pagingData.map {
-            checkNotNull(externalTrackSource.getById(it.id)).toWithIndex(it.index)
+            externalTrackSource.getById(it.id).toWithIndex(
+                id = it.id,
+                index = it.index,
+            )
         }
     }
 
     override suspend fun getByPlaylistId(
         playlistId: Long,
-    ): List<TrackWithIndex> = localPlaylistTrackSource.getByPlaylistId(playlistId).map {
-        checkNotNull(externalTrackSource.getById(it.id)).toWithIndex(it.index)
-    }
+    ): List<TrackWithIndex> = localPlaylistTrackSource.getByPlaylistId(
+        playlistId = playlistId,
+    ).mapNotNull { externalTrackSource.getById(it.id)?.toWithIndex(it.index) }
 
     override suspend fun getByPlaylistIdAndIndex(
         playlistId: Long,
@@ -44,7 +47,7 @@ internal class PlaylistTrackRepository(
     ) {
         val index: Int = localPlaylistTrackSource.getMaxIndexByPlaylistId(
             playlistId = playlistId,
-        )?.inc() ?: 0
+        )?.inc() ?: TrackWithIndex.DEFAULT_INDEX
 
         externalTrackSource.getById(id)?.toLocal(
             playlistId = playlistId,

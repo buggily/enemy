@@ -23,7 +23,7 @@ abstract class QueryPagingSource<Value : Any, Source : QuerySource<Value>>(
         return LoadResult.Page(
             data = data,
             prevKey = key.getPrev(),
-            nextKey = key.getNext(data),
+            nextKey = key.getNext(data.size),
         )
     }
 }

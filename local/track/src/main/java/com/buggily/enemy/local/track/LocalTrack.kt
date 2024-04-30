@@ -26,9 +26,9 @@ data class LocalTrack(
 
         const val TABLE_NAME = "track"
 
-        const val ID = "id"
-        const val PLAYS = "plays"
-        const val FIRST_PLAY_INSTANT = "first_play_instant"
-        const val LAST_PLAY_INSTANT = "last_play_instant"
+        const val ID = "${TABLE_NAME}_id"
+        const val PLAYS = "${TABLE_NAME}_plays"
+        const val FIRST_PLAY_INSTANT = "${TABLE_NAME}_first_play_instant"
+        const val LAST_PLAY_INSTANT = "${TABLE_NAME}_last_play_instant"
     }
 }
