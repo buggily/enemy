@@ -62,6 +62,7 @@ import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
+import kotlin.time.Duration
 
 @AndroidEntryPoint
 class EnemyActivity : ComponentActivity() {
@@ -268,8 +269,11 @@ class EnemyActivity : ComponentActivity() {
         when (event) {
             is ControllerEvent.Play -> with(requireController()) {
                 if (event is ControllerEvent.Play.With) {
-                    setMediaItems(event.items)
-                    seekToDefaultPosition(event.index)
+                    setMediaItems(
+                        event.items,
+                        event.index,
+                        Duration.ZERO.inWholeMilliseconds,
+                    )
                 }
 
                 prepare()
