@@ -45,9 +45,6 @@ internal class ExternalAlbumSource(
                 expressionIdentity = id,
             ),
         ),
-        sort = Query.Sort(
-            columns = mapOf(MediaStore.Audio.Albums._ID to Query.Sort.Type.Number),
-            direction = Query.Sort.Direction.Ascending
-        ),
+        sort = Query.Sort.NONE,
     ).let { externalAlbumQuerySource.loadFirstOrNull(it) }
 }

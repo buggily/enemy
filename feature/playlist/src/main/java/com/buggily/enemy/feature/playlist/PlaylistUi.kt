@@ -85,7 +85,9 @@ private fun PlaylistScreen(
     tracks: LazyPagingItems<TrackWithIndexUi>,
     modifier: Modifier = Modifier,
 ) {
-    val track: TrackUi? = remember(tracks.itemSnapshotList) { tracks.peekFirst()?.track }
+    val track: TrackUi? = remember(tracks.itemSnapshotList) {
+        tracks.peekFirst()?.track
+    }
 
     when (LocalWindowSizeClass.current.heightSizeClass) {
         WindowHeightSizeClass.Compact -> PlaylistScreenCompact(

@@ -8,6 +8,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:ext"))
     implementation(project(":core:query"))
     implementation(libs.androidx.paging.core)
 }

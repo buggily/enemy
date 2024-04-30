@@ -198,7 +198,7 @@ private fun EnemyApp(
                 arguments = NavigationDestination.Controller.arguments,
             ) {
                 val context: Context = LocalContext.current
-                val activity: ComponentActivity = checkNotNull(context as? ComponentActivity)
+                val activity: ComponentActivity = context as ComponentActivity
 
                 ControllerScreen(
                     viewModel = hiltViewModel(activity),
@@ -346,7 +346,7 @@ private fun EnemyController(
     modifier: Modifier = Modifier,
 ) {
     val context: Context = LocalContext.current
-    val activity: ComponentActivity = checkNotNull(context as? ComponentActivity)
+    val activity: ComponentActivity = context as ComponentActivity
 
     ControllerBottomSheet(
         viewModel = hiltViewModel(activity),

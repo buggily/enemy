@@ -74,7 +74,7 @@ class PlaylistViewModel @Inject constructor(
         track: TrackWithIndexUi,
     ) = viewModelScope.launch {
         val tracks: List<TrackWithIndexUi> = getTracksByPlaylistId(playlistId)
-        val index: Int = checkNotNull(tracks.indexOfOrNull(track))
+        val index: Int = tracks.indexOfOrNull(track) ?: return@launch
         val items: List<MediaItem> = tracks.map { it.track.toMediaItem() }
 
         playItems(

@@ -28,7 +28,8 @@ internal class TrackRepository(
     override fun getPagingByRecency(): Flow<PagingData<TrackWithMetadata>> =
         localTrackSource.getPagingByRecency().map { pagingData: PagingData<LocalTrack> ->
             pagingData.map {
-                checkNotNull(externalTrackSource.getById(it.id)).toWithMetadata(
+                externalTrackSource.getById(it.id).toWithMetadata(
+                    id = it.id,
                     plays = it.plays,
                     firstPlayInstant = it.firstPlayInstant,
                     lastPlayInstant = it.lastPlayInstant,
@@ -39,13 +40,13 @@ internal class TrackRepository(
     override fun getPagingByPopularity(): Flow<PagingData<TrackWithMetadata>> =
         localTrackSource.getPagingByPopularity().map { pagingData: PagingData<LocalTrack> ->
             pagingData.map {
-                checkNotNull(externalTrackSource.getById(it.id)).toWithMetadata(
+                externalTrackSource.getById(it.id).toWithMetadata(
+                    id = it.id,
                     plays = it.plays,
                     firstPlayInstant = it.firstPlayInstant,
                     lastPlayInstant = it.lastPlayInstant,
                 )
             }
-
         }
 
     override fun getPagingByAlbumId(
