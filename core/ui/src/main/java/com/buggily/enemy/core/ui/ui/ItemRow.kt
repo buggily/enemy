@@ -18,24 +18,33 @@ import com.buggily.enemy.core.ui.R
 
 @Composable
 fun ItemRow(
+    modifier: Modifier = Modifier,
     content: @Composable RowScope.() -> Unit,
 ) {
-    ItemRow(
+    ItemRowContent(
         content = content,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .padding(dimensionResource(R.dimen.padding_large)),
+            .defaultMinSize(
+                minWidth = Dp.Unspecified,
+                minHeight = dimensionResource(R.dimen.padding_large_extra_extra),
+            )
+            .padding(
+                horizontal = dimensionResource(R.dimen.padding_large),
+                vertical = dimensionResource(R.dimen.padding_large_extra),
+            ),
     )
 }
 
 @Composable
 fun ItemRow(
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
     content: @Composable RowScope.() -> Unit,
 ) {
-    ItemRow(
+    ItemRowContent(
         content = content,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .defaultMinSize(
                 minWidth = Dp.Unspecified,
@@ -56,11 +65,12 @@ fun ItemRow(
 fun ItemRow(
     onClick: () -> Unit,
     onLongClick: () -> Unit,
+    modifier: Modifier = Modifier,
     content: @Composable RowScope.() -> Unit,
 ) {
-    ItemRow(
+    ItemRowContent(
         content = content,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .defaultMinSize(
                 minWidth = Dp.Unspecified,
@@ -78,7 +88,7 @@ fun ItemRow(
 }
 
 @Composable
-private fun ItemRow(
+private fun ItemRowContent(
     modifier: Modifier = Modifier,
     content: @Composable RowScope.() -> Unit,
 ) {

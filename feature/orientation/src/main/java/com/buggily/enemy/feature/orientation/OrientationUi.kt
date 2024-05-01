@@ -36,7 +36,7 @@ fun OrientationScreen(
         viewModel.onResult(it)
     }
 
-    LaunchedEffect(viewModel) {
+    LaunchedEffect(viewModel.event) {
         viewModel.event.flowWithLifecycle(lifecycle).collect {
             when (it) {
                 is OrientationEvent.ReadPermission -> launcher.launch(readPermission)

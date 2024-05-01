@@ -1,6 +1,5 @@
 package com.buggily.enemy.feature.playlist
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -34,14 +33,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.buggily.enemy.core.data.Artable
 import com.buggily.enemy.core.ui.LocalWindowSizeClass
 import com.buggily.enemy.core.ui.ext.floatResource
 import com.buggily.enemy.core.ui.ext.peekFirst
 import com.buggily.enemy.core.ui.ui.ArtImage
 import com.buggily.enemy.core.ui.ui.PlayButton
 import com.buggily.enemy.core.ui.ui.track.TrackItem
-import com.buggily.enemy.domain.playlist.PlaylistUi
-import com.buggily.enemy.domain.track.TrackUi
 import com.buggily.enemy.domain.track.TrackWithIndexUi
 import com.buggily.enemy.core.ui.R as CR
 
@@ -69,7 +67,6 @@ private fun PlaylistScreen(
     modifier: Modifier = Modifier,
 ) {
     PlaylistScreen(
-        playlist = uiState.playlist,
         playlistState = uiState.playlistState,
         trackState = uiState.trackState,
         tracks = tracks,
@@ -79,30 +76,26 @@ private fun PlaylistScreen(
 
 @Composable
 private fun PlaylistScreen(
-    playlist: PlaylistUi?,
     playlistState: PlaylistUiState.PlaylistState,
     trackState: PlaylistUiState.TrackState,
     tracks: LazyPagingItems<TrackWithIndexUi>,
     modifier: Modifier = Modifier,
 ) {
-    val track: TrackUi? = remember(tracks.itemSnapshotList) {
-        tracks.peekFirst()?.track
-    }
+    val trackStateWithTrack: PlaylistUiState.TrackState = remember(
+        trackState,
+        tracks.itemSnapshotList,
+    ) { trackState.copy(track = tracks.peekFirst()) }
 
     when (LocalWindowSizeClass.current.heightSizeClass) {
         WindowHeightSizeClass.Compact -> PlaylistScreenCompact(
-            track = track,
-            playlist = playlist,
-            trackState = trackState,
+            trackState = trackStateWithTrack,
             playlistState = playlistState,
             tracks = tracks,
             modifier = modifier,
         )
 
         else -> PlaylistScreenMedium(
-            track = track,
-            playlist = playlist,
-            trackState = trackState,
+            trackState = trackStateWithTrack,
             playlistState = playlistState,
             tracks = tracks,
             modifier = modifier,
@@ -112,8 +105,6 @@ private fun PlaylistScreen(
 
 @Composable
 private fun PlaylistScreenCompact(
-    track: TrackUi?,
-    playlist: PlaylistUi?,
     trackState: PlaylistUiState.TrackState,
     playlistState: PlaylistUiState.PlaylistState,
     tracks: LazyPagingItems<TrackWithIndexUi>,
@@ -126,14 +117,11 @@ private fun PlaylistScreenCompact(
     ) {
         val itemModifier: Modifier = Modifier.fillMaxHeight()
 
-        when (playlist) {
-            is PlaylistUi -> PlaylistHeader(
-                track = track,
-                playlist = playlist,
-                playlistState = playlistState,
-                modifier = itemModifier.weight(1f),
-            )
-        }
+        PlaylistHeader(
+            trackState = trackState,
+            playlistState = playlistState,
+            modifier = itemModifier.weight(1f),
+        )
 
         LazyColumn(
             verticalArrangement = Arrangement.Top,
@@ -157,10 +145,7 @@ private fun PlaylistScreenCompact(
 }
 
 @Composable
-@OptIn(ExperimentalFoundationApi::class)
 private fun PlaylistScreenMedium(
-    track: TrackUi?,
-    playlist: PlaylistUi?,
     trackState: PlaylistUiState.TrackState,
     playlistState: PlaylistUiState.PlaylistState,
     tracks: LazyPagingItems<TrackWithIndexUi>,
@@ -173,17 +158,14 @@ private fun PlaylistScreenMedium(
             contentPadding = WindowInsets.navigationBars.asPaddingValues(),
             modifier = modifier,
         ) {
-            when (playlist) {
-                is PlaylistUi -> stickyHeader {
-                    PlaylistHeader(
-                        track = track,
-                        playlist = playlist,
-                        playlistState = playlistState,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(IntrinsicSize.Min),
-                    )
-                }
+            item {
+                PlaylistHeader(
+                    trackState = trackState,
+                    playlistState = playlistState,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(IntrinsicSize.Min),
+                )
             }
 
             items(tracks.itemCount) {
@@ -203,26 +185,22 @@ private fun PlaylistScreenMedium(
 
 @Composable
 private fun PlaylistHeader(
-    track: TrackUi?,
-    playlist: PlaylistUi,
+    trackState: PlaylistUiState.TrackState,
     playlistState: PlaylistUiState.PlaylistState,
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        color = MaterialTheme.colorScheme.secondaryContainer,
+        color = MaterialTheme.colorScheme.primaryContainer,
         modifier = modifier,
     ) {
-        when (track) {
-            is TrackUi -> PlaylistHeaderBackground(
-                track = track,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .alpha(floatResource(CR.dimen.alpha_low)),
-            )
-        }
+        PlaylistHeaderBackground(
+            trackState = trackState,
+            modifier = Modifier
+                .fillMaxSize()
+                .alpha(floatResource(CR.dimen.alpha_low)),
+        )
 
         PlaylistHeaderForeground(
-            playlist = playlist,
             playlistState = playlistState,
             modifier = Modifier
                 .fillMaxSize()
@@ -234,19 +212,22 @@ private fun PlaylistHeader(
 
 @Composable
 private fun PlaylistHeaderBackground(
-    track: TrackUi,
+    trackState: PlaylistUiState.TrackState,
     modifier: Modifier,
 ) {
-    ArtImage(
-        artable = track.album,
-        contentScale = ContentScale.Crop,
-        modifier = modifier,
-    )
+    when (val artable: Artable? = trackState.track?.track?.album) {
+        is Artable -> ArtImage(
+            artable = artable,
+            contentScale = ContentScale.Crop,
+            modifier = modifier,
+        )
+
+        else -> Unit
+    }
 }
 
 @Composable
 private fun PlaylistHeaderForeground(
-    playlist: PlaylistUi,
     playlistState: PlaylistUiState.PlaylistState,
     modifier: Modifier = Modifier,
 ) {
@@ -256,7 +237,7 @@ private fun PlaylistHeaderForeground(
         modifier = modifier,
     ) {
         Text(
-            text = playlist.nameText,
+            text = playlistState.playlist?.nameText.orEmpty(),
             textAlign = TextAlign.Start,
             style = MaterialTheme.typography.titleMedium,
         )

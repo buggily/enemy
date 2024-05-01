@@ -345,7 +345,11 @@ class EnemyActivity : ComponentActivity() {
         override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
             super.onMediaMetadataChanged(mediaMetadata)
 
+            val mediaId: String = controller?.currentMediaItem?.mediaId
+                ?: MediaItem.DEFAULT_MEDIA_ID
+
             MediaItem.Builder()
+                .setMediaId(mediaId)
                 .setMediaMetadata(mediaMetadata)
                 .build().let { controllerViewModel.setMediaItem(it) }
         }
@@ -388,7 +392,7 @@ class EnemyActivity : ComponentActivity() {
 
     private fun startSetPosition() {
         setPosition = lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
                 while (true) {
                     setPosition()
                     delay(timeMillis = 1000)

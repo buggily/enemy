@@ -56,10 +56,10 @@ fun ControllerScreen(
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
     val lifecycle: Lifecycle = lifecycleOwner.lifecycle
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(viewModel.isEmpty) {
         viewModel.isEmpty.flowWithLifecycle(
             lifecycle = lifecycle,
-            minActiveState = Lifecycle.State.RESUMED,
+            minActiveState = Lifecycle.State.STARTED,
         ).collect { if (it) viewModel.onEmpty() }
     }
 
@@ -95,7 +95,7 @@ private fun ControllerScreenCompact(
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        color = MaterialTheme.colorScheme.primaryContainer,
+        color = MaterialTheme.colorScheme.tertiaryContainer,
         modifier = modifier,
     ) {
         when (val mediaItem: MediaItem? = uiState.mediaItem) {
@@ -125,7 +125,7 @@ private fun ControllerScreenMedium(
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        color = MaterialTheme.colorScheme.primaryContainer,
+        color = MaterialTheme.colorScheme.tertiaryContainer,
         modifier = modifier,
     ) {
         when (val mediaItem: MediaItem? = uiState.mediaItem) {
@@ -173,7 +173,7 @@ private fun ControllerBottomSheet(
         exit = shrinkVertically(),
     ) {
         Surface(
-            color = MaterialTheme.colorScheme.primaryContainer,
+            color = MaterialTheme.colorScheme.tertiaryContainer,
             modifier = modifier,
         ) {
             when (val mediaItem: MediaItem? = uiState.mediaItem) {
