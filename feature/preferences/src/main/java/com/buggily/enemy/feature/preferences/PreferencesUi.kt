@@ -267,7 +267,7 @@ private fun PreferencesPreference(
     content: @Composable () -> Unit,
 ) {
     Surface(
-        color = MaterialTheme.colorScheme.tertiaryContainer,
+        color = MaterialTheme.colorScheme.primaryContainer,
         shape = MaterialTheme.shapes.large,
         modifier = modifier,
     ) {

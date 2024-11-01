@@ -13,8 +13,12 @@ import com.buggily.enemy.domain.track.TrackUi
 fun TrackItem(
     track: TrackUi,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    ItemRow(onClick) {
+    ItemRow(
+        onClick = onClick,
+        modifier = modifier,
+    ) {
         TrackItemContent(track)
     }
 }
@@ -24,10 +28,12 @@ fun TrackItem(
     track: TrackUi,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     ItemRow(
         onClick = onClick,
         onLongClick = onLongClick,
+        modifier = modifier,
     ) {
         TrackItemContent(track)
     }
@@ -38,8 +44,12 @@ fun TrackItemWithEndText(
     track: TrackUi,
     onClick: () -> Unit,
     endText: String,
+    modifier: Modifier = Modifier,
 ) {
-    ItemRow(onClick) {
+    ItemRow(
+        onClick = onClick,
+        modifier = modifier,
+    ) {
         TrackItemContent(
             track = track,
             endText = endText,
@@ -114,10 +124,12 @@ fun AlbumTrackItem(
     track: TrackUi,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     ItemRow(
         onClick = onClick,
         onLongClick = onLongClick,
+        modifier = modifier,
     ) {
         AlbumTrackItemContent(track)
     }

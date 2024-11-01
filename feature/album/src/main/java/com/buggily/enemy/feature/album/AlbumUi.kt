@@ -38,13 +38,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import com.buggily.enemy.core.data.Artable
 import com.buggily.enemy.core.ui.LocalWindowSizeClass
 import com.buggily.enemy.core.ui.ext.floatResource
 import com.buggily.enemy.core.ui.ui.ArtImage
 import com.buggily.enemy.core.ui.ui.SingleLineText
 import com.buggily.enemy.core.ui.ui.SmallPlayButton
 import com.buggily.enemy.core.ui.ui.track.AlbumTrackItem
-import com.buggily.enemy.domain.album.AlbumUi
 import com.buggily.enemy.core.ui.R as CR
 
 @Composable
@@ -71,7 +71,6 @@ private fun AlbumScreen(
     modifier: Modifier = Modifier,
 ) {
     AlbumScreen(
-        album = uiState.album,
         albumState = uiState.albumState,
         trackState = uiState.trackState,
         tracks = tracks,
@@ -81,7 +80,6 @@ private fun AlbumScreen(
 
 @Composable
 private fun AlbumScreen(
-    album: AlbumUi?,
     albumState: AlbumUiState.AlbumState,
     trackState: AlbumUiState.TrackState,
     tracks: LazyPagingItems<TrackAlbumUi>,
@@ -89,14 +87,13 @@ private fun AlbumScreen(
 ) {
     when (LocalWindowSizeClass.current.heightSizeClass) {
         WindowHeightSizeClass.Compact -> AlbumScreenCompact(
-            album = album,
+            albumState = albumState,
             trackState = trackState,
             tracks = tracks,
             modifier = modifier,
         )
 
         else -> AlbumScreenMedium(
-            album = album,
             albumState = albumState,
             trackState = trackState,
             tracks = tracks,
@@ -107,7 +104,7 @@ private fun AlbumScreen(
 
 @Composable
 private fun AlbumScreenCompact(
-    album: AlbumUi?,
+    albumState: AlbumUiState.AlbumState,
     trackState: AlbumUiState.TrackState,
     tracks: LazyPagingItems<TrackAlbumUi>,
     modifier: Modifier = Modifier,
@@ -119,14 +116,10 @@ private fun AlbumScreenCompact(
     ) {
         val itemModifier: Modifier = Modifier.fillMaxHeight()
 
-        when (album) {
-            is AlbumUi -> {
-                AlbumHeaderCompact(
-                    album = album,
-                    modifier = itemModifier.weight(1f),
-                )
-            }
-        }
+        AlbumHeaderCompact(
+            albumState = albumState,
+            modifier = itemModifier.weight(1f),
+        )
 
         LazyColumn(
             verticalArrangement = Arrangement.Top,
@@ -165,7 +158,6 @@ private fun AlbumScreenCompact(
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
 private fun AlbumScreenMedium(
-    album: AlbumUi?,
     albumState: AlbumUiState.AlbumState,
     trackState: AlbumUiState.TrackState,
     tracks: LazyPagingItems<TrackAlbumUi>,
@@ -179,14 +171,11 @@ private fun AlbumScreenMedium(
     ) {
         val itemModifier: Modifier = Modifier.fillMaxWidth()
 
-        when (album) {
-            is AlbumUi -> stickyHeader {
-                AlbumHeaderMedium(
-                    album = album,
-                    albumState = albumState,
-                    modifier = itemModifier.height(IntrinsicSize.Min),
-                )
-            }
+        stickyHeader {
+            AlbumHeaderMedium(
+                albumState = albumState,
+                modifier = itemModifier.height(IntrinsicSize.Min),
+            )
         }
 
         items(
@@ -218,22 +207,22 @@ private fun AlbumScreenMedium(
 
 @Composable
 private fun AlbumHeaderCompact(
-    album: AlbumUi,
+    albumState: AlbumUiState.AlbumState,
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        color = MaterialTheme.colorScheme.secondaryContainer,
+        color = MaterialTheme.colorScheme.primaryContainer,
         modifier = modifier,
     ) {
         val itemModifier: Modifier = Modifier.fillMaxSize()
 
         AlbumHeaderBackground(
-            album = album,
+            albumState = albumState,
             modifier = itemModifier.alpha(floatResource(CR.dimen.alpha_low)),
         )
 
         AlbumHeaderCompactForeground(
-            album = album,
+            albumState = albumState,
             modifier = itemModifier
                 .systemBarsPadding()
                 .padding(dimensionResource(CR.dimen.padding_large)),
@@ -243,23 +232,21 @@ private fun AlbumHeaderCompact(
 
 @Composable
 private fun AlbumHeaderMedium(
-    album: AlbumUi,
     albumState: AlbumUiState.AlbumState,
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        color = MaterialTheme.colorScheme.secondaryContainer,
+        color = MaterialTheme.colorScheme.primaryContainer,
         modifier = modifier,
     ) {
         val itemModifier: Modifier = Modifier.fillMaxSize()
 
         AlbumHeaderBackground(
-            album = album,
+            albumState = albumState,
             modifier = itemModifier.alpha(floatResource(CR.dimen.alpha_low)),
         )
 
         AlbumHeaderMediumForeground(
-            album = album,
             albumState = albumState,
             modifier = itemModifier
                 .statusBarsPadding()
@@ -270,12 +257,12 @@ private fun AlbumHeaderMedium(
 
 @Composable
 private fun AlbumHeaderCompactForeground(
-    album: AlbumUi,
+    albumState: AlbumUiState.AlbumState,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier) {
         AlbumHeaderText(
-            album = album,
+            albumState = albumState,
             modifier = Modifier.fillMaxSize(),
         )
     }
@@ -283,7 +270,6 @@ private fun AlbumHeaderCompactForeground(
 
 @Composable
 private fun AlbumHeaderMediumForeground(
-    album: AlbumUi,
     albumState: AlbumUiState.AlbumState,
     modifier: Modifier = Modifier,
 ) {
@@ -296,7 +282,6 @@ private fun AlbumHeaderMediumForeground(
         modifier = modifier,
     ) {
         AlbumHeaderImage(
-            album = album,
             albumState = albumState,
             modifier = Modifier
                 .weight(1f)
@@ -304,7 +289,7 @@ private fun AlbumHeaderMediumForeground(
         )
 
         AlbumHeaderText(
-            album = album,
+            albumState = albumState,
             modifier = Modifier.weight(1f)
         )
     }
@@ -312,30 +297,37 @@ private fun AlbumHeaderMediumForeground(
 
 @Composable
 private fun AlbumHeaderBackground(
-    album: AlbumUi,
+    albumState: AlbumUiState.AlbumState,
     modifier: Modifier = Modifier,
 ) {
-    ArtImage(
-        artable = album,
-        contentScale = ContentScale.Crop,
-        modifier = modifier,
-    )
+    when (val artable: Artable? = albumState.album) {
+        is Artable -> ArtImage(
+            artable = artable,
+            contentScale = ContentScale.Crop,
+            modifier = modifier,
+        )
+
+        else -> Unit
+    }
 }
 
 @Composable
 private fun AlbumHeaderImage(
-    album: AlbumUi,
     albumState: AlbumUiState.AlbumState,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier) {
-        ArtImage(
-            artable = album,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(1f),
-        )
+        when (val artable: Artable? = albumState.album) {
+            is Artable -> ArtImage(
+                artable = artable,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1f),
+            )
+
+            else -> Unit
+        }
 
         SmallPlayButton(
             onClick = albumState.onStartClick,
@@ -349,7 +341,7 @@ private fun AlbumHeaderImage(
 
 @Composable
 private fun AlbumHeaderText(
-    album: AlbumUi,
+    albumState: AlbumUiState.AlbumState,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -361,13 +353,13 @@ private fun AlbumHeaderText(
         modifier = modifier,
     ) {
         Text(
-            text = album.nameText,
+            text = albumState.album?.nameText.orEmpty(),
             textAlign = TextAlign.End,
             style = MaterialTheme.typography.titleMedium,
         )
 
         Text(
-            text = album.artist.nameText,
+            text = albumState.album?.artist?.nameText.orEmpty(),
             textAlign = TextAlign.End,
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.alpha(floatResource(CR.dimen.alpha_medium)),
@@ -381,7 +373,7 @@ private fun AlbumDiscItem(
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        color = MaterialTheme.colorScheme.tertiaryContainer,
+        color = MaterialTheme.colorScheme.secondaryContainer,
         modifier = modifier,
     ) {
         SingleLineText(

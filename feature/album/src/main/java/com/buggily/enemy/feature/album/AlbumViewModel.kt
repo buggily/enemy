@@ -11,6 +11,7 @@ import androidx.paging.map
 import com.buggily.enemy.core.ext.firstIndex
 import com.buggily.enemy.core.ext.indexOfOrNull
 import com.buggily.enemy.core.navigation.NavigationDestination
+import com.buggily.enemy.domain.album.AlbumUi
 import com.buggily.enemy.domain.album.GetAlbumById
 import com.buggily.enemy.domain.controller.PlayItems
 import com.buggily.enemy.domain.navigation.NavigateToTrackPicker
@@ -48,8 +49,8 @@ class AlbumViewModel @Inject constructor(
         albumId = checkNotNull(savedStateHandle[albumIdKey])
 
         AlbumUiState(
-            album = null,
             albumState = AlbumUiState.AlbumState(
+                album = null,
                 onStartClick = ::onStartClick,
             ),
             trackState = AlbumUiState.TrackState(
@@ -71,7 +72,8 @@ class AlbumViewModel @Inject constructor(
         }.cachedIn(viewModelScope)
 
         viewModelScope.launch {
-            _uiState.update { it.copy(album = getAlbumById(albumId)) }
+            val album: AlbumUi? = getAlbumById(albumId)
+            _uiState.update { it.copy(albumState = it.albumState.copy(album = album)) }
         }
     }
 

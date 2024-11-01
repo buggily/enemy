@@ -123,14 +123,14 @@ private fun BrowseContent(
     val activity: ComponentActivity = context as ComponentActivity
     val globalUiViewModel: GlobalUiViewModel = hiltViewModel(activity)
 
+    val contentModifier: Modifier = Modifier.fillMaxSize()
+    val tab: BrowseUiState.TabState.Tab = tabState.tab
+
+    LaunchedEffect(tabState.tab) {
+        globalUiViewModel.onIsSearchableChange(tab.isSearchable)
+    }
+
     Box(modifier) {
-        val contentModifier: Modifier = Modifier.fillMaxSize()
-        val tab: BrowseUiState.TabState.Tab = tabState.tab
-
-        LaunchedEffect(tab) {
-            globalUiViewModel.onIsSearchableChange(tab.isSearchable)
-        }
-
         when (tab) {
             is BrowseUiState.TabState.Tab.Recent -> {
                 val viewModel: RecentViewModel = hiltViewModel()
@@ -195,7 +195,7 @@ private fun BrowseSearchableContent(
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
     val lifecycle: Lifecycle = lifecycleOwner.lifecycle
 
-    LaunchedEffect(globalUiViewModel) {
+    LaunchedEffect(globalUiViewModel.search) {
         globalUiViewModel.search.flowWithLifecycle(lifecycle).collectLatest {
             viewModel.onSearchChange(it)
         }

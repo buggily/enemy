@@ -11,6 +11,7 @@ import com.buggily.enemy.core.navigation.NavigationDestination
 import com.buggily.enemy.domain.controller.PlayItems
 import com.buggily.enemy.domain.navigation.NavigateToPlaylistTrackPicker
 import com.buggily.enemy.domain.playlist.GetPlaylistById
+import com.buggily.enemy.domain.playlist.PlaylistUi
 import com.buggily.enemy.domain.track.TrackWithIndexUi
 import com.buggily.enemy.domain.track.playlist.GetTrackPagingByPlaylistId
 import com.buggily.enemy.domain.track.playlist.GetTracksByPlaylistId
@@ -45,18 +46,20 @@ class PlaylistViewModel @Inject constructor(
         tracks = getTrackPagingByPlaylistId(playlistId)
 
         PlaylistUiState(
-            playlist = null,
             playlistState = PlaylistUiState.PlaylistState(
+                playlist = null,
                 onStartClick = ::onStartClick,
             ),
             trackState = PlaylistUiState.TrackState(
+                track = null,
                 onClick = ::onTrackClick,
                 onLongClick = ::onTrackLongClick,
             ),
         ).let { _uiState = MutableStateFlow(it) }
 
         viewModelScope.launch {
-            _uiState.update { it.copy(playlist = getPlaylistById(playlistId)) }
+            val playlist: PlaylistUi? = getPlaylistById(playlistId)
+            _uiState.update { it.copy(playlistState = it.playlistState.copy(playlist = playlist)) }
         }
     }
 

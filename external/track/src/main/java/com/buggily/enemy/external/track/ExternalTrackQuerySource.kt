@@ -4,7 +4,6 @@ import android.content.ContentResolver
 import android.database.Cursor
 import android.net.Uri
 import android.provider.MediaStore
-import androidx.core.database.getIntOrNull
 import androidx.core.database.getLongOrNull
 import androidx.core.database.getStringOrNull
 import com.buggily.enemy.core.query.QuerySource
@@ -42,7 +41,6 @@ internal class ExternalTrackQuerySource(
 
         val idIndex: Int = cursor.getColumnIndex(MediaStore.Audio.Media._ID)
         val nameIndex: Int = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)
-
         val durationIndex: Int = cursor.getColumnIndex(MediaStore.Audio.Media.DURATION)
 
         val trackPositionIndex: Int = cursor.getColumnIndex(MediaStore.Audio.Media.CD_TRACK_NUMBER)
@@ -58,11 +56,15 @@ internal class ExternalTrackQuerySource(
         while (cursor.moveToNext()) {
             val id: Long = cursor.getLongOrNull(idIndex) ?: continue
             val name: String = cursor.getStringOrNull(nameIndex) ?: continue
-
-            val trackPosition: Int = cursor.getIntOrNull(trackPositionIndex) ?: continue
-            val discPosition: Int = cursor.getIntOrNull(discPositionIndex) ?: ExternalTrack.Position.DEFAULT_DISC
-
             val duration: Long = cursor.getLongOrNull(durationIndex) ?: continue
+
+            val trackPosition: Int = cursor.getStringOrNull(
+                trackPositionIndex
+            )?.toIntOrNull() ?: continue
+
+            val discPosition: Int = cursor.getStringOrNull(
+                discPositionIndex
+            )?.toIntOrNull() ?: ExternalTrack.Position.DEFAULT_DISC
 
             val position = ExternalTrack.Position(
                 track = trackPosition,
