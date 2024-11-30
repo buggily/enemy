@@ -2,7 +2,7 @@ package com.buggily.enemy.domain.theme
 
 data class ThemeUi(
     val scheme: Scheme,
-    val dynamic: Dynamic
+    val dynamic: Dynamic,
 ) {
 
     sealed interface Scheme {
