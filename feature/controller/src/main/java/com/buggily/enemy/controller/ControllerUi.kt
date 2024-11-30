@@ -3,6 +3,7 @@ package com.buggily.enemy.controller
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,7 +22,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -38,7 +38,6 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.media3.common.MediaItem
-import com.buggily.enemy.core.ui.LocalWindowSizeClass
 import com.buggily.enemy.core.ui.ext.artistText
 import com.buggily.enemy.core.ui.ext.floatResource
 import com.buggily.enemy.core.ui.ext.nameText
@@ -76,24 +75,6 @@ private fun ControllerScreen(
     uiState: ControllerUiState,
     modifier: Modifier = Modifier,
 ) {
-    when (LocalWindowSizeClass.current.heightSizeClass) {
-        WindowHeightSizeClass.Compact -> ControllerScreenCompact(
-            uiState = uiState,
-            modifier = modifier,
-        )
-
-        else -> ControllerScreenMedium(
-            uiState = uiState,
-            modifier = modifier,
-        )
-    }
-}
-
-@Composable
-private fun ControllerScreenCompact(
-    uiState: ControllerUiState,
-    modifier: Modifier = Modifier,
-) {
     Surface(
         color = MaterialTheme.colorScheme.tertiaryContainer,
         modifier = modifier,
@@ -109,37 +90,7 @@ private fun ControllerScreenCompact(
             else -> Unit
         }
 
-        ControllerForegroundCompact(
-            uiState = uiState,
-            modifier = Modifier
-                .fillMaxSize()
-                .safeContentPadding()
-                .padding(dimensionResource(CR.dimen.padding_large)),
-        )
-    }
-}
-
-@Composable
-private fun ControllerScreenMedium(
-    uiState: ControllerUiState,
-    modifier: Modifier = Modifier,
-) {
-    Surface(
-        color = MaterialTheme.colorScheme.tertiaryContainer,
-        modifier = modifier,
-    ) {
-        when (val mediaItem: MediaItem? = uiState.mediaItem) {
-            is MediaItem -> ControllerBackground(
-                mediaItem = mediaItem,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .alpha(floatResource(CR.dimen.alpha_low)),
-            )
-
-            else -> Unit
-        }
-
-        ControllerForegroundMedium(
+        ControllerForeground(
             uiState = uiState,
             modifier = Modifier
                 .fillMaxSize()
@@ -196,32 +147,7 @@ private fun ControllerBottomSheet(
 }
 
 @Composable
-private fun ControllerForegroundCompact(
-    uiState: ControllerUiState,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(
-            space = dimensionResource(CR.dimen.padding_large),
-            alignment = Alignment.End,
-        ),
-        verticalAlignment = Alignment.Bottom,
-        modifier = modifier,
-    ) {
-        ControllerText(
-            mediaItem = uiState.mediaItem,
-            modifier = Modifier.weight(1f),
-        )
-
-        ControllerControls(
-            uiState = uiState,
-            modifier = Modifier.weight(1f),
-        )
-    }
-}
-
-@Composable
-private fun ControllerForegroundMedium(
+private fun ControllerForeground(
     uiState: ControllerUiState,
     modifier: Modifier = Modifier,
 ) {
@@ -255,11 +181,12 @@ private fun ControllerControls(
     Column(
         verticalArrangement = Arrangement.spacedBy(
             space = dimensionResource(CR.dimen.padding_large),
-            alignment = Alignment.CenterVertically,
+            alignment = Alignment.Bottom,
         ),
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier,
     ) {
+
         ControllerSeekBar(
             seekState = uiState.seekState,
             modifier = Modifier.fillMaxWidth(),
@@ -269,6 +196,7 @@ private fun ControllerControls(
             playState = uiState.playState,
             nextState = uiState.nextState,
             previousState = uiState.previousState,
+            modifier = Modifier.fillMaxWidth(),
         )
 
         ControllerPlaylistControls(
@@ -287,7 +215,7 @@ private fun ControllerText(
     Column(
         verticalArrangement = Arrangement.spacedBy(
             space = dimensionResource(CR.dimen.padding_medium),
-            alignment = Alignment.CenterVertically,
+            alignment = Alignment.Top,
         ),
         horizontalAlignment = Alignment.Start,
         modifier = modifier,
@@ -295,12 +223,15 @@ private fun ControllerText(
         Text(
             text = mediaItem?.nameText.orEmpty(),
             style = MaterialTheme.typography.displaySmall,
+            modifier = Modifier.basicMarquee(),
         )
 
         Text(
             text = mediaItem?.artistText.orEmpty(),
             style = MaterialTheme.typography.displaySmall,
-            modifier = Modifier.alpha(floatResource(CR.dimen.alpha_medium)),
+            modifier = Modifier
+                .basicMarquee()
+                .alpha(floatResource(CR.dimen.alpha_medium)),
         )
     }
 }
@@ -620,12 +551,13 @@ private fun ControllerBottomSheetText(
         SingleLineText(
             text = mediaItem.nameText.orEmpty(),
             style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.basicMarquee(),
         )
 
         SingleLineText(
             text = mediaItem.artistText.orEmpty(),
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.alpha(floatResource(CR.dimen.alpha_medium)),
+            modifier = Modifier.basicMarquee().alpha(floatResource(CR.dimen.alpha_medium)),
         )
     }
 }
