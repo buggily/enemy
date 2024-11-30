@@ -1,10 +1,10 @@
 package com.buggily.enemy
 
 import android.content.pm.PackageManager
-import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,8 +17,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -93,9 +91,9 @@ class EnemyActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         installSplashScreen()
-        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
 
-        setupWindow()
+        super.onCreate(savedInstanceState)
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -210,6 +208,7 @@ class EnemyActivity : ComponentActivity() {
 
                 controllerViewModel.setPlaybackState(playbackState)
                 controllerViewModel.setIsPlaying(isPlaying)
+
                 controllerViewModel.setRepeatMode(repeatMode)
                 controllerViewModel.setShuffleMode(shuffleModeEnabled)
 
@@ -240,29 +239,6 @@ class EnemyActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
         destroySetPosition()
-    }
-
-    private fun setupWindow() {
-        WindowCompat.setDecorFitsSystemWindows(
-            window,
-            false
-        )
-
-        val insetsController = WindowInsetsControllerCompat(
-            window,
-            window.decorView
-        )
-
-        val uiMode: Int = resources.configuration.uiMode
-        val isLight: Boolean = when (uiMode and Configuration.UI_MODE_NIGHT_MASK) {
-            Configuration.UI_MODE_NIGHT_YES -> false
-            else -> true
-        }
-
-        with(insetsController) {
-            isAppearanceLightStatusBars = isLight
-            isAppearanceLightNavigationBars = isLight
-        }
     }
 
     private suspend fun onControllerEvent(event: ControllerEvent) {
