@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -125,7 +126,7 @@ private fun AlbumScreenCompact(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start,
             contentPadding = WindowInsets.systemBars.asPaddingValues(),
-            modifier = itemModifier.weight(2f),
+            modifier = itemModifier.weight(2f).consumeWindowInsets(WindowInsets.systemBars),
         ) {
             items(
                 count = tracks.itemCount,
@@ -167,7 +168,7 @@ private fun AlbumScreenMedium(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start,
         contentPadding = WindowInsets.navigationBars.asPaddingValues(),
-        modifier = modifier,
+        modifier = modifier.consumeWindowInsets(WindowInsets.navigationBars),
     ) {
         val itemModifier: Modifier = Modifier.fillMaxWidth()
 

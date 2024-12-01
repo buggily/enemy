@@ -2,11 +2,12 @@ package com.buggily.enemy.feature.playlist
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -117,7 +118,7 @@ private fun PlaylistScreenCompact(
     ) {
         val itemModifier: Modifier = Modifier.fillMaxHeight()
 
-        PlaylistHeader(
+        PlaylistHeaderCompact(
             trackState = trackState,
             playlistState = playlistState,
             modifier = itemModifier.weight(1f),
@@ -127,7 +128,9 @@ private fun PlaylistScreenCompact(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start,
             contentPadding = WindowInsets.systemBars.asPaddingValues(),
-            modifier = itemModifier.weight(2f),
+            modifier = itemModifier
+                .weight(2f)
+                .consumeWindowInsets(WindowInsets.systemBars),
         ) {
             items(tracks.itemCount) {
                 when (val trackWithIndex: TrackWithIndexUi? = tracks[it]) {
@@ -156,10 +159,10 @@ private fun PlaylistScreenMedium(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start,
             contentPadding = WindowInsets.navigationBars.asPaddingValues(),
-            modifier = modifier,
+            modifier = modifier.consumeWindowInsets(WindowInsets.navigationBars),
         ) {
             item {
-                PlaylistHeader(
+                PlaylistHeaderMedium(
                     trackState = trackState,
                     playlistState = playlistState,
                     modifier = Modifier
@@ -184,13 +187,13 @@ private fun PlaylistScreenMedium(
 }
 
 @Composable
-private fun PlaylistHeader(
+private fun PlaylistHeaderMedium(
     trackState: PlaylistUiState.TrackState,
     playlistState: PlaylistUiState.PlaylistState,
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        color = MaterialTheme.colorScheme.primaryContainer,
+        color = MaterialTheme.colorScheme.secondaryContainer,
         modifier = modifier,
     ) {
         PlaylistHeaderBackground(
@@ -200,7 +203,34 @@ private fun PlaylistHeader(
                 .alpha(floatResource(CR.dimen.alpha_low)),
         )
 
-        PlaylistHeaderForeground(
+        PlaylistHeaderForegroundMedium(
+            playlistState = playlistState,
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding()
+                .padding(dimensionResource(CR.dimen.padding_large)),
+        )
+    }
+}
+
+@Composable
+private fun PlaylistHeaderCompact(
+    trackState: PlaylistUiState.TrackState,
+    playlistState: PlaylistUiState.PlaylistState,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        color = MaterialTheme.colorScheme.secondaryContainer,
+        modifier = modifier,
+    ) {
+        PlaylistHeaderBackground(
+            trackState = trackState,
+            modifier = Modifier
+                .fillMaxSize()
+                .alpha(floatResource(CR.dimen.alpha_low)),
+        )
+
+        PlaylistHeaderForegroundCompact(
             playlistState = playlistState,
             modifier = Modifier
                 .fillMaxSize()
@@ -227,12 +257,15 @@ private fun PlaylistHeaderBackground(
 }
 
 @Composable
-private fun PlaylistHeaderForeground(
+private fun PlaylistHeaderForegroundMedium(
     playlistState: PlaylistUiState.PlaylistState,
     modifier: Modifier = Modifier,
 ) {
     Row(
-        horizontalArrangement = Arrangement.Start,
+        horizontalArrangement = Arrangement.spacedBy(
+            space = dimensionResource(CR.dimen.padding_medium),
+            alignment = Alignment.End,
+        ),
         verticalAlignment = Alignment.Bottom,
         modifier = modifier,
     ) {
@@ -240,13 +273,33 @@ private fun PlaylistHeaderForeground(
             text = playlistState.playlist?.nameText.orEmpty(),
             textAlign = TextAlign.Start,
             style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.weight(1f),
         )
-
-        Spacer(Modifier.weight(1f))
 
         PlayButton(
             onClick = playlistState.onStartClick,
             contentModifier = Modifier.size(dimensionResource(CR.dimen.icon_medium)),
+        )
+    }
+}
+
+@Composable
+private fun PlaylistHeaderForegroundCompact(
+    playlistState: PlaylistUiState.PlaylistState,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(
+            space = dimensionResource(CR.dimen.padding_medium),
+            alignment = Alignment.Bottom,
+        ),
+        horizontalAlignment = Alignment.End,
+        modifier = modifier,
+    ) {
+        Text(
+            text = playlistState.playlist?.nameText.orEmpty(),
+            textAlign = TextAlign.End,
+            style = MaterialTheme.typography.titleMedium,
         )
     }
 }
