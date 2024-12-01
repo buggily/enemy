@@ -14,4 +14,5 @@ interface TrackRepositable {
     suspend fun getByAlbumId(albumId: Long): List<Track>
 
     suspend fun incrementPlaysById(id: Long)
+    suspend fun delete()
 }

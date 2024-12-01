@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="preferences_theme_preferences">preferences</string>
+    <string name="preferences_preferences">preferences</string>
 
-    <string name="preferences_theme_scheme">theme</string>
+    <string name="preferences_theme">theme</string>
     <string name="preferences_theme_scheme_default">default</string>
     <string name="preferences_theme_scheme_light">light</string>
     <string name="preferences_theme_scheme_dark">dark</string>
     <string name="preferences_theme_dynamic">dynamic</string>
     <string name="preferences_theme_reset">reset</string>
+
+    <string name="preferences_recents">recents</string>
+    <string name="preferences_recents_reset">reset</string>
 </resources>

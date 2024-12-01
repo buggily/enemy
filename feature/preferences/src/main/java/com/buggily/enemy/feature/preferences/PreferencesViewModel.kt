@@ -7,6 +7,7 @@ import com.buggily.enemy.domain.theme.SetTheme
 import com.buggily.enemy.domain.theme.SetThemeDynamic
 import com.buggily.enemy.domain.theme.SetThemeScheme
 import com.buggily.enemy.domain.theme.ThemeUi
+import com.buggily.enemy.domain.track.DeleteTracks
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -23,12 +24,19 @@ class PreferencesViewModel @Inject constructor(
     private val setTheme: SetTheme,
     private val setThemeScheme: SetThemeScheme,
     private val setThemeDynamic: SetThemeDynamic,
+    private val deleteTracks: DeleteTracks,
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<PreferencesUiState>
     val uiState: StateFlow<PreferencesUiState> get() = _uiState
 
     init {
+        val schemes: List<ThemeUi.Scheme> = listOf(
+            ThemeUi.Scheme.Default,
+            ThemeUi.Scheme.Light,
+            ThemeUi.Scheme.Dark,
+        )
+
         PreferencesUiState(
             themeState = PreferencesUiState.ThemeState(
                 schemeState = PreferencesUiState.ThemeState.SchemeState(
@@ -40,10 +48,11 @@ class PreferencesViewModel @Inject constructor(
                     dynamic = ThemeUi.Dynamic.On,
                     onCheck = ::onThemeDynamicCheck,
                 ),
-                resetState = PreferencesUiState.ThemeState.ResetState(
-                    onClick = ::onThemeResetClick,
-                ),
+                onResetClick = ::onThemeResetClick,
             ),
+            recentsState = PreferencesUiState.RecentsState(
+                onResetClick = ::onRecentResetClick,
+            )
         ).let { _uiState = MutableStateFlow(it) }
 
         viewModelScope.launch {
@@ -73,6 +82,10 @@ class PreferencesViewModel @Inject constructor(
         ).let { setTheme(it) }
     }
 
+    private fun onRecentResetClick() = viewModelScope.launch {
+        deleteTracks()
+    }
+
     private fun setThemeState(theme: ThemeUi) = with(theme) {
         setSchemeState(scheme)
         setDynamicState(dynamic)
@@ -91,11 +104,4 @@ class PreferencesViewModel @Inject constructor(
 
         it.copy(themeState = it.themeState.copy(dynamicState = dynamicState))
     }
-
-    private val schemes: List<ThemeUi.Scheme>
-        get() = listOf(
-            ThemeUi.Scheme.Default,
-            ThemeUi.Scheme.Light,
-            ThemeUi.Scheme.Dark,
-        )
 }

@@ -4,12 +4,13 @@ import com.buggily.enemy.domain.theme.ThemeUi
 
 data class PreferencesUiState(
     val themeState: ThemeState,
+    val recentsState: RecentsState,
 ) {
 
     data class ThemeState(
         val schemeState: SchemeState,
         val dynamicState: DynamicState,
-        val resetState: ResetState,
+        val onResetClick: () -> Unit,
     ) {
 
         data class SchemeState(
@@ -22,9 +23,9 @@ data class PreferencesUiState(
             val dynamic: ThemeUi.Dynamic,
             val onCheck: (Boolean) -> Unit,
         )
-
-        data class ResetState(
-            val onClick: () -> Unit,
-        )
     }
+
+    data class RecentsState(
+        val onResetClick: () -> Unit,
+    )
 }

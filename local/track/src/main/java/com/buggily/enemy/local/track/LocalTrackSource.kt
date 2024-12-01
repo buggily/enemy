@@ -37,4 +37,6 @@ class LocalTrackSource(
     ) = localTrackDao.update(
         track = track,
     )
+
+    override suspend fun delete() = localTrackDao.delete()
 }

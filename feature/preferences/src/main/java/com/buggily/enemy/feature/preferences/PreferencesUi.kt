@@ -54,6 +54,7 @@ private fun PreferencesScreen(
 ) {
     PreferencesScreen(
         themeState = uiState.themeState,
+        recentsState = uiState.recentsState,
         modifier = modifier,
     )
 }
@@ -61,11 +62,12 @@ private fun PreferencesScreen(
 @Composable
 private fun PreferencesScreen(
     themeState: PreferencesUiState.ThemeState,
+    recentsState: PreferencesUiState.RecentsState,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(
-            space = dimensionResource(CR.dimen.padding_large_extra),
+            space = dimensionResource(CR.dimen.padding_large),
             alignment = Alignment.Top,
         ),
         horizontalAlignment = Alignment.Start,
@@ -79,50 +81,33 @@ private fun PreferencesScreen(
             .asPaddingValues(),
         modifier = modifier.consumeWindowInsets(WindowInsets.safeContent),
     ) {
-        item {
-            PreferencesHeader(
-                modifier = Modifier.fillMaxWidth(),
-            )
-        }
+        item { PreferencesPreferencesHeader() }
 
         item {
-            PreferencesContent(
+            PreferencesThemeContent(
                 themeState = themeState,
                 modifier = Modifier.fillMaxWidth(),
             )
         }
+
+        item {
+            PreferencesRecentsContent(
+                recentsState = recentsState,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
     }
 }
 
 @Composable
-private fun PreferencesHeader(
+private fun PreferencesPreferencesHeader(
     modifier: Modifier = Modifier,
 ) {
     SingleLineText(
-        text = stringResource(R.string.preferences_theme_preferences),
+        text = stringResource(R.string.preferences_preferences),
         style = MaterialTheme.typography.headlineLarge,
         modifier = modifier,
     )
-}
-
-@Composable
-private fun PreferencesContent(
-    themeState: PreferencesUiState.ThemeState,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(
-            space = dimensionResource(CR.dimen.padding_large),
-            alignment = Alignment.Top,
-        ),
-        horizontalAlignment = Alignment.Start,
-        modifier = modifier,
-    ) {
-        PreferencesThemeContent(
-            themeState = themeState,
-            modifier = Modifier.fillMaxWidth(),
-        )
-    }
 }
 
 @Composable
@@ -131,12 +116,12 @@ private fun PreferencesThemeContent(
     modifier: Modifier = Modifier,
 ) {
     PreferencesPreference(
-        text = stringResource(R.string.preferences_theme_scheme),
+        text = stringResource(R.string.preferences_theme),
         modifier = modifier,
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(
-                space = dimensionResource(CR.dimen.padding_large),
+                space = dimensionResource(CR.dimen.padding_medium),
                 alignment = Alignment.Top,
             ),
             horizontalAlignment = Alignment.Start,
@@ -153,7 +138,7 @@ private fun PreferencesThemeContent(
             )
 
             PreferencesThemeReset(
-                resetState = themeState.resetState,
+                themeState = themeState,
                 modifier = Modifier.align(Alignment.End),
             )
         }
@@ -246,15 +231,56 @@ private fun PreferencesThemeDynamic(
 
 @Composable
 private fun PreferencesThemeReset(
-    resetState: PreferencesUiState.ThemeState.ResetState,
+    themeState: PreferencesUiState.ThemeState,
     modifier: Modifier = Modifier,
 ) {
     TextButton(
-        onClick = resetState.onClick,
+        onClick = themeState.onResetClick,
         modifier = modifier,
     ) {
         Text(
             text = stringResource(R.string.preferences_theme_reset),
+            style = MaterialTheme.typography.labelLarge,
+        )
+    }
+}
+
+@Composable
+private fun PreferencesRecentsContent(
+    recentsState: PreferencesUiState.RecentsState,
+    modifier: Modifier = Modifier,
+) {
+    PreferencesPreference(
+        text = stringResource(R.string.preferences_recents),
+        modifier = modifier,
+    ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(
+                space = dimensionResource(CR.dimen.padding_medium),
+                alignment = Alignment.Top,
+            ),
+            horizontalAlignment = Alignment.Start,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            PreferencesRecentsTrackReset(
+                recentsState = recentsState,
+                modifier = Modifier.align(Alignment.End),
+            )
+        }
+    }
+}
+
+@Composable
+private fun PreferencesRecentsTrackReset(
+    recentsState: PreferencesUiState.RecentsState,
+    modifier: Modifier = Modifier,
+) {
+    TextButton(
+        onClick = recentsState.onResetClick,
+        modifier = modifier,
+    ) {
+        Text(
+            text = stringResource(R.string.preferences_recents_reset),
             style = MaterialTheme.typography.labelLarge,
         )
     }

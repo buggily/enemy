@@ -125,7 +125,7 @@ private fun RecentScreenCompact(
                 trackState = trackState,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .aspectRatio(5f),
+                    .aspectRatio(3f),
             )
         }
 
@@ -194,7 +194,7 @@ private fun RecentScreenMedium(
 
         item {
             Spacer(
-                modifier = Modifier.padding(dimensionResource(CR.dimen.padding_large)),
+                modifier = Modifier.padding(dimensionResource(CR.dimen.padding_medium)),
             )
         }
 

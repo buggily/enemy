@@ -3,6 +3,7 @@ package com.buggily.enemy.domain.track.di
 import com.buggily.enemy.core.domain.GetDuration
 import com.buggily.enemy.core.domain.GetDurationText
 import com.buggily.enemy.data.track.TrackRepositable
+import com.buggily.enemy.domain.track.DeleteTracks
 import com.buggily.enemy.domain.track.GetTrackById
 import com.buggily.enemy.domain.track.GetTrackPaging
 import com.buggily.enemy.domain.track.GetTrackPagingByAlbumId
@@ -89,6 +90,13 @@ internal object DomainTrackModule {
     fun providesIncrementTrackPlaysById(
         trackRepository: TrackRepositable,
     ): IncrementTrackPlaysById = IncrementTrackPlaysById(
+        trackRepository = trackRepository,
+    )
+
+    @Provides
+    fun providesDeleteTracks(
+        trackRepository: TrackRepositable,
+    ): DeleteTracks = DeleteTracks(
         trackRepository = trackRepository,
     )
 }
