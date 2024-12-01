@@ -21,20 +21,20 @@ class PlaylistTrackPickerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : PickerViewModel() {
 
-    private val trackId: Long
     private val playlistId: Long
+    private val trackId: Long
     private val trackIndex: Int
 
     private val _uiState: MutableStateFlow<PickerUiState>
     override val uiState: StateFlow<PickerUiState> get() = _uiState
 
     init {
-        val trackIdKey: String = NavigationDestination.Playlist.TrackPicker.TRACK_ID
         val playlistIdKey: String = NavigationDestination.Playlist.TrackPicker.PLAYLIST_ID
+        val trackIdKey: String = NavigationDestination.Playlist.TrackPicker.TRACK_ID
         val trackIndexKey: String = NavigationDestination.Playlist.TrackPicker.TRACK_INDEX
 
-        trackId = checkNotNull(savedStateHandle[trackIdKey])
         playlistId = checkNotNull(savedStateHandle[playlistIdKey])
+        trackId = checkNotNull(savedStateHandle[trackIdKey])
         trackIndex = checkNotNull(savedStateHandle[trackIndexKey])
 
         PickerUiState(
