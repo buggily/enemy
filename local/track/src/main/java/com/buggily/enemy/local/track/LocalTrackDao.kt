@@ -43,4 +43,7 @@ interface LocalTrackDao {
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun update(track: LocalTrack)
+
+    @Query("DELETE FROM ${LocalTrack.TABLE_NAME}")
+    suspend fun delete()
 }

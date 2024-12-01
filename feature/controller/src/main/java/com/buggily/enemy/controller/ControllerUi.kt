@@ -433,19 +433,17 @@ private fun ControllerSeekBar(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier,
     ) {
-        val contentModifier: Modifier = Modifier.fillMaxWidth()
-
         Slider(
             value = seekState.value,
             valueRange = seekState.range,
             onValueChange = seekState.onChange,
             onValueChangeFinished = seekState.onChangeFinish,
-            modifier = contentModifier,
+            modifier = Modifier.fillMaxWidth(),
         )
 
         ControllerSeekBarText(
             seekState = seekState,
-            modifier = contentModifier,
+            modifier = Modifier.fillMaxWidth(),
         )
     }
 }
@@ -474,9 +472,17 @@ private fun ControllerSeekBarText(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier,
     ) {
-        ControllerSeekBarText(seekState.current.text)
+        ControllerSeekBarText(
+            text = seekState.current.text,
+            modifier = Modifier,
+        )
+
         Spacer(Modifier.weight(1f))
-        ControllerSeekBarText(seekState.duration.text)
+
+        ControllerSeekBarText(
+            text = seekState.duration.text,
+            modifier = Modifier,
+        )
     }
 }
 
@@ -509,7 +515,7 @@ private fun ControllerBottomSheetForeground(
 
         Row(
             horizontalArrangement = Arrangement.spacedBy(
-                space = dimensionResource(CR.dimen.padding_large),
+                space = dimensionResource(CR.dimen.padding_medium),
                 alignment = Alignment.End,
             ),
             verticalAlignment = Alignment.CenterVertically,
@@ -557,7 +563,9 @@ private fun ControllerBottomSheetText(
         SingleLineText(
             text = mediaItem.artistText.orEmpty(),
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.basicMarquee().alpha(floatResource(CR.dimen.alpha_medium)),
+            modifier = Modifier
+                .basicMarquee()
+                .alpha(floatResource(CR.dimen.alpha_medium)),
         )
     }
 }

@@ -93,4 +93,6 @@ internal class TrackRepository(
             lastPlayInstant = instant,
         ).let { localTrackSource.insert(it) }
     }
+
+    override suspend fun delete() = localTrackSource.delete()
 }

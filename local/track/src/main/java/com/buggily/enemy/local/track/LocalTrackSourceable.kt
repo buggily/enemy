@@ -12,4 +12,5 @@ interface LocalTrackSourceable {
 
     suspend fun insert(track: LocalTrack)
     suspend fun update(track: LocalTrack)
+    suspend fun delete()
 }
