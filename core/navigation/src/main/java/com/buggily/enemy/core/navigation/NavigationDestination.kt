@@ -224,7 +224,7 @@ sealed interface NavigationDestination {
                 )
 
             override val queries: List<NavigationComponent.Query>
-                get() = emptyList()
+                get() = listOf(NavigationComponent.Query(TRACK_ID, NavType.LongType))
 
             fun getRoute(
                 trackId: Long,
