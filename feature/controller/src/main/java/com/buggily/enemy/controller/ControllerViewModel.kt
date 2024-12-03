@@ -3,6 +3,7 @@ package com.buggily.enemy.controller
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import com.buggily.enemy.core.domain.GetDuration
 import com.buggily.enemy.core.domain.GetDurationText
@@ -57,25 +58,27 @@ class ControllerViewModel @Inject constructor(
         ControllerUiState(
             mediaItem = null,
             playState = ControllerUiState.PlayState(
-                state = ControllerUiState.PlayState.State.Default,
+                isEnabled = false,
                 isPlaying = false,
                 onClick = ::onPlayClick,
             ),
             nextState = ControllerUiState.NextState(
-                hasNext = false,
+                isEnabled = false,
                 onClick = ::onNextClick,
             ),
             previousState = ControllerUiState.PreviousState(
-                hasPrevious = false,
+                isEnabled = false,
                 onClick = ::onPreviousClick,
             ),
             repeatState = ControllerUiState.RepeatState(
                 mode = ControllerUiState.RepeatState.Mode.Off,
                 onClick = ::onRepeatClick,
+                isEnabled = false,
             ),
             shuffleState = ControllerUiState.ShuffleState(
                 mode = ControllerUiState.ShuffleState.Mode.Off,
                 onClick = ::onShuffleClick,
+                isEnabled = false,
             ),
             seekState = ControllerUiState.SeekState(
                 current = duration,
@@ -110,18 +113,6 @@ class ControllerViewModel @Inject constructor(
         if (!isSeeking) onSeekChange(duration = position.toDuration(DurationUnit.MILLISECONDS))
     }
 
-    fun setPlaybackState(playbackState: Int) = _uiState.update {
-        val state: ControllerUiState.PlayState.State = when (playbackState) {
-            MediaController.STATE_IDLE -> ControllerUiState.PlayState.State.Default
-            MediaController.STATE_BUFFERING -> ControllerUiState.PlayState.State.Loading
-            MediaController.STATE_READY -> ControllerUiState.PlayState.State.Ready
-            MediaController.STATE_ENDED -> ControllerUiState.PlayState.State.Done
-            else -> ControllerUiState.PlayState.State.Default
-        }
-
-        it.copy(playState = it.playState.copy(state = state))
-    }
-
     fun setIsPlaying(isPlaying: Boolean) = _uiState.update {
         it.copy(playState = it.playState.copy(isPlaying = isPlaying))
     }
@@ -145,12 +136,40 @@ class ControllerViewModel @Inject constructor(
         it.copy(shuffleState = it.shuffleState.copy(mode = mode))
     }
 
-    fun setHasNext(hasNext: Boolean) = _uiState.update {
-        it.copy(nextState = it.nextState.copy(hasNext = hasNext))
-    }
+    fun setAvailableCommands(availableCommands: Player.Commands) = _uiState.update {
+        val isPlayEnabled: Boolean = Player.COMMAND_PLAY_PAUSE in availableCommands
+        val isNextEnabled: Boolean = Player.COMMAND_SEEK_TO_NEXT in availableCommands
+        val isPreviousEnabled: Boolean = Player.COMMAND_SEEK_TO_PREVIOUS in availableCommands
+        val isRepeatEnabled: Boolean = Player.COMMAND_SET_REPEAT_MODE in availableCommands
+        val isShuffleEnabled: Boolean = Player.COMMAND_SET_SHUFFLE_MODE in availableCommands
 
-    fun setHasPrevious(hasPrevious: Boolean) = _uiState.update {
-        it.copy(previousState = it.previousState.copy(hasPrevious = hasPrevious))
+        val playState: ControllerUiState.PlayState = it.playState.copy(
+            isEnabled = isPlayEnabled,
+        )
+
+        val nextState: ControllerUiState.NextState = it.nextState.copy(
+            isEnabled = isNextEnabled,
+        )
+
+        val previousState: ControllerUiState.PreviousState = it.previousState.copy(
+            isEnabled = isPreviousEnabled,
+        )
+
+        val repeatState: ControllerUiState.RepeatState = it.repeatState.copy(
+            isEnabled = isRepeatEnabled,
+        )
+
+        val shuffleState: ControllerUiState.ShuffleState = it.shuffleState.copy(
+            isEnabled = isShuffleEnabled,
+        )
+
+        it.copy(
+            playState = playState,
+            nextState = nextState,
+            previousState = previousState,
+            repeatState = repeatState,
+            shuffleState = shuffleState,
+        )
     }
 
     fun setDuration(milliseconds: Long) = _uiState.update {

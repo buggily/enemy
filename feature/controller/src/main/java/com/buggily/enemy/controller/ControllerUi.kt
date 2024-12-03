@@ -336,7 +336,7 @@ private fun ControllerNextButton(
     modifier: Modifier = Modifier,
 ) {
     IconButton(
-        enabled = nextState.hasNext,
+        enabled = nextState.isEnabled,
         onClick = nextState.onClick,
         painter = painterResource(CR.drawable.next),
         contentDescription = stringResource(CR.string.next),
@@ -351,7 +351,7 @@ private fun ControllerPreviousButton(
     modifier: Modifier = Modifier,
 ) {
     IconButton(
-        enabled = previousState.hasPrevious,
+        enabled = previousState.isEnabled,
         onClick = previousState.onClick,
         painter = painterResource(CR.drawable.previous),
         contentDescription = stringResource(CR.string.previous),
@@ -384,6 +384,7 @@ private fun ControllerRepeatButton(
 
     IconButton(
         onClick = repeatState.onClick,
+        enabled = repeatState.isEnabled,
         painter = painterResource(painterResId),
         contentDescription = stringResource(stringResId),
         modifier = modifier.alpha(floatResource(floatResId)),
@@ -413,6 +414,7 @@ private fun ControllerShuffleButton(
 
     IconButton(
         onClick = shuffleState.onClick,
+        enabled = shuffleState.isEnabled,
         painter = painterResource(painterResId),
         contentDescription = stringResource(stringResId),
         modifier = modifier.alpha(floatResource(floatResId)),

@@ -18,39 +18,24 @@ data class ControllerUiState(
         get() = mediaItem is MediaItem
 
     data class PlayState(
-        val state: State,
+        val isEnabled: Boolean,
         val isPlaying: Boolean,
         val onClick: () -> Unit,
-    ) {
-
-        sealed interface State {
-            data object Default : State
-            data object Loading : State
-            data object Ready : State
-            data object Done : State
-        }
-
-        val isEnabled: Boolean
-            get() = when (state) {
-                is State.Ready -> true
-                is State.Default,
-                is State.Loading,
-                is State.Done -> false
-            }
-    }
+    )
 
     data class NextState(
-        val hasNext: Boolean,
+        val isEnabled: Boolean,
         val onClick: () -> Unit,
     )
 
     data class PreviousState(
-        val hasPrevious: Boolean,
+        val isEnabled: Boolean,
         val onClick: () -> Unit,
     )
 
     data class RepeatState(
         val mode: Mode,
+        val isEnabled: Boolean,
         val onClick: () -> Unit,
     ) {
 
@@ -67,6 +52,7 @@ data class ControllerUiState(
 
     data class ShuffleState(
         val mode: Mode,
+        val isEnabled: Boolean,
         val onClick: () -> Unit,
     ) {
 

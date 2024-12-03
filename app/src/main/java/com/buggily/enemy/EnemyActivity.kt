@@ -205,15 +205,11 @@ class EnemyActivity : ComponentActivity() {
         lifecycleScope.launch {
             with(requireController()) {
                 controllerViewModel.setMediaItem(currentMediaItem)
-
-                controllerViewModel.setPlaybackState(playbackState)
                 controllerViewModel.setIsPlaying(isPlaying)
 
                 controllerViewModel.setRepeatMode(repeatMode)
                 controllerViewModel.setShuffleMode(shuffleModeEnabled)
-
-                controllerViewModel.setHasNext(hasNextMediaItem())
-                controllerViewModel.setHasPrevious(hasPreviousMediaItem())
+                controllerViewModel.setAvailableCommands(availableCommands)
 
                 controllerViewModel.setDuration(duration)
                 controllerViewModel.setPosition(currentPosition)
@@ -261,12 +257,12 @@ class EnemyActivity : ComponentActivity() {
             }
 
             is ControllerEvent.Next -> {
-                requireController().seekToNextMediaItem()
+                requireController().seekToNext()
                 setPosition()
             }
 
             is ControllerEvent.Previous -> {
-                requireController().seekToPreviousMediaItem()
+                requireController().seekToPrevious()
                 setPosition()
             }
 
@@ -313,11 +309,6 @@ class EnemyActivity : ComponentActivity() {
             controllerViewModel.setIsPlaying(isPlaying)
         }
 
-        override fun onPlaybackStateChanged(playbackState: Int) {
-            super.onPlaybackStateChanged(playbackState)
-            controllerViewModel.setPlaybackState(playbackState)
-        }
-
         override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
             super.onMediaMetadataChanged(mediaMetadata)
 
@@ -340,6 +331,11 @@ class EnemyActivity : ComponentActivity() {
             controllerViewModel.setShuffleMode(shuffleModeEnabled)
         }
 
+        override fun onAvailableCommandsChanged(availableCommands: Player.Commands) {
+            super.onAvailableCommandsChanged(availableCommands)
+            controllerViewModel.setAvailableCommands(availableCommands)
+        }
+
         override fun onEvents(player: Player, events: Player.Events) {
             super.onEvents(player, events)
 
@@ -348,21 +344,7 @@ class EnemyActivity : ComponentActivity() {
                     Player.EVENT_MEDIA_ITEM_TRANSITION,
                     Player.EVENT_PLAYBACK_STATE_CHANGED,
                 )
-            ) {
-                controllerViewModel.setDuration(player.duration)
-            }
-
-            if (
-                events.containsAny(
-                    Player.EVENT_MEDIA_ITEM_TRANSITION,
-                    Player.EVENT_REPEAT_MODE_CHANGED,
-                    Player.EVENT_SHUFFLE_MODE_ENABLED_CHANGED,
-                )
-            ) {
-                controllerViewModel.setPlaybackState(player.playbackState)
-                controllerViewModel.setHasNext(player.hasNextMediaItem())
-                controllerViewModel.setHasPrevious(player.hasPreviousMediaItem())
-            }
+            ) { controllerViewModel.setDuration(player.duration) }
         }
     }
 
