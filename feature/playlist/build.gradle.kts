@@ -12,6 +12,7 @@ dependencies {
     implementation(project(":domain:track"))
     implementation(project(":domain:playlist"))
     implementation(project(":domain:playlistWithTracks"))
+    implementation(project(":domain:resume"))
 
     implementation(project(":domain:controller"))
     implementation(project(":domain:navigation"))

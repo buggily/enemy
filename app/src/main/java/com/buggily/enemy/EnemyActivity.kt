@@ -24,7 +24,6 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.media3.common.MediaItem
-import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
@@ -207,12 +206,12 @@ class EnemyActivity : ComponentActivity() {
                 controllerViewModel.setMediaItem(currentMediaItem)
                 controllerViewModel.setIsPlaying(isPlaying)
 
+                controllerViewModel.setDuration(duration)
+                controllerViewModel.setPosition(currentPosition)
+
                 controllerViewModel.setRepeatMode(repeatMode)
                 controllerViewModel.setShuffleMode(shuffleModeEnabled)
                 controllerViewModel.setAvailableCommands(availableCommands)
-
-                controllerViewModel.setDuration(duration)
-                controllerViewModel.setPosition(currentPosition)
 
                 removeListener(controllerListener)
                 addListener(controllerListener)
@@ -240,12 +239,19 @@ class EnemyActivity : ComponentActivity() {
     private suspend fun onControllerEvent(event: ControllerEvent) {
         when (event) {
             is ControllerEvent.Play -> with(requireController()) {
-                if (event is ControllerEvent.Play.With) {
-                    setMediaItems(
+                when (event) {
+                    is ControllerEvent.Play.WithMany -> setMediaItems(
                         event.items,
                         event.index,
                         Duration.ZERO.inWholeMilliseconds,
                     )
+
+                    is ControllerEvent.Play.WithOne -> setMediaItem(
+                        event.item,
+                        Duration.ZERO.inWholeMilliseconds,
+                    )
+
+                    is ControllerEvent.Play.Without -> Unit
                 }
 
                 prepare()
@@ -302,49 +308,43 @@ class EnemyActivity : ComponentActivity() {
             globalUiViewModel.onDestinationChange(it)
         }
 
-    private val controllerListener: Player.Listener = object : Player.Listener {
+    private val controllerListener: Player.Listener by lazy {
+        object : Player.Listener {
 
-        override fun onIsPlayingChanged(isPlaying: Boolean) {
-            super.onIsPlayingChanged(isPlaying)
-            controllerViewModel.setIsPlaying(isPlaying)
-        }
+            override fun onIsPlayingChanged(isPlaying: Boolean) {
+                super.onIsPlayingChanged(isPlaying)
+                controllerViewModel.setIsPlaying(isPlaying)
+            }
 
-        override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
-            super.onMediaMetadataChanged(mediaMetadata)
+            override fun onMediaItemTransition(
+                mediaItem: MediaItem?,
+                reason: Int,
+            ) {
+                super.onMediaItemTransition(mediaItem, reason)
+                controllerViewModel.setMediaItem(mediaItem)
+            }
 
-            val mediaId: String = controller?.currentMediaItem?.mediaId
-                ?: MediaItem.DEFAULT_MEDIA_ID
+            override fun onRepeatModeChanged(repeatMode: Int) {
+                super.onRepeatModeChanged(repeatMode)
+                controllerViewModel.setRepeatMode(repeatMode)
+            }
 
-            MediaItem.Builder()
-                .setMediaId(mediaId)
-                .setMediaMetadata(mediaMetadata)
-                .build().let { controllerViewModel.setMediaItem(it) }
-        }
+            override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
+                super.onShuffleModeEnabledChanged(shuffleModeEnabled)
+                controllerViewModel.setShuffleMode(shuffleModeEnabled)
+            }
 
-        override fun onRepeatModeChanged(repeatMode: Int) {
-            super.onRepeatModeChanged(repeatMode)
-            controllerViewModel.setRepeatMode(repeatMode)
-        }
+            override fun onAvailableCommandsChanged(availableCommands: Player.Commands) {
+                super.onAvailableCommandsChanged(availableCommands)
+                controllerViewModel.setAvailableCommands(availableCommands)
+            }
 
-        override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
-            super.onShuffleModeEnabledChanged(shuffleModeEnabled)
-            controllerViewModel.setShuffleMode(shuffleModeEnabled)
-        }
+            override fun onEvents(player: Player, events: Player.Events) {
+                super.onEvents(player, events)
 
-        override fun onAvailableCommandsChanged(availableCommands: Player.Commands) {
-            super.onAvailableCommandsChanged(availableCommands)
-            controllerViewModel.setAvailableCommands(availableCommands)
-        }
-
-        override fun onEvents(player: Player, events: Player.Events) {
-            super.onEvents(player, events)
-
-            if (
-                events.containsAny(
-                    Player.EVENT_MEDIA_ITEM_TRANSITION,
-                    Player.EVENT_PLAYBACK_STATE_CHANGED,
-                )
-            ) { controllerViewModel.setDuration(player.duration) }
+                if (!events.contains(Player.EVENT_PLAYBACK_STATE_CHANGED)) return
+                controllerViewModel.setDuration(player.duration)
+            }
         }
     }
 
@@ -368,7 +368,7 @@ class EnemyActivity : ComponentActivity() {
         setPosition = null
     }
 
-    private suspend fun setPosition() {
-        controllerViewModel.setPosition(requireController().currentPosition)
+    private suspend fun setPosition() = with(requireController()) {
+        controllerViewModel.setPosition(currentPosition)
     }
 }

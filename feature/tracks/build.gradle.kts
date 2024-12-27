@@ -9,6 +9,8 @@ android {
 
 dependencies {
     implementation(project(":domain:track"))
+    implementation(project(":domain:resume"))
+
     implementation(project(":domain:controller"))
     implementation(project(":domain:navigation"))
 

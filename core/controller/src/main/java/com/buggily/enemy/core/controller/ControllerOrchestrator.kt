@@ -1,7 +1,6 @@
 package com.buggily.enemy.core.controller
 
 import androidx.media3.common.MediaItem
-import com.buggily.enemy.core.ext.firstIndex
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -21,17 +20,18 @@ class ControllerOrchestrator : ControllerOrchestratable {
         index: Int,
         items: List<MediaItem>,
     ) {
-        ControllerEvent.Play.With(
+        ControllerEvent.Play.WithMany(
             index = index,
             items = items,
         ).let { _event.tryEmit(it) }
     }
 
-    override fun playItem(item: MediaItem) = listOf(item).let {
-        playItems(
-            index = it.firstIndex,
-            items = it,
-        )
+    override fun playItem(
+        item: MediaItem,
+    ) {
+        ControllerEvent.Play.WithOne(
+            item = item,
+        ).let { _event.tryEmit(it) }
     }
 
     override fun play() {

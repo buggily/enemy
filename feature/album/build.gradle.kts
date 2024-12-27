@@ -10,6 +10,8 @@ android {
 dependencies {
     implementation(project(":domain:album"))
     implementation(project(":domain:track"))
+    implementation(project(":domain:resume"))
+
     implementation(project(":domain:controller"))
     implementation(project(":domain:navigation"))
 

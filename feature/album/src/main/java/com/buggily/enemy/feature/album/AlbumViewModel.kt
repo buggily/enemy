@@ -15,6 +15,8 @@ import com.buggily.enemy.domain.album.AlbumUi
 import com.buggily.enemy.domain.album.GetAlbumById
 import com.buggily.enemy.domain.controller.PlayItems
 import com.buggily.enemy.domain.navigation.NavigateToTrackPicker
+import com.buggily.enemy.domain.resume.ResumeUi
+import com.buggily.enemy.domain.resume.SetResume
 import com.buggily.enemy.domain.track.GetTrackPagingByAlbumId
 import com.buggily.enemy.domain.track.GetTracksByAlbumId
 import com.buggily.enemy.domain.track.TrackUi
@@ -30,6 +32,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AlbumViewModel @Inject constructor(
     private val playItems: PlayItems,
+    private val setResume: SetResume,
     private val getTracksByAlbumId: GetTracksByAlbumId,
     private val navigateToTrackPicker: NavigateToTrackPicker,
     getAlbumById: GetAlbumById,
@@ -81,7 +84,7 @@ class AlbumViewModel @Inject constructor(
         val tracks: List<TrackUi> = getTracksByAlbumId(albumId)
         val items: List<MediaItem> = tracks.map { it.toMediaItem() }
 
-        playItems(
+        playItemsAndSetResume(
             index = tracks.firstIndex,
             items = items,
         )
@@ -92,7 +95,7 @@ class AlbumViewModel @Inject constructor(
         val index: Int = tracks.indexOfOrNull(track) ?: return@launch
         val items: List<MediaItem> = tracks.map { it.toMediaItem() }
 
-        playItems(
+        playItemsAndSetResume(
             index = index,
             items = items,
         )
@@ -101,4 +104,19 @@ class AlbumViewModel @Inject constructor(
     private fun onTrackLongClick(track: TrackUi) = navigateToTrackPicker(
         trackId = track.id,
     )
+
+    private fun playItemsAndSetResume(
+        index: Int,
+        items: List<MediaItem>,
+    ) = viewModelScope.launch {
+        playItems(
+            index = index,
+            items = items,
+        )
+
+        setResume(
+            id = albumId,
+            source = ResumeUi.Source.Album(index),
+        )
+    }
 }
