@@ -12,6 +12,8 @@ import com.buggily.enemy.domain.controller.PlayItems
 import com.buggily.enemy.domain.navigation.NavigateToPlaylistTrackPicker
 import com.buggily.enemy.domain.playlist.GetPlaylistById
 import com.buggily.enemy.domain.playlist.PlaylistUi
+import com.buggily.enemy.domain.resume.ResumeUi
+import com.buggily.enemy.domain.resume.SetResume
 import com.buggily.enemy.domain.track.TrackWithIndexUi
 import com.buggily.enemy.domain.track.playlist.GetTrackPagingByPlaylistId
 import com.buggily.enemy.domain.track.playlist.GetTracksByPlaylistId
@@ -26,6 +28,7 @@ import javax.inject.Inject
 @HiltViewModel
 class PlaylistViewModel @Inject constructor(
     private val playItems: PlayItems,
+    private val setResume: SetResume,
     private val getTracksByPlaylistId: GetTracksByPlaylistId,
     private val navigateToPlaylistTrackPicker: NavigateToPlaylistTrackPicker,
     getPlaylistById: GetPlaylistById,
@@ -67,7 +70,7 @@ class PlaylistViewModel @Inject constructor(
         val tracks: List<TrackWithIndexUi> = getTracksByPlaylistId(playlistId)
         val items: List<MediaItem> = tracks.map { it.track.toMediaItem() }
 
-        playItems(
+        playItemsAndSetResume(
             index = tracks.firstIndex,
             items = items,
         )
@@ -80,7 +83,7 @@ class PlaylistViewModel @Inject constructor(
         val index: Int = tracks.indexOfOrNull(track) ?: return@launch
         val items: List<MediaItem> = tracks.map { it.track.toMediaItem() }
 
-        playItems(
+        playItemsAndSetResume(
             index = index,
             items = items,
         )
@@ -93,4 +96,19 @@ class PlaylistViewModel @Inject constructor(
         playlistId = playlistId,
         trackIndex = track.index,
     )
+
+    private fun playItemsAndSetResume(
+        index: Int,
+        items: List<MediaItem>,
+    ) = viewModelScope.launch {
+        playItems(
+            index = index,
+            items = items,
+        )
+
+        setResume(
+            id = playlistId,
+            source = ResumeUi.Source.Playlist(index),
+        )
+    }
 }

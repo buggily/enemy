@@ -3,37 +3,38 @@
 androidx = "1.15.0"
 androidxSplashscreen = "1.0.1"
 androidxComposeActivity = "1.9.3"
-androidxComposeBom = "2024.10.01"
-androidxComposeNavigation = "2.8.3"
+androidxComposeBom = "2024.12.01"
+androidxComposeNavigation = "2.8.5"
 androidxHilt = "1.2.0"
 androidxLifecycle = "2.8.7"
 androidxWindowManager = "1.1.1"
 androidxTest = "1.6.1"
 
 androidxRoom = "2.6.1"
-androidxPaging = "3.3.2"
+androidxPaging = "3.3.5"
 androidxDatastore = "1.1.1"
-androidxMedia = "1.4.1"
+androidxMedia = "1.5.1"
 
 kotlin = "2.0.21"
-kotlinxDateTime = "0.4.1"
+kotlinxDateTime = "0.6.1"
 kotlinxCoroutines = "1.9.0"
+kotlinxSerialization = "1.6.3"
 
 googleDagger = "2.51"
 
 coil = "2.4.0"
-
 junit = "4.13.2"
 
-androidGradlePlugin = "8.7.2"
+androidGradlePlugin = "8.7.3"
 
 [libraries]
 
 kotlin = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version.ref = "kotlin" }
-kotlinx-dateTime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinxDateTime" }
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutines" }
+kotlinx-dateTime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinxDateTime" }
+kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidxComposeActivity" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidxComposeBom" }
@@ -77,6 +78,8 @@ androidx-paging = { group = "androidx.paging", name = "paging-runtime-ktx", vers
 androidx-paging-core = { group = "androidx.paging", name = "paging-common", version.ref = "androidxPaging" }
 androidx-paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "androidxPaging" }
 
+androidx-datastore = { group = "androidx.datastore", name = "datastore", version.ref = "androidxDatastore"}
+androidx-datastore-core = { group = "androidx.datastore", name = "datastore-core", version.ref = "androidxDatastore" }
 androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "androidxDatastore" }
 androidx-datastore-preferences-core = { group = "androidx.datastore", name = "datastore-preferences-core", version.ref = "androidxDatastore" }
 
@@ -98,8 +101,8 @@ kotlin-gradle-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-p
 [plugins]
 
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
-android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "googleDagger" }
 
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

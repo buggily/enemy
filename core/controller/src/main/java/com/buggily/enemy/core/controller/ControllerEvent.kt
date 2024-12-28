@@ -6,9 +6,13 @@ sealed interface ControllerEvent {
 
     sealed interface Play : ControllerEvent {
 
-        data class With(
+        data class WithMany(
             val index: Int,
             val items: List<MediaItem>,
+        ) : Play
+
+        data class WithOne(
+            val item: MediaItem,
         ) : Play
 
         data object Without : Play

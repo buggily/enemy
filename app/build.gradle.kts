@@ -80,9 +80,8 @@ dependencies {
     implementation(project(":feature:playlist"))
 
     implementation(project(":domain:theme"))
-    implementation(project(":domain:album"))
+    implementation(project(":domain:resume"))
     implementation(project(":domain:track"))
-    implementation(project(":domain:playlist"))
 
     implementation(project(":domain:navigation"))
     implementation(project(":domain:controller"))

@@ -22,15 +22,7 @@ interface ControllerOrchestratable {
     fun previous()
     fun next()
 
-    fun repeat(
-        repeatMode: Int,
-    )
-
-    fun shuffle(
-        shuffleMode: Boolean,
-    )
-
-    fun seek(
-        milliseconds: Long,
-    )
+    fun repeat(repeatMode: Int)
+    fun shuffle(shuffleMode: Boolean)
+    fun seek(milliseconds: Long)
 }

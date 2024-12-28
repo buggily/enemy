@@ -9,7 +9,7 @@ class PlayItems(
 
     operator fun invoke(
         index: Int,
-        items: List<MediaItem>
+        items: List<MediaItem>,
     ) = orchestrator.playItems(
         index = index,
         items = items,

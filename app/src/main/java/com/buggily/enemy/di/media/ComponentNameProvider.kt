@@ -2,7 +2,7 @@ package com.buggily.enemy.di.media
 
 import android.content.ComponentName
 import android.content.Context
-import com.buggily.enemy.EnemyMediaSessionService
+import com.buggily.enemy.EnemyMediaService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,6 +18,6 @@ internal object ComponentNameProvider {
         @ApplicationContext context: Context,
     ): ComponentName = ComponentName(
         context,
-        EnemyMediaSessionService::class.java,
+        EnemyMediaService::class.java,
     )
 }

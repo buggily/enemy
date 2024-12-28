@@ -2,11 +2,14 @@ package com.buggily.enemy.tracks
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media3.common.MediaItem
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.buggily.enemy.core.ui.SearchableViewModel
 import com.buggily.enemy.domain.controller.PlayItem
 import com.buggily.enemy.domain.navigation.NavigateToTrackPicker
+import com.buggily.enemy.domain.resume.ResumeUi
+import com.buggily.enemy.domain.resume.SetResume
 import com.buggily.enemy.domain.track.GetTrackPaging
 import com.buggily.enemy.domain.track.TrackUi
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,11 +20,13 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class TracksViewModel @Inject constructor(
     private val playItem: PlayItem,
+    private val setResume: SetResume,
     private val navigateToTrackPicker: NavigateToTrackPicker,
     getTrackPaging: GetTrackPaging,
 ) : ViewModel(), SearchableViewModel {
@@ -57,11 +62,26 @@ class TracksViewModel @Inject constructor(
         it.copy(searchState = it.searchState.copy(value = value))
     }
 
-    private fun onTrackClick(track: TrackUi) = playItem(
-        item = track.toMediaItem(),
-    )
+    private fun onTrackClick(track: TrackUi) = viewModelScope.launch {
+        playItemAndSetResume(
+            trackId = track.id,
+            item = track.toMediaItem(),
+        )
+    }
 
     private fun onTrackLongClick(track: TrackUi) = navigateToTrackPicker(
         trackId = track.id,
     )
+
+    private fun playItemAndSetResume(
+        trackId: Long,
+        item: MediaItem,
+    ) = viewModelScope.launch {
+        playItem(item)
+
+        setResume(
+            id = trackId,
+            source = ResumeUi.Source.Track,
+        )
+    }
 }

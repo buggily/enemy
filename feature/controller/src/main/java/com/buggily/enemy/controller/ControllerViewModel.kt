@@ -83,8 +83,8 @@ class ControllerViewModel @Inject constructor(
             seekState = ControllerUiState.SeekState(
                 current = duration,
                 duration = duration,
-                onChange = ::onSeekChange,
-                onChangeFinish = ::onSeekChangeFinish,
+                onChange = ::onSeekStarted,
+                onChangeFinish = ::onSeekFinished,
             ),
         ).let { _uiState = MutableStateFlow(it) }
 
@@ -105,16 +105,33 @@ class ControllerViewModel @Inject constructor(
         )
     }
 
+    fun setIsPlaying(isPlaying: Boolean) = _uiState.update {
+        it.copy(playState = it.playState.copy(isPlaying = isPlaying))
+    }
+
     fun setMediaItem(mediaItem: MediaItem?) = _uiState.update {
         it.copy(mediaItem = mediaItem)
     }
 
-    fun setPosition(position: Long) {
-        if (!isSeeking) onSeekChange(duration = position.toDuration(DurationUnit.MILLISECONDS))
+    fun setDuration(milliseconds: Long) {
+        val start: Long = Duration.ZERO.inWholeMilliseconds
+        val end: Long = Duration.INFINITE.inWholeMilliseconds
+
+        val range: LongRange = start until end
+        if (milliseconds !in range) return
+
+        _uiState.update {
+            val duration = ControllerUiState.SeekState.Duration(
+                text = getDurationText(milliseconds),
+                duration = getDuration(milliseconds),
+            )
+
+            it.copy(seekState = it.seekState.copy(duration = duration))
+        }
     }
 
-    fun setIsPlaying(isPlaying: Boolean) = _uiState.update {
-        it.copy(playState = it.playState.copy(isPlaying = isPlaying))
+    fun setPosition(position: Long) {
+        if (!isSeeking) onSeekStarted(duration = position.toDuration(DurationUnit.MILLISECONDS))
     }
 
     fun setRepeatMode(repeatMode: Int) = _uiState.update {
@@ -172,32 +189,18 @@ class ControllerViewModel @Inject constructor(
         )
     }
 
-    fun setDuration(milliseconds: Long) = _uiState.update {
-        val start: Long = Duration.ZERO.inWholeMilliseconds
-        val endExclusive: Long = Duration.INFINITE.inWholeMilliseconds
-        val range: LongRange = start until endExclusive
-        if (milliseconds !in range) return@update it
-
-        val duration = ControllerUiState.SeekState.Duration(
-            text = getDurationText(milliseconds),
-            duration = getDuration(milliseconds),
-        )
-
-        it.copy(seekState = it.seekState.copy(duration = duration))
-    }
-
     fun onEmpty() = navigateBackFromController()
 
-    private fun onSeekChange(seconds: Float) {
+    private fun onSeekStarted(seconds: Float) {
         isSeeking = true
 
         getDuration(
             duration = seconds.toLong(),
             unit = DurationUnit.SECONDS,
-        ).let { onSeekChange(it) }
+        ).let { onSeekStarted(it) }
     }
 
-    private fun onSeekChange(duration: Duration) = _uiState.update {
+    private fun onSeekStarted(duration: Duration) = _uiState.update {
         val current = ControllerUiState.SeekState.Duration(
             duration = duration,
             text = getDurationText(duration),
@@ -232,7 +235,7 @@ class ControllerViewModel @Inject constructor(
         shuffle(shuffleMode)
     }
 
-    private fun onSeekChangeFinish() {
+    private fun onSeekFinished() {
         seek(uiState.value.seekState.milliseconds)
         isSeeking = false
     }

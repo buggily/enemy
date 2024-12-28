@@ -26,8 +26,8 @@ class GetDurationText(
     ).let { invoke(it) }
 
     operator fun invoke(duration: Duration): String {
-        require(duration.isFinite())
         require(duration.isNonNegative())
+        require(duration.isFinite())
 
         val minutesDuration: Duration = duration.inWholeMinutes.toDuration(
             unit = DurationUnit.MINUTES,

@@ -10,7 +10,7 @@ data class LocalPlaylist(
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = ID)
-    val id: Long = 0,
+    val id: Long,
 
     @ColumnInfo(name = NAME)
     val name: String,
