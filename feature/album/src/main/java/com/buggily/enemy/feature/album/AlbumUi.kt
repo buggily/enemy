@@ -126,7 +126,9 @@ private fun AlbumScreenCompact(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start,
             contentPadding = WindowInsets.systemBars.asPaddingValues(),
-            modifier = itemModifier.weight(2f).consumeWindowInsets(WindowInsets.systemBars),
+            modifier = itemModifier
+                .weight(2f)
+                .consumeWindowInsets(WindowInsets.systemBars),
         ) {
             items(
                 count = tracks.itemCount,
@@ -212,19 +214,20 @@ private fun AlbumHeaderCompact(
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        color = MaterialTheme.colorScheme.primaryContainer,
+        color = MaterialTheme.colorScheme.secondaryContainer,
         modifier = modifier,
     ) {
-        val itemModifier: Modifier = Modifier.fillMaxSize()
-
         AlbumHeaderBackground(
             albumState = albumState,
-            modifier = itemModifier.alpha(floatResource(CR.dimen.alpha_low)),
+            modifier = Modifier
+                .fillMaxSize()
+                .alpha(floatResource(CR.dimen.alpha_low)),
         )
 
         AlbumHeaderCompactForeground(
             albumState = albumState,
-            modifier = itemModifier
+            modifier = Modifier
+                .fillMaxSize()
                 .systemBarsPadding()
                 .padding(dimensionResource(CR.dimen.padding_large)),
         )
@@ -237,19 +240,20 @@ private fun AlbumHeaderMedium(
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        color = MaterialTheme.colorScheme.primaryContainer,
+        color = MaterialTheme.colorScheme.secondaryContainer,
         modifier = modifier,
     ) {
-        val itemModifier: Modifier = Modifier.fillMaxSize()
-
         AlbumHeaderBackground(
             albumState = albumState,
-            modifier = itemModifier.alpha(floatResource(CR.dimen.alpha_low)),
+            modifier = Modifier
+                .fillMaxSize()
+                .alpha(floatResource(CR.dimen.alpha_low)),
         )
 
         AlbumHeaderMediumForeground(
             albumState = albumState,
-            modifier = itemModifier
+            modifier = Modifier
+                .fillMaxSize()
                 .statusBarsPadding()
                 .padding(dimensionResource(CR.dimen.padding_large)),
         )
