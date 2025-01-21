@@ -1,7 +1,9 @@
 package com.buggily.enemy.feature.playlists
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.buggily.enemy.core.ui.SearchableViewModel
 import com.buggily.enemy.domain.navigation.NavigateToPlaylist
 import com.buggily.enemy.domain.navigation.NavigateToPlaylistPicker
@@ -48,7 +50,7 @@ class PlaylistsViewModel @Inject constructor(
             it.value
         }.distinctUntilChanged()
 
-        playlists = search.flatMapLatest { getPlaylistPaging(it) }
+        playlists = search.flatMapLatest { getPlaylistPaging(it) }.cachedIn(viewModelScope)
     }
 
     override fun onSearchChange(value: String) = _uiState.update {

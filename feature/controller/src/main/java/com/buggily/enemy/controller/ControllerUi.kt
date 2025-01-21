@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -38,9 +40,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.media3.common.MediaItem
-import com.buggily.enemy.core.ui.ext.artistText
 import com.buggily.enemy.core.ui.ext.floatResource
-import com.buggily.enemy.core.ui.ext.nameText
 import com.buggily.enemy.core.ui.ui.ArtImage
 import com.buggily.enemy.core.ui.ui.IconButton
 import com.buggily.enemy.core.ui.ui.SingleLineText
@@ -76,19 +76,13 @@ private fun ControllerScreen(
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        color = MaterialTheme.colorScheme.tertiaryContainer,
+        color = MaterialTheme.colorScheme.primaryContainer,
         modifier = modifier,
     ) {
-        when (val mediaItem: MediaItem? = uiState.mediaItem) {
-            is MediaItem -> ControllerBackground(
-                mediaItem = mediaItem,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .alpha(floatResource(CR.dimen.alpha_low)),
-            )
-
-            else -> Unit
-        }
+        ControllerBackground(
+            mediaState = uiState.mediaState,
+            modifier = Modifier.fillMaxSize(),
+        )
 
         ControllerForeground(
             uiState = uiState,
@@ -124,17 +118,13 @@ private fun ControllerBottomSheet(
         exit = shrinkVertically(),
     ) {
         Surface(
-            color = MaterialTheme.colorScheme.tertiaryContainer,
+            color = MaterialTheme.colorScheme.primaryContainer,
             modifier = modifier,
         ) {
-            when (val mediaItem: MediaItem? = uiState.mediaItem) {
-                is MediaItem -> ControllerBackground(
-                    mediaItem = mediaItem,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .alpha(floatResource(CR.dimen.alpha_low)),
-                )
-            }
+            ControllerBackground(
+                mediaState = uiState.mediaState,
+                modifier = Modifier.fillMaxSize(),
+            )
 
             ControllerBottomSheetForeground(
                 uiState = uiState,
@@ -159,16 +149,19 @@ private fun ControllerForeground(
         horizontalAlignment = Alignment.Start,
         modifier = modifier,
     ) {
-        val contentModifier: Modifier = Modifier.fillMaxWidth()
-
         ControllerText(
-            mediaItem = uiState.mediaItem,
-            modifier = contentModifier.weight(1f),
+            mediaState = uiState.mediaState,
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .clip(MaterialTheme.shapes.medium)
+                .clickable { uiState.mediaState.onClick() }
+                .padding(dimensionResource(CR.dimen.padding_small)),
         )
 
         ControllerControls(
             uiState = uiState,
-            modifier = contentModifier,
+            modifier = Modifier.fillMaxWidth(),
         )
     }
 }
@@ -209,7 +202,7 @@ private fun ControllerControls(
 
 @Composable
 private fun ControllerText(
-    mediaItem: MediaItem?,
+    mediaState: ControllerUiState.MediaState,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -221,13 +214,13 @@ private fun ControllerText(
         modifier = modifier,
     ) {
         Text(
-            text = mediaItem?.nameText.orEmpty(),
+            text = mediaState.nameText.orEmpty(),
             style = MaterialTheme.typography.displaySmall,
             modifier = Modifier.basicMarquee(),
         )
 
         Text(
-            text = mediaItem?.artistText.orEmpty(),
+            text = mediaState.artistText.orEmpty(),
             style = MaterialTheme.typography.displaySmall,
             modifier = Modifier
                 .basicMarquee()
@@ -239,14 +232,17 @@ private fun ControllerText(
 
 @Composable
 private fun ControllerBackground(
-    mediaItem: MediaItem,
+    mediaState: ControllerUiState.MediaState,
     modifier: Modifier = Modifier,
 ) {
-    ArtImage(
-        mediaItem = mediaItem,
-        contentScale = ContentScale.Crop,
-        modifier = modifier,
-    )
+    when (val mediaItem: MediaItem? = mediaState.mediaItem) {
+        is MediaItem -> ArtImage(
+            mediaItem = mediaItem,
+            contentScale = ContentScale.Crop,
+            alpha = floatResource(CR.dimen.alpha_low),
+            modifier = modifier,
+        )
+    }
 }
 
 @Composable
@@ -261,21 +257,19 @@ private fun ControllerPlaybackControls(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier,
     ) {
-        val contentModifier: Modifier = Modifier.weight(1f)
-
         ControllerPreviousButton(
             previousState = previousState,
-            modifier = contentModifier,
+            modifier = Modifier.weight(1f),
         )
 
         ControllerPlayButton(
             playState = playState,
-            modifier = contentModifier,
+            modifier = Modifier.weight(1f),
         )
 
         ControllerNextButton(
             nextState = nextState,
-            modifier = contentModifier,
+            modifier = Modifier.weight(1f),
         )
     }
 }
@@ -525,12 +519,10 @@ private fun ControllerBottomSheetForeground(
                 .fillMaxWidth()
                 .padding(dimensionResource(CR.dimen.padding_large)),
         ) {
-            when (val mediaItem: MediaItem? = uiState.mediaItem) {
-                is MediaItem -> ControllerBottomSheetText(
-                    mediaItem = mediaItem,
-                    modifier = Modifier.weight(1f),
-                )
-            }
+            ControllerBottomSheetText(
+                mediaState = uiState.mediaState,
+                modifier = Modifier.weight(1f),
+            )
 
             ControllerPlaybackControls(
                 playState = uiState.playState,
@@ -545,7 +537,7 @@ private fun ControllerBottomSheetForeground(
 
 @Composable
 private fun ControllerBottomSheetText(
-    mediaItem: MediaItem,
+    mediaState: ControllerUiState.MediaState,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -557,13 +549,13 @@ private fun ControllerBottomSheetText(
         modifier = modifier,
     ) {
         SingleLineText(
-            text = mediaItem.nameText.orEmpty(),
+            text = mediaState.nameText.orEmpty(),
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.basicMarquee(),
         )
 
         SingleLineText(
-            text = mediaItem.artistText.orEmpty(),
+            text = mediaState.artistText.orEmpty(),
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier
                 .basicMarquee()

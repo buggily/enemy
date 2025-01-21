@@ -51,6 +51,7 @@ private fun CreatePlaylistDialog(
     modifier: Modifier = Modifier,
 ) {
     Surface(
+        color = MaterialTheme.colorScheme.surface,
         shape = MaterialTheme.shapes.large,
         modifier = modifier,
     ) {

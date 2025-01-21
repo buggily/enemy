@@ -2,8 +2,8 @@
 
 androidx = "1.15.0"
 androidxSplashscreen = "1.0.1"
-androidxComposeActivity = "1.9.3"
-androidxComposeBom = "2024.12.01"
+androidxComposeActivity = "1.10.0"
+androidxComposeBom = "2025.01.00"
 androidxComposeNavigation = "2.8.5"
 androidxHilt = "1.2.0"
 androidxLifecycle = "2.8.7"
@@ -12,20 +12,22 @@ androidxTest = "1.6.1"
 
 androidxRoom = "2.6.1"
 androidxPaging = "3.3.5"
-androidxDatastore = "1.1.1"
+androidxDatastore = "1.1.2"
 androidxMedia = "1.5.1"
 
 kotlin = "2.0.21"
+kotlinSymbolProcessing = "2.0.21-1.0.27"
+
 kotlinxDateTime = "0.6.1"
-kotlinxCoroutines = "1.9.0"
-kotlinxSerialization = "1.6.3"
+kotlinxCoroutines = "1.10.1"
+kotlinxSerialization = "1.8.0"
 
-googleDagger = "2.51"
+googleDagger = "2.55"
 
-coil = "2.4.0"
+coil = "2.7.0"
 junit = "4.13.2"
 
-androidGradlePlugin = "8.7.3"
+androidGradlePlugin = "8.8.0"
 
 [libraries]
 
@@ -77,6 +79,7 @@ androidx-room-compiler = { group = "androidx.room", name = "room-compiler", vers
 androidx-paging = { group = "androidx.paging", name = "paging-runtime-ktx", version.ref = "androidxPaging" }
 androidx-paging-core = { group = "androidx.paging", name = "paging-common", version.ref = "androidxPaging" }
 androidx-paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "androidxPaging" }
+androidx-paging-test = { group = "androidx.paging", name = "paging-testing", version.ref = "androidxPaging" }
 
 androidx-datastore = { group = "androidx.datastore", name = "datastore", version.ref = "androidxDatastore"}
 androidx-datastore-core = { group = "androidx.datastore", name = "datastore-core", version.ref = "androidxDatastore" }
@@ -104,5 +107,7 @@ android-application = { id = "com.android.application", version.ref = "androidGr
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "googleDagger" }
 
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-symbol-processing = { id = "com.google.devtools.ksp", version.ref = "kotlinSymbolProcessing" }
+
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

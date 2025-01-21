@@ -9,7 +9,6 @@ interface AlbumRepositable {
         search: String,
     ): Flow<PagingData<Album>>
 
-
     suspend fun getById(
         id: Long,
     ): Album?

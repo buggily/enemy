@@ -14,7 +14,6 @@ import com.buggily.enemy.domain.navigation.NavigateToAlbum
 import com.buggily.enemy.domain.navigation.NavigateToController
 import com.buggily.enemy.domain.navigation.NavigateToCreatePlaylist
 import com.buggily.enemy.domain.navigation.NavigateToEditPlaylist
-import com.buggily.enemy.domain.navigation.NavigateToOrientation
 import com.buggily.enemy.domain.navigation.NavigateToPlaylist
 import com.buggily.enemy.domain.navigation.NavigateToPlaylistPicker
 import com.buggily.enemy.domain.navigation.NavigateToPlaylistTrackPicker
@@ -118,13 +117,6 @@ internal object NavigationProvider {
     fun providesNavigateToEditPlaylist(
          navigate: Navigate,
     ): NavigateToEditPlaylist = NavigateToEditPlaylist(
-        navigate = navigate,
-    )
-
-    @Provides
-    fun providesNavigateToOrientation(
-        navigate: Navigate,
-    ): NavigateToOrientation = NavigateToOrientation(
         navigate = navigate,
     )
 

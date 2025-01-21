@@ -122,8 +122,6 @@ private fun BrowseContent(
     val context: Context = LocalContext.current
     val activity: ComponentActivity = context as ComponentActivity
     val globalUiViewModel: GlobalUiViewModel = hiltViewModel(activity)
-
-    val contentModifier: Modifier = Modifier.fillMaxSize()
     val tab: BrowseUiState.TabState.Tab = tabState.tab
 
     LaunchedEffect(tabState.tab) {
@@ -137,7 +135,7 @@ private fun BrowseContent(
 
                 RecentScreen(
                     viewModel = viewModel,
-                    modifier = contentModifier,
+                    modifier = Modifier.fillMaxSize(),
                 )
             }
 
@@ -150,7 +148,7 @@ private fun BrowseContent(
                 ) {
                     AlbumsScreen(
                         viewModel = viewModel,
-                        modifier = contentModifier,
+                        modifier = Modifier.fillMaxSize(),
                     )
                 }
             }
@@ -164,7 +162,7 @@ private fun BrowseContent(
                 ) {
                     TracksScreen(
                         viewModel = viewModel,
-                        modifier = contentModifier,
+                        modifier = Modifier.fillMaxSize(),
                     )
                 }
             }
@@ -178,7 +176,7 @@ private fun BrowseContent(
                 ) {
                     PlaylistsScreen(
                         viewModel = viewModel,
-                        modifier = contentModifier,
+                        modifier = Modifier.fillMaxSize(),
                     )
                 }
             }

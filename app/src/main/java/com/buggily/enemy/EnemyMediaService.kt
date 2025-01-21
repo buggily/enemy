@@ -28,7 +28,7 @@ import javax.inject.Inject
 /*
     While enemy does not fully implement the `MediaLibraryService` and is better suited for a
     `MediaSessionService`, playback resumption through the Android System UI playback resumption
-    media button is only available through a `MediaLibraryService`. The app may fully
+    media button is only available through a `MediaLibraryService`. enemy may fully
     implement the `MediaLibraryService` in the future.
 
     (https://developer.android.com/media/media3/session/background-playback#resumption)

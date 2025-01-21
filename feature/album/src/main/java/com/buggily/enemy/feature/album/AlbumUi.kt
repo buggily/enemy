@@ -115,18 +115,19 @@ private fun AlbumScreenCompact(
         verticalAlignment = Alignment.Top,
         modifier = modifier,
     ) {
-        val itemModifier: Modifier = Modifier.fillMaxHeight()
-
         AlbumHeaderCompact(
             albumState = albumState,
-            modifier = itemModifier.weight(1f),
+            modifier = Modifier
+                .fillMaxHeight()
+                .weight(1f),
         )
 
         LazyColumn(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start,
             contentPadding = WindowInsets.systemBars.asPaddingValues(),
-            modifier = itemModifier
+            modifier = Modifier
+                .fillMaxHeight()
                 .weight(2f)
                 .consumeWindowInsets(WindowInsets.systemBars),
         ) {
@@ -172,12 +173,12 @@ private fun AlbumScreenMedium(
         contentPadding = WindowInsets.navigationBars.asPaddingValues(),
         modifier = modifier.consumeWindowInsets(WindowInsets.navigationBars),
     ) {
-        val itemModifier: Modifier = Modifier.fillMaxWidth()
-
         stickyHeader {
             AlbumHeaderMedium(
                 albumState = albumState,
-                modifier = itemModifier.height(IntrinsicSize.Min),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Min),
             )
         }
 
@@ -219,9 +220,7 @@ private fun AlbumHeaderCompact(
     ) {
         AlbumHeaderBackground(
             albumState = albumState,
-            modifier = Modifier
-                .fillMaxSize()
-                .alpha(floatResource(CR.dimen.alpha_low)),
+            modifier = Modifier.fillMaxSize(),
         )
 
         AlbumHeaderCompactForeground(
@@ -245,9 +244,7 @@ private fun AlbumHeaderMedium(
     ) {
         AlbumHeaderBackground(
             albumState = albumState,
-            modifier = Modifier
-                .fillMaxSize()
-                .alpha(floatResource(CR.dimen.alpha_low)),
+            modifier = Modifier.fillMaxSize(),
         )
 
         AlbumHeaderMediumForeground(
@@ -309,6 +306,7 @@ private fun AlbumHeaderBackground(
         is Artable -> ArtImage(
             artable = artable,
             contentScale = ContentScale.Crop,
+            alpha = floatResource(CR.dimen.alpha_low),
             modifier = modifier,
         )
 

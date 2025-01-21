@@ -1,4 +1,4 @@
-package com.buggily.enemy.ui.theme
+package com.buggily.enemy.core.ui.theme
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Shapes

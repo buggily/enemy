@@ -1,4 +1,4 @@
-package com.buggily.enemy.ui.theme
+package com.buggily.enemy.core.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.font.Font
@@ -6,7 +6,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontLoadingStrategy
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import com.buggily.enemy.R
+import com.buggily.enemy.core.ui.R
 
 private val productSans = FontFamily(
     Font(

@@ -17,7 +17,7 @@ abstract class QuerySource<Value>(
         projection,
         query.bundle,
         null,
-    )?.use { load(it) } ?: emptyList()
+    )?.use { load(it) }.orEmpty()
 
     fun loadFirstOrNull(query: Query): Value? = query.apply {
         limit = Query.Limit(identity = 1)

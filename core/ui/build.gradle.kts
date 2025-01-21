@@ -17,6 +17,7 @@ dependencies {
     implementation(project(":core:ext"))
     implementation(project(":core:navigation"))
 
+    implementation(project(":domain:theme"))
     implementation(project(":domain:album"))
     implementation(project(":domain:track"))
     implementation(project(":domain:playlist"))
