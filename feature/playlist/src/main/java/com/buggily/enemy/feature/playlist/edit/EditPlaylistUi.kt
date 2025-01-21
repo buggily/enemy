@@ -51,6 +51,7 @@ private fun EditPlaylistDialog(
     modifier: Modifier = Modifier,
 ) {
     Surface(
+        color = MaterialTheme.colorScheme.surface,
         shape = MaterialTheme.shapes.large,
         modifier = modifier,
     ) {

@@ -30,9 +30,8 @@ class Query(
                     it.identity
                 }
 
-                val expressions: List<Selection.Expression> = identity.filterIsInstance(
-                    klass = Selection.Expression::class.java,
-                )
+                val expressions: List<Selection.Expression> =
+                    identity.filterIsInstance<Selection.Expression>()
 
                 val selectionArgsIdentity: Array<out String> = expressions.map {
                     it.expressionIdentity.toString()

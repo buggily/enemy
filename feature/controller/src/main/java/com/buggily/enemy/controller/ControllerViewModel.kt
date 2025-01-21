@@ -15,6 +15,9 @@ import com.buggily.enemy.domain.controller.Repeat
 import com.buggily.enemy.domain.controller.Seek
 import com.buggily.enemy.domain.controller.Shuffle
 import com.buggily.enemy.domain.navigation.NavigateBackFromController
+import com.buggily.enemy.domain.navigation.NavigateToAlbum
+import com.buggily.enemy.domain.track.GetTrackById
+import com.buggily.enemy.domain.track.TrackUi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +26,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
@@ -37,6 +41,8 @@ class ControllerViewModel @Inject constructor(
     private val repeat: Repeat,
     private val shuffle: Shuffle,
     private val seek: Seek,
+    private val getTrackById: GetTrackById,
+    private val navigateToAlbum: NavigateToAlbum,
     private val navigateBackFromController: NavigateBackFromController,
     private val getDurationText: GetDurationText,
     private val getDuration: GetDuration,
@@ -56,7 +62,10 @@ class ControllerViewModel @Inject constructor(
         )
 
         ControllerUiState(
-            mediaItem = null,
+            mediaState = ControllerUiState.MediaState(
+                mediaItem = null,
+                onClick = ::onMediaItemClick,
+            ),
             playState = ControllerUiState.PlayState(
                 isEnabled = false,
                 isPlaying = false,
@@ -98,7 +107,7 @@ class ControllerViewModel @Inject constructor(
             initialValue = false,
         )
 
-        isEmpty = uiState.map { it.mediaItem == null && !it.playState.isPlaying }.stateIn(
+        isEmpty = uiState.map { !it.mediaState.hasMediaItem && !it.playState.isPlaying }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(),
             initialValue = false,
@@ -110,7 +119,7 @@ class ControllerViewModel @Inject constructor(
     }
 
     fun setMediaItem(mediaItem: MediaItem?) = _uiState.update {
-        it.copy(mediaItem = mediaItem)
+        it.copy(mediaState = it.mediaState.copy(mediaItem = mediaItem))
     }
 
     fun setDuration(milliseconds: Long) {
@@ -238,5 +247,13 @@ class ControllerViewModel @Inject constructor(
     private fun onSeekFinished() {
         seek(uiState.value.seekState.milliseconds)
         isSeeking = false
+    }
+
+    private fun onMediaItemClick() = viewModelScope.launch {
+        val mediaId: Long = uiState.value.mediaState.mediaId ?: return@launch
+        val track: TrackUi = getTrackById(mediaId) ?: return@launch
+        val albumMediaId: Long = track.album.id
+
+        navigateToAlbum(albumMediaId)
     }
 }

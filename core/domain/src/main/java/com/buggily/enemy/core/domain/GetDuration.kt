@@ -9,7 +9,7 @@ class GetDuration {
     operator fun invoke(
         duration: Long,
     ): Duration = duration.toDuration(
-        unit =DurationUnit.MILLISECONDS,
+        unit = DurationUnit.MILLISECONDS,
     )
 
     operator fun invoke(

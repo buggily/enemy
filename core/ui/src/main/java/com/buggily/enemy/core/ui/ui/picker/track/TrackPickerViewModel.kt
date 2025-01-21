@@ -18,6 +18,7 @@ class TrackPickerViewModel @Inject constructor(
     private val navigateToTrackPlaylistPicker: NavigateToTrackPlaylistPicker,
     savedStateHandle: SavedStateHandle,
 ) : PickerViewModel() {
+
     private val trackId: Long
 
     private val _uiState: MutableStateFlow<PickerUiState>

@@ -92,7 +92,7 @@ class GlobalUiViewModel @Inject constructor(
     private fun onSearchClear() = _uiState.update {
         val searchState: GlobalUiState.SearchState = it.searchState.copy(
             value = String(),
-            isVisible = !it.searchState.isVisible,
+            isVisible = false,
         )
 
         it.copy(searchState = searchState)

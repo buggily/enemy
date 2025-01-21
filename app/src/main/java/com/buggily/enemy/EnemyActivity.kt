@@ -1,8 +1,6 @@
 package com.buggily.enemy
 
-import android.content.pm.PackageManager
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -15,8 +13,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -34,20 +32,18 @@ import androidx.navigation.compose.rememberNavController
 import com.buggily.enemy.controller.ControllerViewModel
 import com.buggily.enemy.core.controller.ControllerEvent
 import com.buggily.enemy.core.controller.ControllerOrchestratable
-import com.buggily.enemy.core.ext.readPermission
 import com.buggily.enemy.core.navigation.NavigationArgs
-import com.buggily.enemy.core.navigation.NavigationDestination
 import com.buggily.enemy.core.navigation.NavigationOrchestratable
 import com.buggily.enemy.core.ui.GlobalUiViewModel
+import com.buggily.enemy.core.ui.theme.EnemyPalette
+import com.buggily.enemy.core.ui.theme.EnemyTheme
+import com.buggily.enemy.core.ui.theme.to
 import com.buggily.enemy.di.DirectExecutorQualifier
 import com.buggily.enemy.domain.theme.ThemeUi
 import com.buggily.enemy.ui.EnemyApp
 import com.buggily.enemy.ui.EnemyAppState
 import com.buggily.enemy.ui.EnemyViewModel
 import com.buggily.enemy.ui.rememberEnemyAppState
-import com.buggily.enemy.ui.theme.EnemyPalette
-import com.buggily.enemy.ui.theme.EnemyTheme
-import com.buggily.enemy.ui.theme.to
 import com.google.common.util.concurrent.ListenableFuture
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
@@ -62,7 +58,7 @@ import kotlin.coroutines.suspendCoroutine
 import kotlin.time.Duration
 
 @AndroidEntryPoint
-class EnemyActivity : ComponentActivity() {
+class EnemyActivity : FragmentActivity() {
 
     private val viewModel: EnemyViewModel by viewModels()
     private val globalUiViewModel: GlobalUiViewModel by viewModels()
@@ -111,6 +107,8 @@ class EnemyActivity : ComponentActivity() {
         }
 
         setContent {
+            val theme: ThemeUi by viewModel.theme.collectAsStateWithLifecycle()
+
             val navController: NavHostController = rememberNavController()
             val windowSizeClass: WindowSizeClass = calculateWindowSizeClass(this)
 
@@ -120,26 +118,8 @@ class EnemyActivity : ComponentActivity() {
             )
 
             LaunchedEffect(navController) {
-                val permissionResult: Int = ContextCompat.checkSelfPermission(
-                    this@EnemyActivity,
-                    readPermission
-                )
-
                 navController.removeOnDestinationChangedListener(onDestinationChangedListener)
                 navController.addOnDestinationChangedListener(onDestinationChangedListener)
-
-                val isGranted: Boolean = permissionResult == PackageManager.PERMISSION_GRANTED
-                if (isGranted) return@LaunchedEffect
-
-                navController.navigate(NavigationDestination.Orientation.route) {
-                    launchSingleTop = true
-                    restoreState = false
-
-                    popUpTo(NavigationDestination.startDestination.route) {
-                        inclusive = true
-                        saveState = false
-                    }
-                }
             }
 
             LaunchedEffect(navController, navigationOrchestrator) {
@@ -168,8 +148,6 @@ class EnemyActivity : ComponentActivity() {
             }
 
             val isSystemInDarkTheme: Boolean = isSystemInDarkTheme()
-            val theme: ThemeUi by viewModel.theme.collectAsStateWithLifecycle()
-
             val paletteTheme: EnemyPalette.Theme = remember(isSystemInDarkTheme, theme) {
                 val isDynamic: Boolean = theme.dynamic is ThemeUi.Dynamic.On
 

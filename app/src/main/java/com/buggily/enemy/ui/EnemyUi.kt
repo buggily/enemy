@@ -1,12 +1,10 @@
 package com.buggily.enemy.ui
 
 import android.content.Context
+import android.content.pm.PackageManager
 import androidx.activity.ComponentActivity
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.expandVertically
-import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,7 +13,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -28,6 +25,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -45,6 +43,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.window.DialogProperties
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
@@ -53,6 +52,7 @@ import androidx.navigation.compose.dialog
 import com.buggily.enemy.R
 import com.buggily.enemy.controller.ControllerBottomSheet
 import com.buggily.enemy.controller.ControllerScreen
+import com.buggily.enemy.core.ext.readPermission
 import com.buggily.enemy.core.navigation.NavigationDestination
 import com.buggily.enemy.core.ui.GlobalUiState
 import com.buggily.enemy.core.ui.GlobalUiViewModel
@@ -128,6 +128,17 @@ private fun EnemyApp(
     controllerState: GlobalUiState.ControllerState,
     modifier: Modifier = Modifier,
 ) {
+    val hasReadPermission: Boolean = ContextCompat.checkSelfPermission(
+        LocalContext.current,
+        readPermission
+    ) == PackageManager.PERMISSION_GRANTED
+
+    val startDestination: NavigationDestination = if (hasReadPermission) {
+        NavigationDestination.Browse
+    } else {
+        NavigationDestination.Orientation
+    }
+
     Scaffold(
         snackbarHost = { SnackbarHost(hostState) },
         contentWindowInsets = WindowInsets.ZERO,
@@ -143,23 +154,22 @@ private fun EnemyApp(
             )
         },
     ) { padding: PaddingValues ->
+
         NavHost(
             navController = appState.navController,
-            startDestination = NavigationDestination.startDestination.route,
+            startDestination = startDestination.route,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
                 .consumeWindowInsets(padding),
         ) {
-            val contentModifier: Modifier = Modifier.fillMaxSize()
-
             composable(
                 route = NavigationDestination.Orientation.route,
                 arguments = NavigationDestination.Orientation.arguments,
             ) {
                 OrientationScreen(
                     viewModel = hiltViewModel(),
-                    modifier = contentModifier,
+                    modifier = Modifier.fillMaxSize(),
                 )
             }
 
@@ -169,7 +179,7 @@ private fun EnemyApp(
             ) {
                 BrowseScreen(
                     viewModel = hiltViewModel(),
-                    modifier = contentModifier,
+                    modifier = Modifier.fillMaxSize(),
                 )
             }
 
@@ -179,7 +189,7 @@ private fun EnemyApp(
             ) {
                 AlbumScreen(
                     viewModel = hiltViewModel(),
-                    modifier = contentModifier,
+                    modifier = Modifier.fillMaxSize(),
                 )
             }
 
@@ -189,7 +199,7 @@ private fun EnemyApp(
             ) {
                 PreferencesScreen(
                     viewModel = hiltViewModel(),
-                    modifier = contentModifier,
+                    modifier = Modifier.fillMaxSize(),
                 )
             }
 
@@ -202,7 +212,7 @@ private fun EnemyApp(
 
                 ControllerScreen(
                     viewModel = hiltViewModel(activity),
-                    modifier = contentModifier,
+                    modifier = Modifier.fillMaxSize(),
                 )
             }
 
@@ -212,7 +222,7 @@ private fun EnemyApp(
             ) {
                 PlaylistScreen(
                     viewModel = hiltViewModel(),
-                    modifier = contentModifier,
+                    modifier = Modifier.fillMaxSize(),
                 )
             }
 
@@ -310,19 +320,18 @@ private fun EnemyBottomAppBar(
             enter = expandVertically(),
             exit = shrinkVertically(),
         ) {
-            EnemyController(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(IntrinsicSize.Min)
-                    .clickable { controllerState.to() }
-                    .let {
-                        if (destinationState.isBottomBarVisible) {
-                            it.consumeWindowInsets(WindowInsets.systemBars)
-                        } else {
-                            it.consumeWindowInsets(WindowInsets.statusBars)
-                        }
-                    },
-            )
+            val windowInsets: WindowInsets = if (destinationState.isBottomBarVisible) {
+                WindowInsets.systemBars
+            } else {
+                WindowInsets.statusBars
+            }
+
+            Modifier
+                .fillMaxWidth()
+                .height(IntrinsicSize.Min)
+                .clickable { controllerState.to() }
+                .consumeWindowInsets(windowInsets)
+                .let { EnemyController(it) }
         }
 
         AnimatedVisibility(
@@ -332,7 +341,6 @@ private fun EnemyBottomAppBar(
         ) {
             EnemyBottomBar(
                 searchState = searchState,
-                destinationState = destinationState,
                 preferencesState = preferencesState,
                 createPlaylistState = createPlaylistState,
                 modifier = Modifier.fillMaxWidth(),
@@ -357,20 +365,20 @@ private fun EnemyController(
 @Composable
 private fun EnemyBottomBar(
     searchState: GlobalUiState.SearchState,
-    destinationState: GlobalUiState.DestinationState,
     preferencesState: GlobalUiState.PreferencesState,
     createPlaylistState: GlobalUiState.CreatePlaylistState,
     modifier: Modifier = Modifier,
 ) {
-    val iconButtonModifier: Modifier = Modifier.size(dimensionResource(CR.dimen.icon_medium))
-
-    Surface(modifier) {
+    Surface(
+        color = MaterialTheme.colorScheme.surface,
+        modifier = modifier,
+    ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(
-                space = dimensionResource(CR.dimen.padding_large),
+                space = dimensionResource(CR.dimen.padding_medium),
                 alignment = Alignment.Start,
             ),
-            verticalAlignment = Alignment.Bottom,
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
                 .navigationBarsPadding()
@@ -379,33 +387,26 @@ private fun EnemyBottomBar(
             if (searchState.isSearchButtonVisible) {
                 EnemyBottomBarSearchIconButton(
                     searchState = searchState,
-                    modifier = iconButtonModifier,
+                    modifier = Modifier.size(dimensionResource(CR.dimen.icon_medium)),
                 )
             }
 
             if (searchState.isPreferencesButtonVisible) {
                 EnemyBottomBarPreferencesIconButton(
                     preferencesState = preferencesState,
-                    destinationState = destinationState,
-                    modifier = iconButtonModifier,
+                    modifier = Modifier.size(dimensionResource(CR.dimen.icon_medium)),
                 )
             }
 
-            AnimatedVisibility(
-                visible = searchState.isSearchTextVisible,
-                enter = expandHorizontally(),
-                exit = ExitTransition.None,
-                modifier = Modifier.weight(1f),
-            ) {
+            if (searchState.isSearchTextVisible) {
                 EnemySearchTextField(
                     searchState = searchState,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.weight(1f),
                 )
-            }
-
-            if (!searchState.isSearchTextVisible) {
+            } else {
                 Spacer(Modifier.weight(1f))
             }
+
 
             EnemyBottomBarFloatingActionButton(
                 createPlaylistState = createPlaylistState,
@@ -441,23 +442,16 @@ private fun EnemyBottomBarSearchIconButton(
 }
 
 @Composable
-private fun RowScope.EnemyBottomBarPreferencesIconButton(
+private fun EnemyBottomBarPreferencesIconButton(
     preferencesState: GlobalUiState.PreferencesState,
-    destinationState: GlobalUiState.DestinationState,
     modifier: Modifier = Modifier,
 ) {
-    AnimatedVisibility(
-        visible = destinationState.isPreferencesButtonVisible,
-        enter = expandHorizontally(),
-        exit = shrinkHorizontally(),
-    ) {
-        IconButton(
-            painter = painterResource(CR.drawable.preferences),
-            contentDescription = stringResource(R.string.app_preferences),
-            onClick = preferencesState.to,
-            contentModifier = modifier,
-        )
-    }
+    IconButton(
+        painter = painterResource(CR.drawable.preferences),
+        contentDescription = stringResource(R.string.app_preferences),
+        onClick = preferencesState.to,
+        contentModifier = modifier,
+    )
 }
 
 @Composable

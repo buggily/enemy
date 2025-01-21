@@ -63,7 +63,9 @@ data class GlobalUiState(
             }
 
         val isPreferencesButtonVisible: Boolean
-            get() = setOf(NavigationDestination.Preferences).none {
+            get() = setOf(
+                NavigationDestination.Preferences,
+            ).none {
                 isDestinationInHierarchy(it)
             }
 
@@ -74,6 +76,6 @@ data class GlobalUiState(
         }
 
         private val navigationHierarchy: Sequence<NavDestination>
-            get() = destination?.hierarchy ?: emptySequence()
+            get() = destination?.hierarchy.orEmpty()
     }
 }

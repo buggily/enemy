@@ -18,7 +18,6 @@ fun IconFloatingActionButton(
     shape: Shape = FloatingActionButtonDefaults.shape,
     onClick: () -> Unit,
 ) {
-
     FloatingActionButton(
         shape = shape,
         onClick = onClick,

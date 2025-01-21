@@ -6,7 +6,7 @@ import android.net.Uri
 interface Artable {
 
     val artUriId: Long
-    val contentDescription: String
+    val contentDescription: String?
 
     val artUri: Uri
         get() = ContentUris.withAppendedId(artContentUri, artUriId)

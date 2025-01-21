@@ -11,7 +11,7 @@ sealed interface NavigationDestination {
     val queries: List<NavigationComponent.Query>
 
     private val dynamicPaths: List<NavigationComponent.Path.Dynamic>
-        get() = paths.filterIsInstance(NavigationComponent.Path.Dynamic::class.java)
+        get() = paths.filterIsInstance<NavigationComponent.Path.Dynamic>()
 
     val arguments: List<NamedNavArgument>
         get() = listOf(
@@ -270,9 +270,6 @@ sealed interface NavigationDestination {
     }
 
     companion object {
-
-        val startDestination: NavigationDestination
-            get() = Browse
 
         fun get(destination: NavDestination?): NavigationDestination? = values.find {
             it.route == destination?.route

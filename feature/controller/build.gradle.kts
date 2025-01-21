@@ -10,6 +10,7 @@ android {
 dependencies {
     implementation(project(":domain:controller"))
     implementation(project(":domain:navigation"))
+    implementation(project(":domain:track"))
 
     implementation(libs.androidx.media.core)
     implementation(libs.androidx.media.ui)

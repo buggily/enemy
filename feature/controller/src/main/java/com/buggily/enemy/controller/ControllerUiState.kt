@@ -1,11 +1,12 @@
 package com.buggily.enemy.controller
 
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import com.buggily.enemy.core.ext.isPositive
 import kotlin.time.Duration as KDuration
 
 data class ControllerUiState(
-    val mediaItem: MediaItem?,
+    val mediaState: MediaState,
     val playState: PlayState,
     val nextState: NextState,
     val previousState: PreviousState,
@@ -15,7 +16,31 @@ data class ControllerUiState(
 ) {
 
     val isVisible: Boolean
-        get() = mediaItem is MediaItem
+        get() = mediaState.hasMediaItem
+
+    data class MediaState(
+        val mediaItem: MediaItem?,
+        val onClick: () -> Unit,
+    ) {
+
+        val nameText: String?
+            get() = mediaMetadata?.title?.toString()
+
+        val artistText: String?
+            get() = mediaMetadata?.artist?.toString()
+
+        val mediaId: Long?
+            get() = mediaItem?.mediaId?.toLongOrNull()
+
+        val hasMediaItem: Boolean
+            get() = !lacksMediaItem
+
+        private val lacksMediaItem: Boolean
+            get() = mediaItem == null
+
+        private val mediaMetadata: MediaMetadata?
+            get() = mediaItem?.mediaMetadata
+    }
 
     data class PlayState(
         val isEnabled: Boolean,

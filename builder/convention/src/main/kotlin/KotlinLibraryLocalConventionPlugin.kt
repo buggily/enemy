@@ -8,7 +8,6 @@ class KotlinLibraryLocalConventionPlugin : Plugin<Project> {
         with(pluginManager) {
             apply("enemy.kotlin.library")
             apply("enemy.kotlin.hilt")
-            apply("org.jetbrains.kotlin.kapt")
         }
     }
 }

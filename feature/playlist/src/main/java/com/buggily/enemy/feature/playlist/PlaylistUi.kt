@@ -27,7 +27,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.style.TextAlign
@@ -116,19 +115,20 @@ private fun PlaylistScreenCompact(
         verticalAlignment = Alignment.Top,
         modifier = modifier,
     ) {
-        val itemModifier: Modifier = Modifier.fillMaxHeight()
-
         PlaylistHeaderCompact(
             trackState = trackState,
             playlistState = playlistState,
-            modifier = itemModifier.weight(1f),
+            modifier = Modifier
+                .fillMaxHeight()
+                .weight(1f),
         )
 
         LazyColumn(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start,
             contentPadding = WindowInsets.systemBars.asPaddingValues(),
-            modifier = itemModifier
+            modifier = Modifier
+                .fillMaxHeight()
                 .weight(2f)
                 .consumeWindowInsets(WindowInsets.systemBars),
         ) {
@@ -198,9 +198,7 @@ private fun PlaylistHeaderMedium(
     ) {
         PlaylistHeaderBackground(
             trackState = trackState,
-            modifier = Modifier
-                .fillMaxSize()
-                .alpha(floatResource(CR.dimen.alpha_low)),
+            modifier = Modifier.fillMaxSize(),
         )
 
         PlaylistHeaderForegroundMedium(
@@ -225,9 +223,7 @@ private fun PlaylistHeaderCompact(
     ) {
         PlaylistHeaderBackground(
             trackState = trackState,
-            modifier = Modifier
-                .fillMaxSize()
-                .alpha(floatResource(CR.dimen.alpha_low)),
+            modifier = Modifier.fillMaxSize(),
         )
 
         PlaylistHeaderForegroundCompact(
@@ -249,6 +245,7 @@ private fun PlaylistHeaderBackground(
         is Artable -> ArtImage(
             artable = artable,
             contentScale = ContentScale.Crop,
+            alpha = floatResource(CR.dimen.alpha_low),
             modifier = modifier,
         )
 
