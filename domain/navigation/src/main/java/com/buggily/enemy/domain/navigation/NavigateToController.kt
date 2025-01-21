@@ -12,7 +12,12 @@ class NavigateToController(
 
         NavigationArgs.Route.WithOptions(route) {
             launchSingleTop = true
-            restoreState = true
+            restoreState = false
+
+            popUpTo(route) {
+                inclusive = true
+                saveState = false
+            }
         }.let { navigate(it) }
     }
 }
