@@ -1,6 +1,7 @@
 package com.buggily.enemy
 
 import android.os.Bundle
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -14,7 +15,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -58,7 +58,7 @@ import kotlin.coroutines.suspendCoroutine
 import kotlin.time.Duration
 
 @AndroidEntryPoint
-class EnemyActivity : FragmentActivity() {
+class EnemyActivity : ComponentActivity() {
 
     private val viewModel: EnemyViewModel by viewModels()
     private val globalUiViewModel: GlobalUiViewModel by viewModels()
