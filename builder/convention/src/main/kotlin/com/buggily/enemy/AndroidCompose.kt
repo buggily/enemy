@@ -7,7 +7,7 @@ internal fun Project.configureAndroidCompose(
     commonExtension: CommonExtension<*, *, *, *, *, *>,
 ) = with(commonExtension) {
 
-    compileSdk = 35
+    compileSdk = 36
 
     buildFeatures {
         compose = true

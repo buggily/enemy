@@ -9,8 +9,10 @@ import com.buggily.enemy.local.track.LocalTrack
 import com.buggily.enemy.local.track.LocalTrackSourceable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.datetime.Instant
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
+@OptIn(ExperimentalTime::class)
 internal class TrackRepository(
     private val localTrackSource: LocalTrackSourceable,
     private val externalTrackSource: ExternalTrackSourceable,
