@@ -1,7 +1,8 @@
 package com.buggily.enemy.data.track
 
 import com.buggily.enemy.external.track.ExternalTrack
-import kotlinx.datetime.Instant
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 fun ExternalTrack.to(): Track = Track(
     id = id,
@@ -29,6 +30,7 @@ fun ExternalTrack.to(): Track = Track(
     duration = duration,
 )
 
+@OptIn(ExperimentalTime::class)
 fun ExternalTrack.toWithMetadata(
     plays: Int,
     firstPlayInstant: Instant,
@@ -40,6 +42,7 @@ fun ExternalTrack.toWithMetadata(
     lastPlayInstant = lastPlayInstant,
 )
 
+@OptIn(ExperimentalTime::class)
 fun ExternalTrack?.toWithMetadata(
     id: Long,
     plays: Int,

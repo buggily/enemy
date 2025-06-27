@@ -12,7 +12,7 @@ internal fun Project.configureKotlinAndroid(
     commonExtension: CommonExtension<*, *, *, *, *, *>,
 ) = with(commonExtension) {
 
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 30
@@ -26,8 +26,9 @@ internal fun Project.configureKotlinAndroid(
     tasks.withType<KotlinJvmCompile>().configureEach {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_17)
+            freeCompilerArgs.add("-opt-in=kotlin.time.ExperimentalTime")
         }
     }
 
-    kotlinExtension.jvmToolchain(17)
+    kotlinExtension.jvmToolchain(jdkVersion = 17)
 }

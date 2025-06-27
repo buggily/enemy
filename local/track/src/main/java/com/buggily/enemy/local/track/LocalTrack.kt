@@ -3,8 +3,10 @@ package com.buggily.enemy.local.track
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import kotlinx.datetime.Instant
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
+@OptIn(ExperimentalTime::class)
 @Entity(tableName = LocalTrack.TABLE_NAME)
 data class LocalTrack(
 

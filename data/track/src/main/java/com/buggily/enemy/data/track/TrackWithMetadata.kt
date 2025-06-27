@@ -1,7 +1,9 @@
 package com.buggily.enemy.data.track
 
-import kotlinx.datetime.Instant
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
+@OptIn(ExperimentalTime::class)
 data class TrackWithMetadata(
     val track: Track,
     val plays: Int,

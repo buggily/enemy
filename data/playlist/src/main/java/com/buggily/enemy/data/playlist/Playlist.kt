@@ -1,7 +1,9 @@
 package com.buggily.enemy.data.playlist
 
-import kotlinx.datetime.Instant
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
+@OptIn(ExperimentalTime::class)
 data class Playlist(
     val id: Long = DEFAULT_ID,
     val name: String,

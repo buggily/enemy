@@ -1,7 +1,9 @@
 package com.buggily.enemy.domain.playlist
 
-import kotlinx.datetime.Instant
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
+@OptIn(ExperimentalTime::class)
 data class PlaylistUi(
     val id: Long,
     val name: String,

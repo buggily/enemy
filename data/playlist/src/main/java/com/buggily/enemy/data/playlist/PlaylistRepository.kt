@@ -7,8 +7,10 @@ import com.buggily.enemy.local.playlist.LocalPlaylist
 import com.buggily.enemy.local.playlist.LocalPlaylistSourceable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.datetime.Instant
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
+@OptIn(ExperimentalTime::class)
 internal class PlaylistRepository(
     private val localPlaylistSource: LocalPlaylistSourceable,
     private val getInstant: GetInstant,
