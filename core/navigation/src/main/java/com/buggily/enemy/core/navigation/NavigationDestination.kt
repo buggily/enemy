@@ -272,7 +272,8 @@ sealed interface NavigationDestination {
     companion object {
 
         fun get(destination: NavDestination?): NavigationDestination? = values.find {
-            it.route == destination?.route
+            // find predicate passes null on start?
+            it?.route == destination?.route
         }
 
         private val values: List<NavigationDestination> = listOf(
