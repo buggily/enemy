@@ -1,7 +1,6 @@
 package com.buggily.enemy.core.navigation
 
 import androidx.navigation.NamedNavArgument
-import androidx.navigation.NavDestination
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 
@@ -267,28 +266,5 @@ sealed interface NavigationDestination {
             get() = emptyList()
 
         private const val CONTROLLER = "controller"
-    }
-
-    companion object {
-
-        fun get(destination: NavDestination?): NavigationDestination? = values.find {
-            // find predicate passes null on start?
-            it?.route == destination?.route
-        }
-
-        private val values: List<NavigationDestination> = listOf(
-            Orientation,
-            Browse,
-            Album,
-            Track.Picker,
-            Track.PlaylistPicker,
-            Playlist,
-            Playlist.Create,
-            Playlist.Edit,
-            Playlist.Picker,
-            Playlist.TrackPicker,
-            Preferences,
-            Controller,
-        )
     }
 }
