@@ -320,8 +320,17 @@ class EnemyActivity : ComponentActivity() {
             override fun onEvents(player: Player, events: Player.Events) {
                 super.onEvents(player, events)
 
-                if (!events.contains(Player.EVENT_PLAYBACK_STATE_CHANGED)) return
-                controllerViewModel.setDuration(player.duration)
+                // EVENT_PLAYBACK_STATE_CHANGED needed for immediate population
+                // EVENT_MEDIA_ITEM_TRANSITION needed for continuous population
+
+                if (
+                    events.containsAny(
+                        Player.EVENT_PLAYBACK_STATE_CHANGED,
+                        Player.EVENT_MEDIA_ITEM_TRANSITION,
+                    )
+                ) {
+                    controllerViewModel.setDuration(player.duration)
+                }
             }
         }
     }
