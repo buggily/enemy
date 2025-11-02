@@ -72,7 +72,7 @@ data class GlobalUiState(
         private fun isDestinationInHierarchy(
             destination: NavigationDestination,
         ): Boolean = navigationHierarchy.any {
-            NavigationDestination.get(it) == destination
+            it.route == destination.route
         }
 
         private val navigationHierarchy: Sequence<NavDestination>
