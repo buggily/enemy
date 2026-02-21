@@ -9,13 +9,13 @@ class KotlinHiltConventionPlugin : Plugin<Project> {
 
     override fun apply(target: Project) = with(target) {
         with(pluginManager) {
-            apply("org.jetbrains.kotlin.kapt")
+            apply("com.google.devtools.ksp")
         }
 
         dependencies {
             with(getLibs()) {
                 add("implementation", getLib("hilt.core"))
-                add("kapt", getLib("hilt.core.compiler"))
+                add("ksp", getLib("hilt.core.compiler"))
             }
         }
     }

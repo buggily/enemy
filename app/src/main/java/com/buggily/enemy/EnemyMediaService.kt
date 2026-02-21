@@ -81,7 +81,14 @@ class EnemyMediaService : MediaLibraryService() {
         override fun onPlaybackResumption(
             mediaSession: MediaSession,
             controller: MediaSession.ControllerInfo,
+            isForPlayback: Boolean,
         ): ListenableFuture<MediaSession.MediaItemsWithStartPosition> {
+            if (!isForPlayback) return super.onPlaybackResumption(
+                mediaSession,
+                controller,
+                false,
+            )
+
             val future: SettableFuture<MediaSession.MediaItemsWithStartPosition> =
                 SettableFuture.create()
 

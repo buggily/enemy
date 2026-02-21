@@ -14,7 +14,6 @@ class KotlinLibraryConventionPlugin : Plugin<Project> {
         with(pluginManager) {
             apply("java-library")
             apply("org.jetbrains.kotlin.jvm")
-            apply("org.jetbrains.kotlin.kapt")
             apply("com.google.devtools.ksp")
         }
 
