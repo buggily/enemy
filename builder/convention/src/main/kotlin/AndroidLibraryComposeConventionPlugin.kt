@@ -1,5 +1,5 @@
 
-import com.android.build.gradle.LibraryExtension
+import com.android.build.api.dsl.LibraryExtension
 import com.buggily.enemy.configureAndroidCompose
 import com.buggily.enemy.ext.getLib
 import com.buggily.enemy.ext.getLibs

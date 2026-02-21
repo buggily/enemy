@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,7 +29,7 @@ class OrientationViewModel @Inject constructor(
     )
 
     val event: SharedFlow<OrientationEvent>
-        get() = _event
+        get() = _event.asSharedFlow()
 
     init {
         OrientationUiState(

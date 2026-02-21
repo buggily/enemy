@@ -15,10 +15,10 @@ dependencies {
 
     implementation(libs.kotlinx.dateTime)
 
+    ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.paging)
-    ksp(libs.androidx.room.compiler)
 
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.paging)

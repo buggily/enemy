@@ -4,6 +4,7 @@ import androidx.media3.common.MediaItem
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 
 class ControllerOrchestrator : ControllerOrchestratable {
 
@@ -14,7 +15,7 @@ class ControllerOrchestrator : ControllerOrchestratable {
     )
 
     override val event: SharedFlow<ControllerEvent>
-        get() = _event
+        get() = _event.asSharedFlow()
 
     override fun playItems(
         index: Int,
