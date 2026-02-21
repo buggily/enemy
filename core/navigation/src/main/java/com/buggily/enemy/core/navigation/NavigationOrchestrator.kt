@@ -3,6 +3,7 @@ package com.buggily.enemy.core.navigation
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 
 class NavigationOrchestrator : NavigationOrchestratable {
 
@@ -13,7 +14,7 @@ class NavigationOrchestrator : NavigationOrchestratable {
     )
 
     override val event: SharedFlow<NavigationEvent>
-        get() = _event
+        get() = _event.asSharedFlow()
 
     override fun navigate(args: NavigationArgs) {
         NavigationEvent(
